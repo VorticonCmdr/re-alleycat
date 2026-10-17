@@ -1,0 +1,107 @@
+:root {
+  --bg: #f4f1ea;
+  --fg: #1d1b18;
+  --muted: #6b655c;
+  --panel: #ffffff;
+  --border: #d9d3c7;
+  --accent: #a3238f;
+  --danger: #b3261e;
+  --screen-bg: #000000;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15140f;
+    --fg: #ece8df;
+    --muted: #a39d92;
+    --panel: #201e18;
+    --border: #3a362d;
+    --accent: #e070cf;
+    --danger: #ff8a80;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15140f;
+  --fg: #ece8df;
+  --muted: #a39d92;
+  --panel: #201e18;
+  --border: #3a362d;
+  --accent: #e070cf;
+  --danger: #ff8a80;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+main { max-width: 980px; margin: 0 auto; padding: 16px; }
+header h1 { margin: 0 0 4px; font-size: 1.5rem; }
+header .sub { color: var(--muted); font-weight: 400; font-size: 1rem; }
+.note { color: var(--muted); margin: 0 0 16px; }
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+}
+.drop {
+  display: block;
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  padding: 28px 16px;
+  text-align: center;
+  cursor: pointer;
+}
+.drop.over { border-color: var(--accent); }
+.drop input { display: none; }
+.check { display: block; margin-top: 12px; color: var(--muted); }
+.msg { min-height: 1.4em; margin: 10px 0 0; }
+.msg.error { color: var(--danger); }
+
+.screen-wrap {
+  background: var(--screen-bg);
+  border-radius: 6px;
+  padding: 8px;
+}
+#screen {
+  display: block;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  aspect-ratio: 4 / 3;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  outline: none;
+}
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 10px 0;
+}
+.bar button {
+  font: inherit;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--fg);
+  cursor: pointer;
+}
+.bar button:hover { border-color: var(--accent); }
+.spacer { flex: 1; }
+.status { color: var(--muted); font-variant-numeric: tabular-nums; }
+.help { color: var(--muted); }
+.diag {
+  white-space: pre-wrap;
+  background: var(--panel);
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  border-radius: 6px;
+  padding: 12px;
+  overflow-x: auto;
+}

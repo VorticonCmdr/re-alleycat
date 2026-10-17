@@ -1,0 +1,13 @@
+{
+  "name": "alleycat-port",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Browser port of Alley Cat (1984). Requires the user's own original CAT.EXE.",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "verify": "node tools/verify.mjs",
+    "serve": "node tools/serve.mjs"
+  },
+  "engines": { "node": ">=20" }
+}

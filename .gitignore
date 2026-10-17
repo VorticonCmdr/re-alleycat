@@ -1,0 +1,11 @@
+# Original proprietary game files: never commit
+/game/
+# Ghidra project (contains original binary bytes)
+/ghidra/
+# Local-only evidence: traces, captures, dumps derived from the original
+/local/
+*.EXE
+*.exe
+*.COM
+node_modules/
+.DS_Store

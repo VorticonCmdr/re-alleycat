@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alley Cat Port</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Alley Cat <span class="sub">browser port</span></h1>
+      <p class="note">Runs your own copy of the original 1984 IBM PC game. Nothing is uploaded: the file stays in this browser.</p>
+    </header>
+
+    <section id="loader" class="panel">
+      <label class="drop" id="drop">
+        <input type="file" id="file" accept=".exe,.EXE">
+        <span>Choose or drop <b>CAT.EXE</b></span>
+      </label>
+      <label class="check"><input type="checkbox" id="remember"> Remember the file in this browser</label>
+      <p id="loader-msg" class="msg" role="status"></p>
+    </section>
+
+    <section id="player" hidden>
+      <div class="screen-wrap">
+        <canvas id="screen" width="320" height="200" tabindex="0" aria-label="Game screen"></canvas>
+      </div>
+      <div class="bar">
+        <button data-combo="Escape" title="Esc">Pause</button>
+        <button data-combo="ControlLeft+KeyS" title="Ctrl+S">Sound on/off</button>
+        <button data-combo="ControlLeft+KeyR" title="Ctrl+R">Restart</button>
+        <button data-combo="ControlLeft+KeyM" title="Ctrl+M">Menu</button>
+        <span class="spacer"></span>
+        <span id="status" class="status" role="status"></span>
+      </div>
+      <details class="help">
+        <summary>Controls</summary>
+        <ul>
+          <li>Arrow keys (or numeric keypad incl. diagonals 7 9 1 3) move the cat.</li>
+          <li>Alt performs special actions. Esc pauses.</li>
+          <li>Ctrl+S sound, Ctrl+R restart, Ctrl+M menu (also available as buttons, since browsers reserve some Ctrl shortcuts).</li>
+        </ul>
+      </details>
+      <pre id="diag" class="diag" hidden></pre>
+    </section>
+  </main>
+  <script type="module" src="src/ui/app.js"></script>
+</body>
+</html>
