@@ -155,3 +155,37 @@ re-read the clock, shifting the tick-read alignment (room-exits checkpoint 16, D
 Room loops: no pass counter exists and breakpoint counting distorts DOSBox, and walking
 update rates in rooms are dominated by what the cat runs into (two DOSBox runs: 0.81 and
 0.61 updates per moving tick; port 1.06). Room-loop speed therefore remains **[approx]**.
+
+## TANDYCAT.EXE (Tandy 1000 edition) [static]/[obs]
+- sha256 13bc456a…a321, 56881 bytes, MZ with no relocations, CS:IP = 0000:DB30 (a start-up
+  stub after the data), SS:SP = FFF0:0100. Not packed.
+- Live on DOSBox machine=tandy (model byte FFh) [obs]: PSP 0191h, CS = image base 01A1h,
+  DS = 0815h = image + 6740h. Runs in BIOS mode 4 (CGA 320x200x4), like CAT.EXE.
+- Code: a normalised diff of the two disassemblies (addresses/immediates masked) matches
+  97.7 % of CAT.EXE's 8452 instructions in sequence. Differences: keyboard handler
+  (CAT CS:147f..15c9), input poll (CS:1200..12c1), menu/joystick (CS:5d7b..600f), an added
+  Tandy start-up stub, 4-instruction changes at CS:1936 and CS:221a, and six writes to the
+  SN76496 sound chip (port C0h). Code offsets shift by +2B0h in the middle of the program.
+- Data: 97 % of CAT's data bytes reappear in constant-shift runs (local/re/tandy_runs.json):
+  +1 (0000-043f), +20h (06c6-0fed), +270h/+272h (0fed-37af), +280h (37af-6d37),
+  +2C0h..+2C9h (6d63-7128). Gaps are Tandy-specific data (e.g. the scan-code table).
+- Consequence for the port: the translated logic can be shared if DS address constants in
+  the code are mapped per edition (pointers stored in data are already in the edition's own
+  space and must not be mapped), plus translations of the Tandy-only routines.
+- Reference: a second, isolated dosbox-automation instance with machine=tandy
+  (local/dosbox-tandy/start.sh, port 8387) runs it; the managed instance stays svga_s3.
+- Start-up stub (CS:DB30, DS = PSP so its stores are CS+100h) [obs, live diff of DOSBox
+  machine=tandy memory against the file]: the Tandy BIOS signature (F000:C000 = 21h) is
+  found, so it patches CS:158d into `CALL DC08` (Tandy 1000 arrow scan codes 2Bh/4Eh/29h/4Ah
+  -> 4Bh/4Dh/48h/50h), stores model FFh at CS:0089/1fa5/5582 (immediates of the model
+  tests), sets the sound-enable immediate at CS:61f4 to FFh and hooks INT 10h. The
+  `OUT C0h` -> `INT C0h` rewrite (for a 1E0h sound port) does not run on a Tandy.
+- INT 10h hook (CS:DBE1) [static]: AH=10h with BH<8 gets BH+8; AH=0Bh BH=0 (background)
+  becomes AX=1000h (palette register 0) plus AX=1001h (border); AH=0Bh BH!=0 (palette
+  select) is swallowed. The game sets Tandy palette registers itself.
+- Timing [static]: CS:16e9 programs PIT ch0 with CFFFh (BIOS tick ~22.4 Hz) while sound
+  plays, CS:16f0 restores 0 (65536). The alley pacing at CAT CS:1936 (a pass counter) becomes
+  a tick-change test; CS:221a and CS:4b02 also change tick handling.
+- Sound [static]: a three-voice SN76496 music player (CS:173e..1827, tables near DS:1228),
+  mute at CS:1732 (9Fh/BFh/DFh/FFh to port C0h).
+- Video [obs]: DOSBox reports CGA timing at 59.92 Hz for machine=tandy.

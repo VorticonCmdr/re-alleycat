@@ -10,7 +10,7 @@ const BASE = process.env.DOSBOX_URL || 'http://127.0.0.1:8386';
 
 export class DosBox {
   constructor() {
-    this.token = existsSync(TOKEN_FILE) ? readFileSync(TOKEN_FILE, 'utf8').trim() : null;
+    this.token = process.env.DOSBOX_TOKEN || (existsSync(TOKEN_FILE) ? readFileSync(TOKEN_FILE, 'utf8').trim() : null);
     this.calls = 0;
   }
 

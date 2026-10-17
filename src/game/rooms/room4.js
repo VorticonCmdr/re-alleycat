@@ -1,4 +1,4 @@
-// Room 4 (jump-table entry CS:0349). Room-specific routines CS:3e90..CS:431c.
+// Room 4 (jump-table entry CS:0349). Room-specific routines CS:3e90..CS:433f.
 // All tables, sprites and screen offsets are read from the data segment at runtime.
 
 import { registerRoom } from './hooks.js';
@@ -173,7 +173,7 @@ function objectNearCat(g, si, bx, bp) {
 }
 
 // CS:4277 - pick a free spot (0..15, not used by another object) for object BX;
-// up to 0x20 retries to keep it away from the cat.
+// up to 0x20 retries (0x21 placements) to keep it away from the cat.
 function objectNewSpot(g, si, bx) {
   g.wb(0x3ed9, 0x20);
   g.c(2);
@@ -347,7 +347,7 @@ function objectsUpdate(g) {
 }
 
 registerRoom(4, {
-  // CS:0349
+  // CS:0349 - room 4 entry and loop (loop head CS:0364).
   *loop(g) {
     g.ww(0x0004, 4);
     g.c(1);

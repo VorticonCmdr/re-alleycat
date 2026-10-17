@@ -20,6 +20,7 @@ const until = args.until || 'room'; // 'room': stop on entering a room; 'solved'
 const site = parseInt(args.site || '0155', 16);
 const every = Number(args.every || 8);
 const seconds = Number(args.seconds || 60);
+const force = args.force ? Number(args.force) : 0; // force room N at alley pass 60 (as scenarios do)
 
 export function runBot(seed) {
   const g = new Game(parseMZ(loadCatExe()).image, { rngSeed: seed });
@@ -32,11 +33,24 @@ export function runBot(seed) {
   }
   const held = new Set();
   let hits = 0;
+  let alley = 0;
+  let lastRoom = 0;
   const log = [];
   const mem = { rb: (a) => g.rb(a), rw: (a) => g.rw(a), scratch: {} };
   while (g.clock.ms() < seconds * 1000 && !g.exited) {
     g.serviceInterrupts();
     const s = g.step();
+    if (force && s === 0x0155 && ++alley === 60) {
+      for (let a = 0x421; a <= 0x431; a++) g.wb(a, force);
+      g.ww(0x41d, 0xffff);
+      g.ww(0x41f, 0xffff);
+      g.wb(0x418, 0);
+      g.wb(0x551, 1);
+    }
+    if (args.trace && g.rw(4) !== lastRoom) {
+      console.log(`  ${(g.clock.ms() / 1000).toFixed(1)}s room ${lastRoom} -> ${g.rw(4)} bowls left ${g.rb(0x44d6)} x=${g.rw(0x579)} y=${g.rb(0x57b)} lives=${g.rb(0x1f80)}`);
+      lastRoom = g.rw(4);
+    }
     if (until === 'room' && g.rw(0x0004) !== 0) return { ok: true, g, hits, log, ms: g.clock.ms(), room: g.rw(0x0004) };
     if (until === 'solved' && g.rb(0x553)) return { ok: true, g, hits, log, ms: g.clock.ms(), room: g.rw(0x0004) };
     if (s !== site && !(until === 'solved' && ROOM_SITES[s])) continue;

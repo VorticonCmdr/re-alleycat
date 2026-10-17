@@ -1,0 +1,812 @@
+{
+  "id": "natural-room6",
+  "description": "Room 6 chosen by state injection; the room6 policy holds Alt and steps between the floor rows so the room walks the cat to every bowl; the outcome (goal or a life lost to the chaser) is whatever the original produced, see the manifest note.",
+  "exe": {
+    "file": "CAT.EXE",
+    "sha256": "4979c8867826e08881d1d4bec95c95d6bc1ac70fd21050ccdb4f733a50d7bfdd"
+  },
+  "emulator": {
+    "name": "dosbox-automation",
+    "machine": "svga_s3",
+    "cpu_cycles": 3000,
+    "core": "auto",
+    "launch": "C:\\CAT.EXE from the shell, C: = game/ (read-only), PSP 01E5"
+  },
+  "startState": "program entry CS:0000 after a clean launch; environment values come from the capture stream",
+  "keyInjection": "at sync points, by writing the memory effects of the game INT 9 handler (CS:14b3)",
+  "stateInjection": "room choice only (DS:0421-0431, 041d-0420, 0551 at alley pass 60); the room is played by the policy",
+  "compare": {
+    "ds": "0000..7130 (data segment; code segment excluded)",
+    "vram": "0000..4000",
+    "dsExclude": [
+      {
+        "from": "5a0e",
+        "to": "5a10",
+        "reason": "CS:5ac2 stores a PIT ch0 sample (sound timing only)"
+      },
+      {
+        "from": "5a12",
+        "to": "5a14",
+        "reason": "CS:5ac2 sweep value advanced per PIT-timed step (sound only)"
+      },
+      {
+        "from": "5a16",
+        "to": "5a1a",
+        "reason": "CS:5a1c PIT sample and retune counter (sound only)"
+      },
+      {
+        "from": "5a3c",
+        "to": "5a40",
+        "reason": "CS:5a1c sweep accumulators advanced per PIT-timed retune (sound only)"
+      }
+    ]
+  },
+  "verify": "npm run verify -- --only=reference   (single: node tests/reference.mjs --scenario=natural-room6)",
+  "maxTicks": 6000,
+  "policy": {
+    "name": "play",
+    "site": "02c5",
+    "start": 2,
+    "every": 2
+  },
+  "maxIdleTicks": 1500,
+  "events": [
+    {
+      "type": "checkpoint",
+      "site": "5d71",
+      "count": 1
+    },
+    {
+      "type": "key",
+      "site": "5d71",
+      "count": 200,
+      "code": "Space",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "5ef7",
+      "count": 5,
+      "code": "Space",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "5ef7",
+      "count": 50,
+      "code": "KeyN",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "5f29",
+      "count": 10,
+      "code": "KeyN",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "5f29",
+      "count": 50,
+      "code": "KeyK",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "5faa",
+      "count": 10,
+      "code": "KeyK",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "5faa",
+      "count": 50,
+      "code": "Space",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 5,
+      "code": "Space",
+      "down": false
+    },
+    {
+      "type": "poke",
+      "site": "0155",
+      "count": 60,
+      "addr": "0421",
+      "bytes": "0606060606060606060606060606060606",
+      "note": "room-choice tables"
+    },
+    {
+      "type": "poke",
+      "site": "0155",
+      "count": 60,
+      "addr": "041d",
+      "bytes": "ffffffff",
+      "note": "last two rooms"
+    },
+    {
+      "type": "poke",
+      "site": "0155",
+      "count": 60,
+      "addr": "0418",
+      "bytes": "00"
+    },
+    {
+      "type": "poke",
+      "site": "0155",
+      "count": 60,
+      "addr": "0551",
+      "bytes": "01",
+      "note": "entered a window"
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 1
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 151
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 301
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 451
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 601
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 751
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 901
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 1051
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 1201
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 1351
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 1501
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 1651
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 1801
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 1951
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 2101
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 2251
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 2401
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 2551
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 2701
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 2851
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 3001
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 3151
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 3301
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 3451
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 3601
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 3751
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 3901
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 4051
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 4201
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 4351
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 4501
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 4651
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 4801
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 4951
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 5101
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 100
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 200
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 300
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 400,
+      "final": true
+    },
+    {
+      "type": "key",
+      "site": "02c5",
+      "count": 2,
+      "code": "AltLeft",
+      "down": true,
+      "by": "play"
+    },
+    {
+      "type": "key",
+      "site": "02c5",
+      "count": 632,
+      "code": "ArrowDown",
+      "down": true,
+      "by": "play"
+    },
+    {
+      "type": "key",
+      "site": "02c5",
+      "count": 712,
+      "code": "ArrowDown",
+      "down": false,
+      "by": "play"
+    },
+    {
+      "type": "key",
+      "site": "02c5",
+      "count": 1074,
+      "code": "ArrowDown",
+      "down": true,
+      "by": "play"
+    },
+    {
+      "type": "key",
+      "site": "02c5",
+      "count": 1452,
+      "code": "ArrowDown",
+      "down": false,
+      "by": "play"
+    },
+    {
+      "type": "key",
+      "site": "02c5",
+      "count": 1820,
+      "code": "ArrowDown",
+      "down": true,
+      "by": "play"
+    },
+    {
+      "type": "key",
+      "site": "02c5",
+      "count": 1926,
+      "code": "ArrowDown",
+      "down": false,
+      "by": "play"
+    },
+    {
+      "type": "key",
+      "site": "02c5",
+      "count": 2552,
+      "code": "ArrowDown",
+      "down": true,
+      "by": "play"
+    },
+    {
+      "type": "key",
+      "site": "02c5",
+      "count": 2818,
+      "code": "ArrowDown",
+      "down": false,
+      "by": "play"
+    },
+    {
+      "type": "key",
+      "site": "02c5",
+      "count": 3310,
+      "code": "ArrowDown",
+      "down": true,
+      "by": "play"
+    },
+    {
+      "type": "key",
+      "site": "02c5",
+      "count": 4190,
+      "code": "ArrowDown",
+      "down": false,
+      "by": "play"
+    }
+  ],
+  "endedBy": "final checkpoint",
+  "capture": {
+    "tool": "capture-v5",
+    "emulator": "0.84.0-vc1 (f6d9b)",
+    "date": "2026-10-17",
+    "stops": 6299,
+    "seconds": 117,
+    "seed": 48769,
+    "tickChanges": 832,
+    "retraceEdges": 290,
+    "speakerWrites": 2549,
+    "checkpoints": [
+      {
+        "site": "5d71",
+        "count": 1,
+        "tickReads": 1,
+        "retraceReads": 0,
+        "speakerWrites": 1,
+        "ds": "affc716c4e974bb89aa7adda8ab781be1bbf7c08a644ee1edc255136c5366f47",
+        "vram": "5fce33f4a530bcd7fe0a7ffcd70347d31f889847fbc12a71fb730c637d9c6e14"
+      },
+      {
+        "site": "02c5",
+        "count": 1,
+        "tickReads": 643,
+        "retraceReads": 251,
+        "speakerWrites": 185,
+        "ds": "3622c0fc78fbe9de2112ba608c6ee6581d1b0c46be8006c1ccb5d90073ff2f5e",
+        "vram": "8571dfd82e8e69de00219cad0118441881f4e6b640750e66a8f561b101c3feea"
+      },
+      {
+        "site": "02c5",
+        "count": 151,
+        "tickReads": 1564,
+        "retraceReads": 251,
+        "speakerWrites": 205,
+        "ds": "07080f0cd7c22f4b59b52c669beb1c6fb967f6c8605ceff88decb60eecc49623",
+        "vram": "c9d97d65d16b67349bc61ab7df0b2d54d12fda7a798eb349cb1902087d111ca5"
+      },
+      {
+        "site": "02c5",
+        "count": 301,
+        "tickReads": 2486,
+        "retraceReads": 305,
+        "speakerWrites": 231,
+        "ds": "f7082a1df4764e70385de00103ffd76e5c9abe9e40415b3dc7061dbb1c061dca",
+        "vram": "c82615875b809f507731cb55886365bbed35c1a631addaa419fae5d4cdb4e2f2"
+      },
+      {
+        "site": "02c5",
+        "count": 451,
+        "tickReads": 3407,
+        "retraceReads": 305,
+        "speakerWrites": 284,
+        "ds": "1943fbf2c08c42e7efecd72e7e3da779fba315ca1a23fd6efb557350b1d12f68",
+        "vram": "623dae9bd53b6d8bd53e46661a63cb57d2d6b6aa7870ba8fde4928b09f871027"
+      },
+      {
+        "site": "02c5",
+        "count": 601,
+        "tickReads": 4330,
+        "retraceReads": 363,
+        "speakerWrites": 343,
+        "ds": "1a00037b3470d1c8e48567d02e3180bc68f73e40c3d8f2d6dff20f0065fcf8e9",
+        "vram": "a095ac71c4a34e2c17ff3580edafe8adc4173be15f322ff86f568bbbc940d7f7"
+      },
+      {
+        "site": "02c5",
+        "count": 751,
+        "tickReads": 5253,
+        "retraceReads": 462,
+        "speakerWrites": 374,
+        "ds": "a577d08b0a3bfdcffb03b809dcae2daa3ce8a4f71f62fff400dbacbd692227f6",
+        "vram": "8b5f699da6c00c161e16e247c08bb929bfe2ddd1e1e2fc39991ff0861791d9c8"
+      },
+      {
+        "site": "02c5",
+        "count": 901,
+        "tickReads": 6178,
+        "retraceReads": 572,
+        "speakerWrites": 408,
+        "ds": "c31317d1b814b8964ccd99db218a13eee8e1e1363c6b2e2537a4d16636c86b92",
+        "vram": "ff9282a2fe88f367e7296c673251adecf84ed226a817f8634a412e0b41478c3c"
+      },
+      {
+        "site": "02c5",
+        "count": 1051,
+        "tickReads": 7101,
+        "retraceReads": 632,
+        "speakerWrites": 483,
+        "ds": "36456bc345c7621499cbe314b3c898d7642cb8777e7d78753a9c8c409ede33a7",
+        "vram": "abd5c5528b6596cc05bb6d8fc1e1e38ce351e8927a6d3135cdd9f44a837c1de3"
+      },
+      {
+        "site": "02c5",
+        "count": 1201,
+        "tickReads": 8023,
+        "retraceReads": 696,
+        "speakerWrites": 515,
+        "ds": "f347fd26e216e9d1da27e99b827e94119c6da9d6d90c72c2f31145896ee0adf3",
+        "vram": "51c75297f055ff22b863a3dfc5e28bdcd0d92b4b30ce654aef8f083dadda092c"
+      },
+      {
+        "site": "02c5",
+        "count": 1351,
+        "tickReads": 8943,
+        "retraceReads": 696,
+        "speakerWrites": 603,
+        "ds": "b3c1e1f324f67d0bac19c5bde488ebed9058562540792dcec36576043953d798",
+        "vram": "fce837543aafad8cc05e0d6a4fa92e61ec5051421944e51561ac90105c9922b8"
+      },
+      {
+        "site": "02c5",
+        "count": 1501,
+        "tickReads": 9863,
+        "retraceReads": 696,
+        "speakerWrites": 623,
+        "ds": "e29c6fccea7a2855bd56404f8e9acfd7f9fabb804cc2ff8deff45303ff5b998a",
+        "vram": "9261a41a8d2ed4abf498fa33e11af3858e5bfd4742a939b8eea9aafc864b4cc5"
+      },
+      {
+        "site": "02c5",
+        "count": 1651,
+        "tickReads": 10783,
+        "retraceReads": 698,
+        "speakerWrites": 639,
+        "ds": "9b3a0813a6c45a293c493eaf56bd1efe62a64d034b2ab3410d543f312e32c6a5",
+        "vram": "8f513a8b45bd7b37d1c1656bd3039f1464ea7cceb3be61aa3dcf54f77d6707fa"
+      },
+      {
+        "site": "02c5",
+        "count": 1801,
+        "tickReads": 11698,
+        "retraceReads": 698,
+        "speakerWrites": 723,
+        "ds": "6a6b62ce80cc980a9add861ca19c3a8ed6ee847a0f1c2d4ec8b6fed65fe518fe",
+        "vram": "5670358049c0074f56cde8cb2a6c68a171d266febc08abc429caab5421c94639"
+      },
+      {
+        "site": "02c5",
+        "count": 1951,
+        "tickReads": 12619,
+        "retraceReads": 726,
+        "speakerWrites": 759,
+        "ds": "c527fd44adf98c81e6cc539bfc11bf97a16ffac09bf5457d0d5ed066edeb7da5",
+        "vram": "78ac6ebf4c2f87fb7afe7c5be00befadd8661154b36274dc5ce51511459daba2"
+      },
+      {
+        "site": "02c5",
+        "count": 2101,
+        "tickReads": 13590,
+        "retraceReads": 731,
+        "speakerWrites": 869,
+        "ds": "e4f2b7e6a50ecce4b7801f65be97c00fefd4f733a6dbfd1f6bd74ecd93a25ca2",
+        "vram": "12fe05a262fe354d13e1d2963f985a458f63565a4b35859b46038b6eef83cbb0"
+      },
+      {
+        "site": "02c5",
+        "count": 2251,
+        "tickReads": 14510,
+        "retraceReads": 788,
+        "speakerWrites": 904,
+        "ds": "8c40603cc2e05a8492a2474ac55855fa1a42821b9a7c39e67024975941211943",
+        "vram": "eb9af12657bd4fb0eb01774c9096aa20eb7e24809a0970eeda0082183fbfa6b0"
+      },
+      {
+        "site": "02c5",
+        "count": 2401,
+        "tickReads": 15426,
+        "retraceReads": 788,
+        "speakerWrites": 992,
+        "ds": "47a729cc054e925cdb88b3ff37058b926307a810bbd5906a419262f291f69c31",
+        "vram": "0a2fde47c01882c056abb41f0807a464637adc0762a301cd5f6d84243ca56a62"
+      },
+      {
+        "site": "02c5",
+        "count": 2551,
+        "tickReads": 16348,
+        "retraceReads": 788,
+        "speakerWrites": 1080,
+        "ds": "00ae60a69832800602d441b2212bcd69771273d89ab4b7d497d260d553556af0",
+        "vram": "5e7f7703fbbe0e978b6fc1be09b03a9607c4a076f3d0042e7ca955bf09414ee5"
+      },
+      {
+        "site": "02c5",
+        "count": 2701,
+        "tickReads": 17271,
+        "retraceReads": 788,
+        "speakerWrites": 1160,
+        "ds": "2f337873e55ecd18772da1e0981f99d6eb31f45f133a906fa312454afae1ad41",
+        "vram": "8f34c9e45625d5cf55176e55ffa766b0671ccee4c06002d440975d81289157d8"
+      },
+      {
+        "site": "02c5",
+        "count": 2851,
+        "tickReads": 18191,
+        "retraceReads": 788,
+        "speakerWrites": 1204,
+        "ds": "62338e6d02e4fef6bcd6cb99f1ee5d5c8f84d80bea90e96afb7e0693fb13cf68",
+        "vram": "683499d284e999f27bed57642658eaccddb456696f2396beeca6b86ac76efaa8"
+      },
+      {
+        "site": "02c5",
+        "count": 3001,
+        "tickReads": 19111,
+        "retraceReads": 793,
+        "speakerWrites": 1224,
+        "ds": "94ff0c8e9d4d9261ab03855da928538ef31e885e560d263578f705f37df7c7b0",
+        "vram": "5c13c6d711e86d291d478926cf6c00ab3c3a7fdde6e710e605ec4d7c81a6a118"
+      },
+      {
+        "site": "02c5",
+        "count": 3151,
+        "tickReads": 20082,
+        "retraceReads": 802,
+        "speakerWrites": 1331,
+        "ds": "2ace448d27511cd496501ea8cf2a91c0b9122131604d78ca60f34c60831e4b2d",
+        "vram": "3f45a59a5e1b0da3fa745978c45893a72ed579c68e74469ba46d513cf46a8b6c"
+      },
+      {
+        "site": "02c5",
+        "count": 3301,
+        "tickReads": 21054,
+        "retraceReads": 853,
+        "speakerWrites": 1439,
+        "ds": "7275afde07cc6c7f0e33e513018f1fe8cc72e43406c28470c0997f5cda244cab",
+        "vram": "fce13aa734d3110aaa66c967f645292e60221f23993f4e8616c22b3a55f1c88f"
+      },
+      {
+        "site": "02c5",
+        "count": 3451,
+        "tickReads": 21972,
+        "retraceReads": 864,
+        "speakerWrites": 1530,
+        "ds": "5452bdcbe2f60cc890ca6a3efcbb9da0b734333482932ccdcd3fd5ea244c3eee",
+        "vram": "c072e03036774b834a1b708c510ce9813f1b7cbb7b6baa5129610ae2145e5cde"
+      },
+      {
+        "site": "02c5",
+        "count": 3601,
+        "tickReads": 22894,
+        "retraceReads": 864,
+        "speakerWrites": 1618,
+        "ds": "f0682c68c517bb5daafcbac83c2cfc54fe64cbadc0a3c40e71c3272de5df85b1",
+        "vram": "736cc75419043b514536412950effbcc42bb65a3d1687cd3e203048481f2c6dd"
+      },
+      {
+        "site": "02c5",
+        "count": 3751,
+        "tickReads": 23816,
+        "retraceReads": 864,
+        "speakerWrites": 1706,
+        "ds": "63844982ebb28f6a3c5c95e1dc099d0e6269c8861e502ca202917da8b7c1451d",
+        "vram": "30d1a42edc18773205dcbd0767bc612083455d8746e90571960741216cfcc056"
+      },
+      {
+        "site": "02c5",
+        "count": 3901,
+        "tickReads": 24739,
+        "retraceReads": 864,
+        "speakerWrites": 1798,
+        "ds": "eeed7587279cfe938722e3d0e3a2f7a44f6e6fc4e7e83acf25f7308b1abd6493",
+        "vram": "fcb36afaafd301d33cc0bb763c6e5038aa0e1d69073a196070064b8fce13ff57"
+      },
+      {
+        "site": "02c5",
+        "count": 4051,
+        "tickReads": 25661,
+        "retraceReads": 864,
+        "speakerWrites": 1874,
+        "ds": "310b3d77a4f441ae342f5ab22ef896e71bc5206565912b6a45d077841766970f",
+        "vram": "66a640381a6785d8a2d344446b732c6cd8ef7c3e30c50cd76e6ac82cdff720ce"
+      },
+      {
+        "site": "02c5",
+        "count": 4201,
+        "tickReads": 26581,
+        "retraceReads": 876,
+        "speakerWrites": 1910,
+        "ds": "6de66fdb6cca973429382e4b67b3d0fb0a9f20eacdfa90d83c36b362cfd95cc6",
+        "vram": "5aa5856cecca54e78e10e897f0fad8cafdc3d0b4bc5500aeb74459fc60df0bc8"
+      },
+      {
+        "site": "02c5",
+        "count": 4351,
+        "tickReads": 27504,
+        "retraceReads": 946,
+        "speakerWrites": 1953,
+        "ds": "05d7e8996265ce8055a294fc3e2cc5490daa89ef80605a5d775de55f2ef5f030",
+        "vram": "9482dc0f658b08b55da3b6db272dc72e5ca45556b7628052460efcf72a986378"
+      },
+      {
+        "site": "02c5",
+        "count": 4501,
+        "tickReads": 28477,
+        "retraceReads": 1001,
+        "speakerWrites": 2056,
+        "ds": "b5a2590f38e753240403d20758217aad210a8828565c95351730b253e0e1b1ac",
+        "vram": "a9fa5b637e81d89f42b889007c0129018848a95b0f8331187978feaa9aacf78b"
+      },
+      {
+        "site": "02c5",
+        "count": 4651,
+        "tickReads": 29326,
+        "retraceReads": 1035,
+        "speakerWrites": 2184,
+        "ds": "82cfe889ca601389f1c8a2f3545a617c7a16d7624c83c16d02a0901635458d55",
+        "vram": "c6628ed2fcb0a087a0900e5a25fea2a8cd2ae344d573d20061f7362230170e87"
+      },
+      {
+        "site": "02c5",
+        "count": 4801,
+        "tickReads": 30076,
+        "retraceReads": 1135,
+        "speakerWrites": 2256,
+        "ds": "5fc188dbf5786f36c854ead6df6439a3ccebd13ac6525a8136f3598a7b5f35b8",
+        "vram": "f8c5287fe45dd00b2c357905d71efd256290a81ba4ebb2cf4dbcf45ebb9de711"
+      },
+      {
+        "site": "02c5",
+        "count": 4951,
+        "tickReads": 30826,
+        "retraceReads": 1229,
+        "speakerWrites": 2313,
+        "ds": "e43d8041db887a7c0044fbea9f1988d50546f85ff95fdfe9eae45698929463cb",
+        "vram": "d825e35bb0d78cec154c8cea786b916e6022404788d67868fcfbddd7505b92b3"
+      },
+      {
+        "site": "02c5",
+        "count": 5101,
+        "tickReads": 31576,
+        "retraceReads": 1334,
+        "speakerWrites": 2373,
+        "ds": "a5818dc161d410acb35223de110623662beea4fcdab9e380b75c16a8499bc6c9",
+        "vram": "70f049e6e05c2d7574352113b078a201a0bf02d50975f1f80e126001a67006fe"
+      },
+      {
+        "site": "0155",
+        "count": 100,
+        "tickReads": 33470,
+        "retraceReads": 1420,
+        "speakerWrites": 2533,
+        "ds": "034cc68b72327d86b43655eaffe222d423478df01b10f62dfc3ce64b0cb1c538",
+        "vram": "6ebe633a1569c0d6e54d87b4e16f3a705058f1b76e1078193d4dc42b022823db"
+      },
+      {
+        "site": "0155",
+        "count": 200,
+        "tickReads": 33845,
+        "retraceReads": 1533,
+        "speakerWrites": 2537,
+        "ds": "b01b83ac6869c978dca5a577c377fb8546fc61f334aa6acf048381c3688ca0cd",
+        "vram": "67fab661577723b6a3d9618c2ca328b0c4d752fe9f37ea8a0f9556af5682900c"
+      },
+      {
+        "site": "0155",
+        "count": 300,
+        "tickReads": 34220,
+        "retraceReads": 1664,
+        "speakerWrites": 2545,
+        "ds": "b90acc97f6febc5254821615e00624cdc7c0af39bb4c4d00b353e18c8d545f27",
+        "vram": "aeaff915cbd033492ddf5839fc91336c6888a53d4b8bffe705317999ba3da454"
+      },
+      {
+        "site": "0155",
+        "count": 400,
+        "tickReads": 34595,
+        "retraceReads": 1827,
+        "speakerWrites": 2549,
+        "ds": "26bd0317f817e254b7e55133ddef40da2d01348be23d32bb4d23f6d959144213",
+        "vram": "5fc7bf0f330225f1bcd0acf323a142c0c0f6e8529c7c1892f64ae38b538a5643"
+      }
+    ],
+    "artifacts": {
+      "stream.json": "807c39765bc5ae89eb0ac2f075a953d483949c0fe3b412d185bd882625782a18"
+    },
+    "environmentChanges": [
+      "CRTC vertical retrace moved from lines 412-414 to 405-410 at the first sync point (capture-only; values are recorded)"
+    ]
+  },
+  "outcome": "in this capture the policy ate 10 of the 12 bowls (DS:44d6 = 2), then the chaser caught the cat (lives 3 -> 2) and the game returned to the alley; the room goal (DS:0553) was not reached"
+}

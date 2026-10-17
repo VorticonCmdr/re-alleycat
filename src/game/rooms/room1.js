@@ -13,7 +13,7 @@ import { addBcd } from '../score.js';
 import * as S from '../sound.js';
 
 // CS:3850 - animate the room-1 object every 6 ticks; the cat touching it sets DS:0554.
-function room1Update(g) {
+function objectUpdate(g) {
   const dx = g.ticks();
   g.c(5);
   if (((dx - g.rw(0x35da)) & 0xffff) < 6) return;
@@ -272,7 +272,7 @@ function* loop(g) {
     yield* catUpdate(g); // CS:08e5
     chaserUpdate(g); // CS:3150
     dogUpdate(g); // CS:1e63
-    room1Update(g); // CS:3850
+    objectUpdate(g); // CS:3850
     g.c(2);
     if (g.rb(0x554) !== 0) return 'room2'; // JNZ L0459 (room-2 entry)
     g.c(5);

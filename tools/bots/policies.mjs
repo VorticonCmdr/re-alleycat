@@ -54,9 +54,26 @@ export const policies = {
     return keys;
   },
 
-  // Room 6 (bowls): Alt makes the cat go for the nearest bowl (CS:4943).
-  room6() {
-    return new Set(['AltLeft']);
+  // Room 6 (bowls): with Alt held (DS:069a = 0) the room walks the cat to the nearest
+  // non-empty bowl on its own floor row and eats it (CS:4943; bowl rows DS:4499, counts
+  // DS:44c4). Holding Down/Up steps the cat between the floor rows (y = row - 8).
+  room6({ rb, scratch }) {
+    const keys = new Set(['AltLeft']);
+    const y = rb(0x57b);
+    const vdir = rb(0x571);
+    const rows = new Set();
+    for (let bx = 0; bx < 12; bx++) if (rb(0x44c4 + bx) > 0) rows.add(rb(0x4499 + bx) - 8);
+    if (!rows.size || (vdir === 0 && rows.has(y))) {
+      scratch.step = null;
+      return keys;
+    }
+    if (vdir !== 0) {
+      if (scratch.step) keys.add(scratch.step); // keep stepping through a row change
+      return keys;
+    }
+    scratch.step = [...rows].some((r) => r > y) ? 'ArrowDown' : 'ArrowUp';
+    keys.add(scratch.step);
+    return keys;
   },
 
   // Alley: running jump onto a tall can, standing jump onto the fence top, then hop into

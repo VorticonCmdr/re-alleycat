@@ -191,7 +191,56 @@ function naturalRoom1Scenario() {
   return m;
 }
 
-const extraScenarios = [exitsScenario(), room7WinScenario(), hotkeysScenario(), naturalWindowScenario(), naturalRoom1Scenario()];
+function naturalRoom6Scenario() {
+  const ev = [];
+  intro(ev);
+  forceRoom(ev, 60, 6);
+  // under capture a room-6 pass takes ~8 ms of emulated time (speaker breakpoint stops end
+  // DOSBox's 1 ms slices), so the policy runs every 2 passes and checkpoints are sparse
+  for (let c = 1; c <= 9001; c += 150) ev.push({ type: 'checkpoint', site: '02c5', count: c });
+  for (const c of [100, 200, 300, 400]) ev.push({ type: 'checkpoint', site: '0155', count: c, ...(c === 400 ? { final: true } : {}) });
+  const m = common('natural-room6', 'Room 6 chosen by state injection; the room6 policy holds Alt and steps between the floor rows so the room walks the cat to every bowl; the outcome (goal or a life lost to the chaser) is whatever the original produced, see the manifest note.', ev, {
+    policy: { name: 'play', site: '02c5', start: 2, every: 2 },
+    maxIdleTicks: 1500,
+  });
+  m.stateInjection = 'room choice only (DS:0421-0431, 041d-0420, 0551 at alley pass 60); the room is played by the policy';
+  return m;
+}
+
+// Real keyboard: DOSBox presses the keys, the original INT 9 handler (CS:14b3, including
+// the hot-key routine CS:1572) runs, and the scan-code bytes it reads become the replay
+// input. Keypad arrows send single bytes (grey arrows add an E0 prefix whose second IRQ
+// lands at an arbitrary instruction, so it could not be placed exactly).
+function realKeyboardScenario() {
+  const ev = [];
+  const hk = (site, count, key, down) => ev.push({ type: 'hostkey', site, count, key, down });
+  const cp = (site, count) => ev.push({ type: 'checkpoint', site, count });
+  cp('5d71', 1);
+  hk('5d71', 200, 'KBD_space', true);
+  hk('5ef7', 5, 'KBD_space', false);
+  hk('5ef7', 50, 'KBD_n', true);
+  hk('5f29', 10, 'KBD_n', false);
+  hk('5f29', 50, 'KBD_k', true);
+  hk('5faa', 10, 'KBD_k', false);
+  hk('5faa', 50, 'KBD_space', true);
+  hk('0155', 5, 'KBD_space', false);
+  hk('0155', 300, 'KBD_kp6', true);
+  hk('0155', 2300, 'KBD_kp6', false);
+  hk('0155', 2400, 'KBD_kp8', true);
+  hk('0155', 2450, 'KBD_kp8', false);
+  hk('0155', 2600, 'KBD_leftctrl', true); // Ctrl+S: sound off (hot-key routine CS:1572)
+  hk('0155', 2610, 'KBD_s', true);
+  hk('0155', 2620, 'KBD_s', false);
+  hk('0155', 2630, 'KBD_leftctrl', false);
+  hk('0155', 2700, 'KBD_kp4', true);
+  hk('0155', 3500, 'KBD_kp4', false);
+  for (let c = 100; c <= 4000; c += 100) cp('0155', c);
+  const m = common('real-keyboard', 'Menu, walking, jumping and Ctrl+S with real DOSBox key presses handled by the original INT 9 handler; the recorded scan-code bytes drive the port\'s translated handler.', ev);
+  m.keyInjection = 'real key presses in DOSBox at sync points (hostkey events); the scan-code bytes read by the original INT 9 handler are recorded with their exact position as scan events and replayed into the translated handler';
+  return m;
+}
+
+const extraScenarios = [exitsScenario(), room7WinScenario(), hotkeysScenario(), naturalWindowScenario(), naturalRoom1Scenario(), naturalRoom6Scenario(), realKeyboardScenario()];
 
 const wanted = process.argv.slice(2).filter((a) => !a.startsWith('--'));
 const reset = process.argv.includes('--reset');

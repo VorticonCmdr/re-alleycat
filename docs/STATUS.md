@@ -7,7 +7,7 @@ _Last updated: 2026-10-17_
 | file | sha256 | status |
 |---|---|---|
 | CAT.EXE (IBM PC, CGA) | 4979c886…dfdd | supported |
-| TANDYCAT.EXE | 13bc456a…a321 | rejected with a message (not ported) |
+| TANDYCAT.EXE | 13bc456a…a321 | rejected with a message (assessed, not ported; see below) |
 
 Reference machine profile: DOSBox 0.84.0-vc1, machine=svga_s3 (model byte 0xFC),
 cpu_cycles=3000. The port defaults to the same profile. The IBM PC/XT (0xFF) and PCjr
@@ -28,9 +28,9 @@ their creatures, chaser, goals, bonuses, fish-bowl room) and back, game over →
 |---|---|---|
 | `npm run verify` | all required groups | passing |
 | `npm run verify -- --only=unit` | unit: machine layer and primitives vs. definitions | 24 checks |
-| `npm run verify -- --only=slice` | independent runtime scenario + determinism + negative control | 11 checks |
-| `npm run verify -- --only=reference` | closed-loop replay of DOSBox captures, byte-exact DS+VRAM | 13 scenarios, 391 checkpoints, 39 negative controls (incl. speaker writes) |
-| `npm run verify -- --only=browser` | browser acceptance (headless Chrome) | 11 checks (incl. a room) |
+| `npm run verify -- --only=slice` | independent runtime scenario + determinism + negative control | 19 checks |
+| `npm run verify -- --only=reference` | closed-loop replay of DOSBox captures, byte-exact DS+VRAM | 15 scenarios, 472 checkpoints, 45 negative controls (incl. speaker writes) |
+| `npm run verify -- --only=browser` | browser acceptance (headless Chrome) | 14 checks (incl. a room, touch, gamepad, profiles) |
 
 Reference scenarios (`scenarios/*.json`, captures in `local/captures/`, recapture with
 `node tools/dosbox/capture.mjs scenarios/<id>.json` against a running dosbox-automation):
@@ -44,6 +44,8 @@ Reference scenarios (`scenarios/*.json`, captures in `local/captures/`, recaptur
 | natural-window | no state injection: the `enterWindow` play policy climbs cans → fence → clothes line and drops into an open window (room 6 in this capture); its key presses are logged and replayed | 76/76 identical |
 | natural-room1 | room choice injected; the `play` policy lands on the chair, jumps onto the table into the fish bowl; original hands over to room 2 | 76/76 identical |
 | hotkeys | skill T; Esc pause/resume (INT 1Ah AH=1 checked); Ctrl+S sound off and play; Ctrl+R restart; Ctrl+M menu, skill A, new game | 29/29 identical |
+| natural-room6 | room choice injected; the room6 policy holds Alt and steps between floor rows: 10 of 12 bowls eaten by play, then the chaser catches the cat (goal not reached) | 40/40 identical |
+| real-keyboard | real DOSBox key presses: the original INT 9 handler (CS:14b3, hot-key routine CS:1572) runs; the 18 scan-code bytes it read, each at an exactly known position, drive the port's translated handler (menu, keypad walking/jumping, Ctrl+S) | 41/41 identical |
 
 Outcomes in room-exits/room7-win are triggered by state injection (documented `poke`
 events), not by playing the room to its goal. Captures move the CRTC retrace window
@@ -59,11 +61,21 @@ The free-running browser timing is an approximation of DOSBox at 3000 cycles/ms.
 
 ## Known limitations
 
-- Room goals reached by actual play: room 1 (fish bowl) only; the other rooms' goals are
+- Room goals reached by actual play: room 1 (fish bowl) only (room 6 partly); the other rooms' goals are
   verified with injected outcomes. Not covered at all: the 46-second title timeout before
   the first game, Ctrl+9 and Ctrl+Y.
-- Joystick input is not supported (no game port is reported, so the original's own
-  "joystick not found" path is taken when Y is chosen).
+- Joystick: a host gamepad drives an emulated game port (axis one-shots timed in virtual
+  time, CS:122e/12a1 translated). Its timing constants are approximate; no reference capture
+  covers the joystick (DOSBox exposes no API to drive its emulated stick).
+- Keys in reference scenarios are mostly applied as the INT 9 handler's memory effects at
+  loop heads; only `real-keyboard` runs the original handler, and only for single-byte
+  keys (the E0 prefix of grey arrows arrives at an arbitrary instruction and is covered by
+  unit tests only).
+- Room 6 (bowls): the play policy eats bowls by itself but does not dodge the chaser
+  (port free-run: 4 of 8 seeds reach the goal; the capture ate 10 of 12 bowls).
+- Captures run room loops far slower in emulated time than free play (room 6: ~7 passes
+  per BIOS tick instead of ~2000) because every breakpoint stop ends a 1 ms DOSBox slice;
+  replays are exact, but play policies must be tuned to the capture's pass rate.
 - Menu/pause text uses an original substitute 8x8 font (the BIOS ROM font is not part of
   the game files).
 - Instruction-cost model is calibrated on the alley loop (+1.3 % passes per tick), the
@@ -73,7 +85,29 @@ The free-running browser timing is an approximation of DOSBox at 3000 cycles/ms.
 - Ctrl+Alt+Left/Right in the original nudges the CRT picture; the port records but does
   not display it.
 
+## Tandy 1000 edition (TANDYCAT.EXE): assessed, not ported
+
+Findings are in RE_NOTES ("TANDYCAT.EXE"). It runs on an isolated second DOSBox
+(machine=tandy, `local/dosbox-tandy/start.sh`, port 8387). Its INT 1Ah stub matches what the
+tick capture expects, so references can be captured. 97.7 % of its instructions match
+CAT.EXE, but a verified port still needs all of the following:
+1. A per-edition table for every DS address constant in the translated code (≈2200
+   literal accesses; data-held pointers stay as they are) and the code-offset map for
+   CS-relative data.
+2. Translations of the Tandy-only code: keyboard/input (Tandy arrow codes via the CS:DC08
+   patch), menu and two-joystick code, the start-up stub's live patches, the INT 10h hook
+   (palette registers, background via palette 0 + border).
+3. A three-voice SN76496 music player (CS:173e..1827) and an SN76496 synthesizer for the
+   browser, with port C0h writes added to the speaker verification.
+4. A timing model for 59.92 Hz CGA video and the PIT ch0 rate change (CFFFh while sound
+   plays), plus new alley pacing (tick-change test instead of the pass counter at CAT
+   CS:1936).
+5. A capture tool parameterised by edition (segments, sync sites, retrace site), and new
+   reference scenarios.
+Shipping it unverified would break the project's evidence rules, so the edition is still
+rejected at load.
+
 ## Next milestone
 
-Calibrate the cost model on room loops and the title (free-running DOSBox measurements);
-longer natural-play scenarios (no state injection) that reach room goals.
+Tandy edition per the plan above (largest item); play policies for the remaining room goals;
+calibrate room-loop costs.

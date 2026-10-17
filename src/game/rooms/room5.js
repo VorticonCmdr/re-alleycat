@@ -17,9 +17,6 @@ import { placeCatFromRoom, catUpdate, eraseCat, saveUnderCatAt } from '../cat.js
 import { dogInit, dogUpdate } from '../alley.js';
 import { roomTransition, roomBackground, floorInit, chaserUpdate } from './common.js';
 
-// RNG (CS:2dfd) low byte, i.e. DL.
-const rndDL = (g) => random(g) & 0xff;
-
 // CS:452d - runner touches the cat: success unless the room is already being left.
 function runnerMeetsCat(g) {
   g.c(8);
@@ -67,7 +64,7 @@ function awayFromCat(g) {
   g.c(5);
 }
 
-// CMP a,b / MOV DL,0 ... JZ / INC DL / JC / MOV DL,0FFh  (INC keeps CF of the CMP)
+// SUB DL,DL / CMP a,b / JZ / INC DL / JC / MOV DL,0FFh: 0, 1 (a < b) or 0xff (INC keeps CF of the CMP).
 const toward = (a, b) => (a === b ? 0 : a < b ? 1 : 0xff);
 
 // CS:4340 - runner update (from the tick after the shelf object has landed).
@@ -87,7 +84,7 @@ function runnerUpdate(g) {
   if (runnerMeetsChaser(g)) return;
   let L = 'L439c';
   g.c(3);
-  if (rndDL(g) <= 0x30) {
+  if ((random(g) & 0xff) <= 0x30) {
     awayFromCat(g);
     const si = (g.rw(0x0008) << 1) & 0xffff;
     g.c(5);
@@ -107,7 +104,7 @@ function runnerUpdate(g) {
       L = 'L4402';
     } else {
       g.c(2);
-      if (rndDL(g) <= 6) {
+      if ((random(g) & 0xff) <= 6) {
         g.ww(0x40c8, 0xff);
         g.c(2);
         L = 'L4402';
@@ -121,7 +118,7 @@ function runnerUpdate(g) {
         g.c(16);
         if ((dl | g.rb(0x40b7)) !== 0) {
           L = 'L442e';
-        } else if (rndDL(g) > 0x10) {
+        } else if ((random(g) & 0xff) > 0x10) {
           g.c(2);
           L = 'L442e';
         } else {
@@ -135,12 +132,12 @@ function runnerUpdate(g) {
   }
   if (L === 'L4402') {
     g.c(2);
-    let dl = rndDL(g);
+    let dl = random(g) & 0xff;
     if (dl <= 0x30) {
       dl &= 1;
       if (dl === 0) dl = 0xff;
       g.wb(0x40b7, dl);
-      dl = rndDL(g) & 1;
+      dl = random(g) & 1;
       if (dl === 0) dl = 0xff;
       g.wb(0x40b8, dl);
       g.c(10);
@@ -373,7 +370,7 @@ function* shelfUpdate(g) {
   yield* shelfFall(g);
 }
 
-// L46a2 .. L473d - the shelf object falls, one 5-pixel step per BIOS tick (busy wait).
+// L46a2 .. L473d (in CS:45ab) - the shelf object falls, one 5-pixel step per BIOS tick (busy wait).
 function* shelfFall(g) {
   for (;;) {
     // L46a2
@@ -433,7 +430,7 @@ function* shelfFall(g) {
 }
 
 registerRoom(5, {
-  // CS:02fe - room 5 entry and loop.
+  // CS:02fe - room 5 entry and loop (loop head CS:0319).
   *loop(g) {
     g.ww(0x0004, 5);
     g.c(1);

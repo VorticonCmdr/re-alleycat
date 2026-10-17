@@ -287,8 +287,9 @@ function objectsUpdate(g) {
   copyRect(g, SEG_VRAM, di, s, 1, 6);
 }
 
-// CS:37e5 - every call after 8 ticks: redraw one cell of the top row (DS:2656 + BX),
-// except next to the cat when it is at the surface; wraps after 28h cells.
+// CS:37e5 - once 8 ticks have passed since DS:350f, redraw one cell of the top row
+// (DS:2656 + BX) per call, except next to the cat at the surface; after 28h cells
+// it wraps and DS:350f restarts the 8-tick pause.
 function surfaceUpdate(g) {
   const dx = g.ticks();
   g.c(4);
@@ -524,7 +525,7 @@ function* swim(g) {
 }
 
 registerRoom(2, {
-  // CS:0459 .. 049b
+  // CS:0459 - room 2 entry and loop (loop head CS:0478).
   *loop(g) {
     g.ww(0x0004, 2);
     g.c(1);

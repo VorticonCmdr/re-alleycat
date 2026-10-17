@@ -12,23 +12,7 @@ import * as S from '../sound.js';
 import * as C from '../cat.js';
 import * as A from '../alley.js';
 
-// CS:33a0 and CS:2136 are private in common.js / alley.js; use them once exported.
-function eraseChaser(g, site) {
-  if (typeof CM.eraseChaser !== 'function') {
-    g.unsupported(`eraseChaser CS:33a0 not exported from rooms/common.js (${site})`);
-    return;
-  }
-  CM.eraseChaser(g);
-}
-function dogGrabsCat(g, site) {
-  if (typeof A.dogGrabsCat !== 'function') {
-    g.unsupported(`dogGrabsCat CS:2136 not exported from alley.js (${site})`);
-    return;
-  }
-  A.dogGrabsCat(g);
-}
-
-// Retrace wait: CALL 13d8 / JZ back.
+// L4902 / L4aa2 - wait for vertical retrace (CALL 13d8 / JZ back).
 function* waitRetrace(g) {
   while (!g.retrace()) {
     g.c(2);
@@ -47,7 +31,7 @@ function chaserTest(g) {
 }
 
 // CS:47d6 - every few ticks: check the twelve slots against the cat.
-function* tick47d6(g) {
+function* slotsUpdate(g) {
   const dx = g.ticks();
   const ax = (dx - g.rw(0x44d7)) & 0xffff;
   let si = (g.rw(0x0008) << 1) & 0xffff;
@@ -82,11 +66,11 @@ function* tick47d6(g) {
       if (g.rw(0x4459 + bx) >= 2) {
         g.ww(0x44da, g.rw(0x4411 + bx));
         g.c(3);
-        erase488d(g);
-        fill48a1(g);
+        eraseCatOrCounterCat(g);
+        blankSlot(g);
         CM.drawChaser(g); // CS:3339
         C.drawCat(g); // CS:1145
-        dogGrabsCat(g, 'CS:4848');
+        A.dogGrabsCat(g); // CS:2136
         return;
       }
       // L484c
@@ -113,9 +97,9 @@ function* tick47d6(g) {
     if (toL4870) {
       // L4870
       g.c(5);
-      yield* check48d7(g, bx);
-      draw4916(g, bx);
-      redraw48c1(g);
+      yield* slotTouchesCat(g, bx);
+      drawSlotCell(g, bx);
+      redrawCatAfterSlot(g);
     }
     // L487d: LOOP
   }
@@ -123,11 +107,11 @@ function* tick47d6(g) {
   if (g.rb(0x44fc) !== 0) yield* S.flashClicks(g); // CS:5691
 }
 
-// CS:488d
-function erase488d(g) {
+// CS:488d - erase the cat-at-counter sprite if shown (clearing DS:44bd), else the cat.
+function eraseCatOrCounterCat(g) {
   g.c(2);
   if (g.rb(0x44bd) !== 0) {
-    restore4b03(g);
+    eraseCounterCat(g);
     g.wb(0x44bd, 0);
     g.c(2);
     return;
@@ -136,15 +120,15 @@ function erase488d(g) {
 }
 
 // CS:48a1 - fill DS:000e with 41h words AAAAh and copy it to [44da] (5 words x 13 rows).
-function fill48a1(g) {
+function blankSlot(g) {
   g.df = 0; // CLD
   for (let i = 0; i < 0x41; i++) g.ww(0x0e + 2 * i, 0xaaaa);
   g.c(0x41 + 10);
   copyRect(g, SEG_VRAM, g.rw(0x44da), 0x0e, 5, 0x0d);
 }
 
-// CS:48c1
-function redraw48c1(g) {
+// CS:48c1 - after a slot hit (DS:44d9) redraw the cat or the cat-at-counter sprite.
+function redrawCatAfterSlot(g) {
   g.c(2);
   if (g.rb(0x44d9) === 0) return;
   g.c(2);
@@ -152,11 +136,11 @@ function redraw48c1(g) {
     C.drawCat(g); // CS:1145
     return;
   }
-  draw4b1d(g);
+  drawCounterCat(g);
 }
 
 // CS:48d7 - does slot BX (doubled) touch the cat? If so, wait for retrace and erase.
-function* check48d7(g, bx) {
+function* slotTouchesCat(g, bx) {
   g.wb(0x44d9, 0);
   const ax = (g.rw(0x43e1 + bx) - 0x14) & 0xffff;
   const dl = g.rw(0x43f9 + bx) & 0xff;
@@ -167,14 +151,14 @@ function* check48d7(g, bx) {
   yield* waitRetrace(g); // L4902
   g.c(2);
   if (g.rb(0x44bd) !== 0) {
-    restore4b03(g);
+    eraseCounterCat(g);
     return;
   }
   C.eraseCat(g); // CS:11e3
 }
 
 // CS:4916 - one 1x1-word cell for slot BX (doubled), picked by its counter.
-function draw4916(g, bx) {
+function drawSlotCell(g, bx) {
   let ax = g.rw(0x4411 + bx);
   let si = ((g.rw(0x4459 + bx) << 1) + 0x4100) & 0xffff;
   ax = (ax + 0xa7) & 0xffff;
@@ -189,7 +173,7 @@ function draw4916(g, bx) {
 }
 
 // CS:4943 - per tick: the cat next to one of the twelve counters.
-function* tick4943(g) {
+function* countersUpdate(g) {
   g.c(2);
   if (g.rb(0x1cb8) !== 0) return;
   g.c(2);
@@ -207,8 +191,8 @@ function* tick4943(g) {
   if (g.rb(0x584) !== 0) {
     g.c(2);
     if (g.rb(0x44bd) === 0) return;
-    restore4b03(g);
-    eraseChaser(g, 'CS:497c');
+    eraseCounterCat(g);
+    CM.eraseChaser(g); // CS:33a0
     C.saveUnderCat(g); // CS:1124
     CM.drawChaser(g); // CS:3339
     g.wb(0x44bd, 0);
@@ -272,14 +256,14 @@ function* tick4943(g) {
       g.c(7);
       label = 'L49f9';
     } else {
-      yield* atCounter4a4b(g);
+      yield* catAtCounter(g);
       return;
     }
   }
   // L49f9
   g.c(2);
   if (g.rb(0x44bd) !== 0) {
-    restore4b03(g);
+    eraseCounterCat(g);
     C.drawCat(g); // CS:1145
     g.wb(0x69a, 0x10);
     g.c(1);
@@ -293,7 +277,7 @@ function* tick4943(g) {
 }
 
 // CS:4a4b .. 4b02 - the cat is at counter [44c1].
-function* atCounter4a4b(g) {
+function* catAtCounter(g) {
   g.wb(0x44be, 0);
   g.c(2);
   if (g.rb(0x44bd) === 0) {
@@ -323,7 +307,7 @@ function* atCounter4a4b(g) {
   g.ww(0x43dc, xyAddr(g, cx, dl));
   g.c(1);
   yield* waitRetrace(g); // L4aa2
-  restore4b03(g);
+  eraseCounterCat(g);
   g.c(2);
   if (g.rb(0x44d5) !== 0) {
     const bx = g.rw(0x44c1);
@@ -348,21 +332,21 @@ function* atCounter4a4b(g) {
       // L4ae7
       g.c(2);
       if (chaserTest(g)) {
-        eraseChaser(g, 'CS:4aef');
-        counter4bc8(g, bx);
+        CM.eraseChaser(g); // CS:33a0
+        drawCounter(g, bx);
         CM.drawChaser(g); // CS:3339
         g.c(4);
       } else {
-        counter4bc8(g, bx); // L4afc
+        drawCounter(g, bx); // L4afc
       }
     }
   }
   // L4aff
-  draw4b1d(g);
+  drawCounterCat(g);
 }
 
 // CS:4b03 - restore the background under the cat-at-counter sprite.
-function restore4b03(g) {
+function eraseCounterCat(g) {
   g.c(2);
   if (g.rb(0x43e0) !== 0) return;
   g.c(5);
@@ -370,7 +354,7 @@ function restore4b03(g) {
 }
 
 // CS:4b1d - draw the cat-at-counter sprite at [43dc] (AND-blit, background to 43a0).
-function draw4b1d(g) {
+function drawCounterCat(g) {
   g.wb(0x43e0, 0);
   const di = g.rw(0x43dc);
   g.ww(0x43de, di);
@@ -422,7 +406,7 @@ function drawBackground(g) {
     const bx = c - 1;
     g.wb(0x44c4 + bx, g.rb(0x4479 + g.rw(0x0008)));
     g.c(7);
-    counter4bc8(g, bx);
+    drawCounter(g, bx);
     g.c(2);
   }
   g.wb(0x44d0, 0);
@@ -434,15 +418,15 @@ function drawBackground(g) {
 }
 
 // CS:4bc8 - draw counter BX (0..11) with its current value.
-function counter4bc8(g, bx) {
-  const di = counterAddr4be8(g, bx);
+function drawCounter(g, bx) {
+  const di = counterAddr(g, bx);
   const si = ((g.rb(0x44c4 + bx) << 5) + 0x41fc) & 0xffff;
   g.c(9);
   copyRect(g, SEG_VRAM, di, si, 2, 8);
 }
 
 // CS:4be8 - screen offset of counter BX.
-function counterAddr4be8(g, bx) {
+function counterAddr(g, bx) {
   const dl = g.rb(0x4499 + bx);
   const cx = g.rw(0x4481 + ((bx << 1) & 0xff));
   g.c(6);
@@ -450,7 +434,7 @@ function counterAddr4be8(g, bx) {
 }
 
 registerRoom(6, {
-  // CS:02aa - entry sequence and loop
+  // CS:02aa - room 6 entry and loop (loop head CS:02c5).
   *loop(g) {
     g.ww(0x0004, 6);
     g.c(1);
@@ -466,8 +450,8 @@ registerRoom(6, {
       yield* hotKeys(g, T.pauseScreen); // CS:1338
       pollInput(g); // CS:1200
       S.alleyMusic(g); // CS:546d
-      yield* tick4943(g); // CS:4943
-      yield* tick47d6(g); // CS:47d6
+      yield* countersUpdate(g); // CS:4943
+      yield* slotsUpdate(g); // CS:47d6
       yield* C.catUpdate(g); // CS:08e5
       g.c(2);
       if (g.rb(0x1cb8) !== 0) A.dogUpdate(g); // CS:1e63

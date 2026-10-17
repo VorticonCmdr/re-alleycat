@@ -22,7 +22,7 @@ import { hotKeys, pollInput, speakerOff } from '../input.js';
 import { pauseScreen } from '../title.js';
 import * as S from '../sound.js';
 
-// Advance a CGA row pointer: DI -= back; DI ^= 2000h; if bank 0 -> DI += 50h.
+// Inline in CS:4fdf and CS:5008 - next CGA row: DI -= back; DI ^= 2000h; if bank 0 -> DI += 50h.
 function nextRow(di, back) {
   di = (di - back) & 0xffff;
   di ^= 0x2000;
@@ -30,7 +30,7 @@ function nextRow(di, back) {
   return di;
 }
 
-// Column index into DS:2be2 for x (already shifted): (x>>4)-2 clamped to 0..0x11.
+// Inline in CS:300f and CS:30fa - column index into DS:2be2 for x: (x>>4)-2 clamped to 0..0x11.
 function column(ax) {
   ax >>= 4;
   ax = ax < 2 ? 0 : ax - 2;
@@ -170,15 +170,12 @@ function drawBackground(g) {
       let bx = 0;
       g.c(2);
       if (g.rb(0x2e8a) !== 0xbf) {
-        bx = random(g) & 0xff & 2; // MOV BL,DL / AND BL,2 (BH = 0)
+        bx = random(g) & 2; // MOV BL,DL / AND BL,2 (BH = 0)
         g.c(3);
       }
       drawTile(g, g.rw(0x2e88), g.rb(0x2e8a), bx);
       const si = g.rw(0x2e8b);
-      let ax = g.rw(0x2e88) >> 4;
-      ax = ax < 2 ? 0 : ax - 2;
-      if (ax >= 0x12) ax = 0x11;
-      ax = (ax + g.rb(0x2bdb + si)) & 0xffff;
+      const ax = (column(g.rw(0x2e88)) + g.rb(0x2bdb + si)) & 0xffff;
       g.wb(0x2be2 + ax, bx);
       g.ww(0x2e88, g.rw(0x2e88) + 0x10);
       g.c(20);
@@ -605,7 +602,7 @@ function creaturesUpdate(g) {
 
 // ---------------------------------------------------------------- falling object
 
-// CS:6100
+// CS:6100 - no falling object yet.
 function objectInit(g) {
   g.wb(0x70f2, 0);
   g.c(1);
@@ -1036,7 +1033,7 @@ function* successAnimation(g) {
 
 // ---------------------------------------------------------------- room loop
 
-// CS:0260 - entry sequence and loop of room 7.
+// CS:0260 - room 7 entry and loop (loop head CS:027e).
 function* loop(g) {
   g.ww(0x0004, 7);
   g.c(1);

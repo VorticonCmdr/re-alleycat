@@ -19,14 +19,21 @@ Open the page, choose `CAT.EXE`, then:
 
 - arrow keys / numeric keypad (diagonals 7 9 1 3) move the cat, Alt = special action
 - Esc pause, Ctrl+S sound, Ctrl+R restart, Ctrl+M menu (also as buttons below the screen)
+- touch: an on-screen pad (shown on touch devices, or switch it on in Settings)
+- gamepad: stick/D-pad move, A/B = Alt, Start = Esc, Select = Space; answer Y to the
+  joystick question to play in the original's joystick mode
+
+Settings (remembered per browser): scaling (fit / integer), touch pad, machine profile
+(DOSBox reference, or an approximate IBM PC/XT), fullscreen.
 
 URL options: `?seed=1234` fixes the random seed (hex), `?cycles=3000` changes the
-virtual CPU speed (instructions per millisecond).
+virtual CPU speed (instructions per millisecond), `?profile=ibmpc` picks a profile.
 
 ## Status
 
-See [docs/STATUS.md](docs/STATUS.md). Short version: title screen, menu and the alley are
-playable; the rooms behind the windows are not ported yet and stop with a diagnostic.
+See [docs/STATUS.md](docs/STATUS.md). Short version: the whole game is playable (title,
+menu, alley, all seven rooms, game over), verified byte-for-byte against the original in
+DOSBox. The Tandy 1000 edition (`TANDYCAT.EXE`) is analysed but not ported.
 
 ## Verify
 

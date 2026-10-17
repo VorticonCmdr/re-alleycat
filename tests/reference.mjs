@@ -73,6 +73,8 @@ function runScenario(manifest, { perturb = null, quiet = false } = {}) {
       for (const ev of env.sync(site)) {
         if (ev.type === 'key') {
           for (const b of keyBytes(ev.code, ev.down)) keyboardInterrupt(g, b);
+        } else if (ev.type === 'scan') {
+          keyboardInterrupt(g, parseInt(ev.byte, 16)); // recorded from the original INT 9 handler
         } else if (ev.type === 'poke') {
           const bytes = Buffer.from(ev.bytes, 'hex');
           for (let i = 0; i < bytes.length; i++) g.wb(parseInt(ev.addr, 16) + i, bytes[i]);
@@ -155,9 +157,9 @@ for (const f of files) {
   }
   // Negative controls: the comparison must detect a removed input event and a tick
   // value delivered one read late.
-  const keyIdx = manifest.events.findLastIndex((e) => e.type === 'key' && e.down);
+  const keyIdx = manifest.events.findLastIndex((e) => (e.type === 'key' && e.down) || (e.type === 'scan' && !(parseInt(e.byte, 16) & 0x80)));
   const controls = [
-    { name: `drop key event ${manifest.events[keyIdx]?.code}@${manifest.events[keyIdx]?.site}#${manifest.events[keyIdx]?.count}`,
+    { name: `drop key event ${manifest.events[keyIdx]?.code ?? manifest.events[keyIdx]?.byte}@${manifest.events[keyIdx]?.site}#${manifest.events[keyIdx]?.count}`,
       apply: (st, ev) => ({ stream: st, events: ev.filter((_, i) => i !== keyIdx) }), usable: keyIdx >= 0 },
     { name: 'alter one recorded speaker write',
       apply: (st, ev) => {

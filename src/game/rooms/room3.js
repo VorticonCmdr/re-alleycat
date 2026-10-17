@@ -1,6 +1,6 @@
 // Room 3 (jump table entry 3, CS:0394): three targets on the wall the cat has to hit,
 // a creature moving around the room (DS:3964..), and ledges the cat can land on.
-// Routines CS:3b30..CS:3e89.
+// Routines CS:3b30..CS:3e88.
 
 import { registerRoom } from './hooks.js';
 import { roomTransition, roomBackground, floorInit, chaserUpdate } from './common.js';
@@ -125,7 +125,7 @@ function drawBackground(g) {
   }
 }
 
-// CS:3c43 - room 3 landing test (called from CS:16c6): snap the cat onto a ledge.
+// CS:3c43 - room 3 landing test (called from CS:1703 in CS:16c6): snap the cat onto a ledge.
 // Returns CF.
 function landing(g) {
   const ax = g.rw(0x579) & 0xfffc;
@@ -273,7 +273,7 @@ function* creatureUpdate(g) {
       // L3d52: going up/down toward the cat
       al = (al + dl) & 0xff;
       g.c(3);
-      let set_ff = true;
+      let turnBack = true;
       if (!(al > g.rb(0x57b))) {
         let b = g.rw(0x3964) - g.rw(0x579);
         if (b < 0) b = ~b;
@@ -281,11 +281,11 @@ function* creatureUpdate(g) {
         g.c(6);
         if (!(b > 0x30)) {
           g.c(2);
-          if (al < 0xa0) set_ff = false;
+          if (al < 0xa0) turnBack = false;
           else al = 0x9f;
         }
       }
-      if (set_ff) {
+      if (turnBack) {
         g.wb(0x3967, 0xff); // L3d71
         g.c(1);
       }
@@ -331,7 +331,7 @@ function* creatureUpdate(g) {
   creatureDraw(g); // CS:3e14
 }
 
-// CS:0394 - room 3 entry and loop.
+// CS:0394 - room 3 entry and loop (loop head CS:03b2).
 function* loop(g) {
   g.ww(0x0004, 3);
   g.c(1);

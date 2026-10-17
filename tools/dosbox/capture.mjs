@@ -16,6 +16,11 @@
 // Keys are applied by writing the memory effects of the game's own INT 9 handler
 // (CS:14b3): make counter DS:0693 and the key-state byte for tracked keys. This keeps
 // key timing exact at the sync point (DOSBox's own keyboard dispatch is PIC-timed).
+// "hostkey" events instead press a real key in DOSBox while stopped at the sync point, so
+// the game's own INT 9 handler runs: every scan-code byte it reads (CS:14bc) is recorded
+// with its position and becomes a "scan" event that the replay feeds to the port's
+// translated handler. A byte is only accepted when its exact position is known (see
+// FIRST_READS_KEYS); anything else (e.g. a typematic repeat) aborts the capture.
 //
 // Output (local only, never committed): local/captures/<id>/{stream.json, ds-N.bin, vram-N.bin}
 // The scenario manifest gets its "capture" section updated (hashes, counts, tool revision).
@@ -40,6 +45,14 @@ const DS = EXPECT_PSP + 0x20;
 const CS = EXPECT_PSP + 0x733;
 const KEYTAB = 0x6a1;
 
+// Sync sites whose first instruction is CMP AX,[0693] in a two-instruction wait loop. A key
+// injected at such a stop is taken after that CMP, so the game first sees it on the next
+// pass: the byte is placed at count + 1. At every other site the first instruction does
+// not read keyboard state (SUB AH,AH / MOV DX / CALL 1338 / CMP [1f80]): placed at count.
+const FIRST_READS_KEYS = new Set([0x5ef7, 0x5f29, 0x5faa, 0x6007]);
+const FIRST_LEN = { 0x0155: 5, 0x5d71: 2, 0x5ef7: 4, 0x5f29: 4, 0x5faa: 4, 0x6007: 4, 0x5f9e: 3, 0x03fa: 3, 0x0478: 3, 0x03b2: 3, 0x0364: 3, 0x0319: 3, 0x02c5: 3, 0x027e: 3 };
+const INT9_AFTER_IN = 0x14be; // after IN AL,60h; AX ES DI CX pushed
+
 function log(...a) {
   console.log(...a);
 }
@@ -60,9 +73,15 @@ async function resume(d) {
 
 // Leave the game: restore the BIOS INT 9 vector the game saved at CS:13df, then run
 // MOV AX,4C00h / INT 21h at the current instruction.
+// CAT is considered running while INT 9 points into its code segment (status.program is
+// not reliable across emulator restarts).
+async function catHooked(d) {
+  const v = await d.readLinear(9 * 4, 4);
+  return v.readUInt16LE(2) === CS;
+}
+
 export async function forceExit(d) {
-  const st = await d.status();
-  if (!/CAT/i.test(st.program || '')) return;
+  if (!(await catHooked(d))) return;
   let p = await d.pause();
   await d.clearBreakpoints();
   let regs = p.stop?.registers || (await d.regs()).registers || (await d.regs());
@@ -84,8 +103,7 @@ export async function forceExit(d) {
   await d.clearBreakpoints();
   await d.cont();
   for (let i = 0; i < 50; i++) {
-    const s = await d.status();
-    if (!/CAT/i.test(s.program || '') || s.is_shell) return;
+    if (!(await catHooked(d))) return;
     await new Promise((r) => setTimeout(r, 100));
   }
   throw new Error('CAT did not exit');
@@ -174,6 +192,7 @@ async function main() {
     if (!e) list.push((e = { count, actions: [] }));
     e.actions.push(action);
   };
+  manifest.events = manifest.events.filter((e) => e.type !== 'scan'); // outputs of an earlier capture
   for (const ev of manifest.events) add(ev.site, ev.count, ev);
   for (const list of plan.values()) list.sort((a, b) => a.count - b.count);
   // Play policy: a recurring pseudo-event; the keys it presses are logged as key events.
@@ -268,6 +287,12 @@ async function main() {
   }
   const speaker = [];
   for (const site of plan.keys()) await armSync(site);
+  const hostKeys = manifest.events.some((e) => e.type === 'hostkey');
+  const int9Bp = hostKeys ? (await d.addBreakpoint({ type: 'execute', segment: CS, offset: INT9_AFTER_IN })).id : null;
+  let pendingHost = null; // {event, countBp}
+  const scans = [];
+  const ignoredScans = [];
+  const keyTable = [...exe.subarray(0x300 + KEYTAB, 0x300 + KEYTAB + 22)];
 
   const checkpoints = [];
   const applied = [];
@@ -316,6 +341,29 @@ async function main() {
     } else if (speakerBps.has(id)) {
       const port = speakerBps.get(id);
       speaker.push([port, port === 0x61 ? r.eax & 3 : r.eax & 0xff]);
+    } else if (id !== null && id === int9Bp) {
+      const byte = r.eax & 0xff;
+      const stk = await d.read(r.ss, (r.esp + 8) & 0xffff, 4);
+      const ip = stk.readUInt16LE(0);
+      const cs = stk.readUInt16LE(2);
+      if (!pendingHost && byte & 0x80 && !keyTable.includes(byte & 0x7f)) {
+        // release of an untracked key (the Enter that launched CAT): no counter, no table
+        // write; recorded for the manifest
+        ignoredScans.push({ byte: byte.toString(16), at: `${cs.toString(16)}:${ip.toString(16)}` });
+        since = await resume(d);
+        continue;
+      }
+      if (!pendingHost) throw new Error(`unsolicited INT 9 byte ${byte.toString(16)} at ${cs.toString(16)}:${ip.toString(16)} (typematic repeat?)`);
+      const e = pendingHost.event;
+      const site = parseInt(e.site, 16);
+      const passes = await hitsOf(pendingHost.countBp);
+      if (cs !== CS || ip !== site + FIRST_LEN[site] || passes !== 0) {
+        throw new Error(`INT 9 byte ${byte.toString(16)} for ${e.key} at ${cs.toString(16)}:${ip.toString(16)}, ${passes} passes after ${e.site}#${e.count}: position not exact`);
+      }
+      const count = e.count + (FIRST_READS_KEYS.has(site) ? 1 : 0);
+      scans.push({ type: 'scan', site: e.site, count, byte: byte.toString(16).padStart(2, '0'), from: `${e.key} ${e.down ? 'down' : 'up'} @${e.site}#${e.count}` });
+      await d.req('DELETE', '/api/v1/debug/breakpoints', { id: pendingHost.countBp });
+      pendingHost = null;
     } else if (id === seedBp) {
       st.seed = r.eax & 0xffff;
     } else {
@@ -335,9 +383,19 @@ async function main() {
       const tickReads = st.tickCum + (await hitsOf(st.tickBp)) - st.setCalls.length; // AH=1 calls pass the IRET too
       const retrReads = st.retrCum + (await hitsOf(st.retrBp));
       lastEventTick = st.tickLast;
+      if (pendingHost) throw new Error(`no INT 9 for ${pendingHost.event.key} @${pendingHost.event.site}#${pendingHost.event.count} before the next sync stop`);
       for (const a of entry.actions) {
         a.done = true;
-        if (a.type === 'key') {
+        if (a.type === 'hostkey') {
+          if (pendingHost) throw new Error('two host keys at one sync point');
+          const rs = await d.replayStatus();
+          if (rs.active) throw new Error('DOSBox input replay still active');
+          await d.sequence([{ type: 'key', key: a.key, pressed: a.down }]);
+          // counts executions of the site's second instruction: 0 when the IRQ is taken
+          // right after the first one (a sync breakpoint already occupies the site itself)
+          pendingHost = { event: a, countBp: (await d.addBreakpoint({ type: 'execute', segment: CS, offset: site + FIRST_LEN[site], ignore_count: 0x7fffffff })).id };
+          applied.push({ site: a.site, count: a.count, hostkey: a.key, down: a.down });
+        } else if (a.type === 'key') {
           for (const b of keyBytes(a.code, a.down)) await applyKeyByte(d, b);
           applied.push({ site: a.site, count: a.count, code: a.code, down: a.down });
         } else if (a.type === 'policy') {
@@ -397,6 +455,8 @@ async function main() {
     log(`kept ${manifest.events.length} events (${policyState.log.length} from the policy)`);
   }
   for (const e of manifest.events) delete e.done;
+  if (pendingHost) throw new Error(`capture ended with ${pendingHost.event.key} undelivered`);
+  manifest.events.push(...scans);
   const stream = {
     format: 1,
     scenario: manifest.id,
@@ -423,6 +483,7 @@ async function main() {
     tickChanges: st.ticks.length,
     retraceEdges: st.retrace.length,
     speakerWrites: speaker.length,
+    ...(hostKeys ? { int9Bytes: scans.length, ignoredInt9: ignoredScans.map((x) => `${x.byte} at ${x.at}: release of an untracked key, no state change`) } : {}),
     checkpoints: checkpoints.map(({ site, count, tickReads, retraceReads, speakerWrites, ds, vram }) => ({ site, count, tickReads, retraceReads, speakerWrites, ds, vram })),
     artifacts: { 'stream.json': sha(streamBuf) },
     environmentChanges: st.retraceMoved ? [`CRTC vertical retrace moved from lines ${st.retraceMoved.from.join('-')} to ${st.retraceMoved.to.join('-')} at the first sync point (capture-only; values are recorded)`] : [],
@@ -432,8 +493,10 @@ async function main() {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  main().catch((e) => {
+  main().catch(async (e) => {
     console.error(e.stack || e.message);
+    // leave the emulator at the shell with the BIOS keyboard handler restored
+    await forceExit(new DosBox()).catch((x) => console.error('warning: exit failed', x.message));
     process.exit(1);
   });
 }
