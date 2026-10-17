@@ -11,7 +11,16 @@ every routine is reimplemented in JavaScript and runs against the original data.
 sound tables and texts come from that file at runtime and are never uploaded or stored
 anywhere except, if you tick the box, in your own browser's IndexedDB.
 
-## Play
+## Play online
+
+- **Game:** https://vorticoncmdr.github.io/re-alleycat/ — choose your `CAT.EXE`
+  (optionally tick "remember" to keep it in this browser).
+- **Asset viewer:** https://vorticoncmdr.github.io/re-alleycat/viewer.html — open `CAT.EXE`
+  and/or `TANDYCAT.EXE` with "Open files" to browse sprites, text, the title tune and raw data.
+
+Both pages run entirely in your browser; the files you choose are never uploaded.
+
+## Play locally
 
 ```sh
 npm run serve        # http://127.0.0.1:8000/
