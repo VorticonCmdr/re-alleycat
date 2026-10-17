@@ -176,263 +176,115 @@
       "count": 601
     },
     {
-      "type": "checkpoint",
-      "site": "027e",
-      "count": 701
-    },
-    {
-      "type": "checkpoint",
-      "site": "027e",
-      "count": 801
-    },
-    {
-      "type": "checkpoint",
-      "site": "027e",
-      "count": 901
-    },
-    {
-      "type": "checkpoint",
-      "site": "027e",
-      "count": 1001
-    },
-    {
-      "type": "checkpoint",
-      "site": "027e",
-      "count": 1101
-    },
-    {
-      "type": "checkpoint",
-      "site": "027e",
-      "count": 1201
-    },
-    {
-      "type": "checkpoint",
-      "site": "027e",
-      "count": 1301
-    },
-    {
-      "type": "checkpoint",
-      "site": "027e",
-      "count": 1401
-    },
-    {
-      "type": "checkpoint",
-      "site": "027e",
-      "count": 1501
-    },
-    {
-      "type": "checkpoint",
-      "site": "027e",
-      "count": 1601
-    },
-    {
       "type": "key",
       "site": "027e",
       "count": 300,
       "code": "ArrowRight",
       "down": true
-    },
-    {
-      "type": "key",
-      "site": "027e",
-      "count": 700,
-      "code": "ArrowRight",
-      "down": false
-    },
-    {
-      "type": "key",
-      "site": "027e",
-      "count": 800,
-      "code": "ArrowUp",
-      "down": true
-    },
-    {
-      "type": "key",
-      "site": "027e",
-      "count": 830,
-      "code": "ArrowUp",
-      "down": false
-    },
-    {
-      "type": "key",
-      "site": "027e",
-      "count": 1000,
-      "code": "ArrowLeft",
-      "down": true
-    },
-    {
-      "type": "key",
-      "site": "027e",
-      "count": 1300,
-      "code": "ArrowLeft",
-      "down": false
     }
   ],
   "capture": {
-    "tool": "capture-v2",
+    "tool": "capture-v5",
     "emulator": "0.84.0-vc1 (f6d9b)",
     "date": "2026-10-17",
-    "stops": 292,
-    "seconds": 15,
-    "seed": 17135,
-    "tickChanges": 257,
-    "retraceEdges": 0,
+    "stops": 4194,
+    "seconds": 69,
+    "seed": 33383,
+    "tickChanges": 1006,
+    "retraceEdges": 1282,
+    "speakerWrites": 1886,
     "checkpoints": [
       {
         "site": "5d71",
         "count": 1,
         "tickReads": 1,
         "retraceReads": 0,
-        "ds": "074a8413b3060bbdc682d86ac41fd29f5614e85b7a4abfcbb107ec235e1852b7",
-        "vram": "18103cbfbe39b307a9a45873df7ded7cb6325962f6ce343aca5dc18a65d94d6b"
+        "speakerWrites": 1,
+        "ds": "b98c785316d9e7b509ddeff649e25a34165be8b771f9a6c7991b32d4ca04d08b",
+        "vram": "389fed38ba8fe9a2894055dbe6206da031e54b08766abe3ceac77ae066aeadbc"
       },
       {
         "site": "0155",
         "count": 59,
-        "tickReads": 619,
+        "tickReads": 621,
         "retraceReads": 273,
-        "ds": "bf3dad3a0efd8d0f310377c2d7c1e3f7a6445c079287c53a7b174d91f63e594e",
-        "vram": "548984eaeefe100b14c5e9d3e587de323343452fd7fc39279fca1da390d594c2"
+        "speakerWrites": 32,
+        "ds": "bcbf54782c7dbd8409fcf65a43dce6c3510d031f0bfb9cf73b253e2cf380e7fa",
+        "vram": "afca34cbfdf39a3ed9b20414d32bc1a5b9a6c61071d1a0f671101feeca85aa33"
       },
       {
         "site": "027e",
         "count": 1,
-        "tickReads": 630,
+        "tickReads": 632,
         "retraceReads": 276,
-        "ds": "e85ac630f52ecc294d87945fb46fead7fa7013e6d792f8c1f5f3f085da6ded9f",
-        "vram": "c8aed32b7750b003c873b4b2795c3bdc5bc7c82ebdc50528a194bc96f7d21980"
+        "speakerWrites": 184,
+        "ds": "b99ac843df75885483ad71bb12010fb8a34706edfef3b10533d0e3f72bb7439d",
+        "vram": "572ad0a3680bd6fc1341ce4ff8a291c3cb84b376e32b73ff0be4da6f415a79f6"
       },
       {
         "site": "027e",
         "count": 101,
-        "tickReads": 1234,
-        "retraceReads": 281,
-        "ds": "ec846182b7c22a18b562200c7e45c286ea4427b61c2f7cbbf4f89fa373b18943",
-        "vram": "087a95845575337eff046d52b9e0b5ebfa3ea4fcdae453fe0686362161fd4947"
+        "tickReads": 1236,
+        "retraceReads": 287,
+        "speakerWrites": 196,
+        "ds": "dc8336379c0b15aae41f4aedad3d755e72b291688a2092357afdff749c177024",
+        "vram": "6e07bd3b72325f0098735a158b3d40f516a8c26c679f1aee23f04639f7d936cb"
       },
       {
         "site": "027e",
         "count": 201,
-        "tickReads": 1839,
-        "retraceReads": 381,
-        "ds": "49755257b2c0cb5fd3895e7abebd3bd46f0f4966586e8ba70b3699b008831abe",
-        "vram": "7ea593c9372174620cdca80a385ebad20a04bb22ad28c2de0a95ab8842a0caa7"
+        "tickReads": 1841,
+        "retraceReads": 348,
+        "speakerWrites": 208,
+        "ds": "9f412086808479846062e27b9ccdb169d8da0261938af609f8481bcf5ce2840f",
+        "vram": "89b97542727eed393c8ab1a7a342c1a2fd9d6fe5996eef39ad199e104399150f"
       },
       {
         "site": "027e",
         "count": 301,
-        "tickReads": 2444,
-        "retraceReads": 481,
-        "ds": "e8c49486b00242722a6613bdc3fb2d7814fb66968923918b85268de750ecc45a",
-        "vram": "3a5d0cfb943e67aab08f4aa8588b18f3ad984014965857262c3b902d326cfeca"
+        "tickReads": 2446,
+        "retraceReads": 431,
+        "speakerWrites": 224,
+        "ds": "ec6b052bcffcf6cfa46d7c72bb4d81c84f120d3df776578b2cae253d3e143ea2",
+        "vram": "1c7969915ae9b6db5376089ade1ffde25e9f213e8b15407e08e25af064444668"
       },
       {
         "site": "027e",
         "count": 401,
-        "tickReads": 3049,
-        "retraceReads": 581,
-        "ds": "7d3475133e4486b179014802a2a3a98e4a91f940b3f179a380403e1eaa441564",
-        "vram": "c2bc0bd47209a876e407625396e3557edae59185040f6739c0392a0238b6a060"
+        "tickReads": 3050,
+        "retraceReads": 452,
+        "speakerWrites": 240,
+        "ds": "b4eb9897ce4f6596e41f671caf5a0644fad24cda42fedb427328566f4c98d968",
+        "vram": "a8f7f7e8edf9f2c06e55934fdf5ed8a9dbd94615042a2bbfa2b9e680786c4c50"
       },
       {
         "site": "027e",
         "count": 501,
-        "tickReads": 3654,
-        "retraceReads": 681,
-        "ds": "c3038354ad6bbd63ad33bc751720ac5e841bd633a15e9fb8f0adc3d17d6d3c29",
-        "vram": "68cc928bf73a8e5e7f75eafd03542216f0504e5b345a2cf948e36719c4008c2c"
+        "tickReads": 3656,
+        "retraceReads": 452,
+        "speakerWrites": 259,
+        "ds": "4bb406ce30b4109632d1c1bbd3827c4a0131ebd863957798c5a51ada205bc379",
+        "vram": "f480688ffbb7296b86b4b8ad622b84fe4eef83cc284b6fb8ea5915979c2f8109"
       },
       {
         "site": "027e",
         "count": 601,
-        "tickReads": 4259,
-        "retraceReads": 781,
-        "ds": "d1cf1b158277b24d1f494d965501248182c565c0f690555c153b9b1a555f69b2",
-        "vram": "8d2ceb57141d84034173951302d086bda08afd794b047c739cff4b33cad81205"
-      },
-      {
-        "site": "027e",
-        "count": 701,
-        "tickReads": 4864,
-        "retraceReads": 881,
-        "ds": "56c51cf8b195174866e9c5259924fcb184f66e7b8531ca3d9a604b6af00dc8f1",
-        "vram": "f151a48b2f704440bd955345dce1a527f06fa18641159cda761e9b100e41c867"
-      },
-      {
-        "site": "027e",
-        "count": 801,
-        "tickReads": 5469,
-        "retraceReads": 981,
-        "ds": "8a46ac643abb93a133f3957068f51811c59ba9acf09984ea8cfd8daa2ba06e1a",
-        "vram": "f3185183b211a6c7b7bc18a451fab4bd3f6ef2735484df673a5f43cfb304e061"
-      },
-      {
-        "site": "027e",
-        "count": 901,
-        "tickReads": 6073,
-        "retraceReads": 1081,
-        "ds": "e4ee52a3afc24f7a28a751545ab0f12b0598e6111b273e17d1460d3bbb7c6bb9",
-        "vram": "c0f45d20e1cc3c8e2a27a25d06345d3f7832e65d60687b401e3fbebfe9d2f776"
-      },
-      {
-        "site": "027e",
-        "count": 1001,
-        "tickReads": 6678,
-        "retraceReads": 1181,
-        "ds": "1313da8f99dfec847e3dd2ee25b94f8ae896e0148244bd9fbf856e787baa8d3f",
-        "vram": "ef5a068714f2df6dc276d66f4d82ba91496a276cd86f653a22ac58a284515697"
-      },
-      {
-        "site": "027e",
-        "count": 1101,
-        "tickReads": 7283,
-        "retraceReads": 1281,
-        "ds": "414a22694c70a72d59a7dadfccc7714c7d28cfc29d72cb710d16199c411400d1",
-        "vram": "5e94b6acc3626f724fb65267b68bab826dffc8fe5ecd148860a4719684f8fd4a"
-      },
-      {
-        "site": "027e",
-        "count": 1201,
-        "tickReads": 7888,
-        "retraceReads": 1381,
-        "ds": "ff77bc3f509003e7ccb9b270546b61f2cdb43659753d272a114839685c737089",
-        "vram": "ca352234a3c9180749513e37789d297d6d17fa55a263fe428a407b12ee3da708"
-      },
-      {
-        "site": "027e",
-        "count": 1301,
-        "tickReads": 8493,
-        "retraceReads": 1481,
-        "ds": "b05e6bc208fce3c476a95f061654cb609b566cf1c828db9750cbaf0276dc227d",
-        "vram": "997aff11f056ef42b922f34d645de89d8e65b448a9c86e55dc32eb9cd33690fa"
-      },
-      {
-        "site": "027e",
-        "count": 1401,
-        "tickReads": 9098,
-        "retraceReads": 1581,
-        "ds": "3e3387805535feb384eade0f564e73b2317dc63218fcdbd6a788c8528a8d8a41",
-        "vram": "c16facac318e19f1546c4de79f04a4c444787c038966c6377b78ed1a3de0d4ab"
-      },
-      {
-        "site": "027e",
-        "count": 1501,
-        "tickReads": 9703,
-        "retraceReads": 1681,
-        "ds": "05a360f3f03b2cc7f001d390858adf72e2192c0c9f38a0c5f4cf971bc6d29f35",
-        "vram": "c31d27018866942f16479e5915987d521d228ca5fd85270edc90ad9a17c0ef71"
-      },
-      {
-        "site": "027e",
-        "count": 1601,
-        "tickReads": 10308,
-        "retraceReads": 1781,
-        "ds": "8076a023be721cc16e9b45b7d90230c1d7af54e72f569a23ecec2d208f0d74d7",
-        "vram": "e097623dd081f05e85699e78640c7c3b19b6ca654d57257a0163b88660eb55ea"
+        "tickReads": 4260,
+        "retraceReads": 452,
+        "speakerWrites": 271,
+        "ds": "3efab5744873585cbafa81d03ff88f481483af57b3662bc16846903d0b6a864b",
+        "vram": "efedcecd6e9af13eca946a6696f0b0a522dcb1c34c452eb1f8f9557340b998e9"
       }
     ],
     "artifacts": {
-      "stream.json": "356ac690bcbf5dc91de686a3777888cdb8e7b35d3e416ef15cbd4e488c5338c8"
-    }
+      "stream.json": "f9e712fb69ac9382721f2d92ef6912e8b5e4061660b590e1f0da0226a4788a3c"
+    },
+    "environmentChanges": [
+      "CRTC vertical retrace moved from lines 412-414 to 405-410 at the first sync point (capture-only; values are recorded)"
+    ]
+  },
+  "truncated": {
+    "reason": "tick budget exhausted (total 3000, idle 900)",
+    "droppedEvents": 15
   }
 }

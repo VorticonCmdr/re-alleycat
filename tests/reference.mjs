@@ -58,6 +58,7 @@ function runScenario(manifest, { perturb = null, quiet = false } = {}) {
   env.schedule(events);
   const g = newGame({ rngSeed: stream.seed });
   g.replay = env;
+  g.audioLog = [];
   const mask = buildMask(manifest.compare);
   const expected = manifest.capture.checkpoints;
   const failures = [];
@@ -88,12 +89,23 @@ function runScenario(manifest, { perturb = null, quiet = false } = {}) {
           const dd = diff(ds, refDs, mask);
           const compareVram = !(ev.vram === false);
           const vd = compareVram ? diff(vram, refVram, null, 6) : { n: 0, out: [] };
-          const ok = align && dd.n === 0 && vd.n === 0;
+          let audio = '';
+          if (cp.speakerWrites !== undefined) {
+            const ref = stream.speaker.slice(0, cp.speakerWrites);
+            const port = g.audioLog;
+            let k = 0;
+            while (k < ref.length && k < port.length && ref[k][0] === port[k][0] && ref[k][1] === port[k][1]) k++;
+            if (k !== ref.length || port.length !== ref.length) {
+              const show = (e) => (e ? `${e[0].toString(16)}:${e[1].toString(16)}` : '-');
+              audio = ` speaker writes differ at #${k} (port ${show(port[k])}, ref ${show(ref[k])}; counts ${port.length}/${ref.length})`;
+            }
+          }
+          const ok = align && dd.n === 0 && vd.n === 0 && !audio;
           if (!quiet) console.log(`${ok ? 'PASS' : 'FAIL'}  ${manifest.id} ${label}` +
             `${align ? '' : ` read counts port ${env.tickReads}/${env.retraceReads} ref ${cp.tickReads}/${cp.retraceReads}`}` +
             `${dd.n ? ` DS ${dd.n} bytes differ [${dd.out.join(', ')}]` : ''}` +
             `${vd.n ? ` VRAM ${vd.n} bytes differ [${vd.out.join(', ')}]` : ''}` +
-            `${compareVram ? '' : ' (VRAM excluded: text screen)'}`);
+            `${compareVram ? '' : ' (VRAM excluded: text screen)'}${audio}`);
           if (!ok) failures.push(label);
           cpIndex++;
           if (!ok && !process.argv.includes('--all')) return { failures, checkpoints: cpIndex };
@@ -118,6 +130,7 @@ const files = manifestArg ? [manifestArg] : readdirSync(join(ROOT, 'scenarios'))
 let total = 0;
 let bad = 0;
 let ran = 0;
+let controlsFailed = 0;
 let setup = null;
 for (const f of files) {
   const manifest = JSON.parse(readFileSync(f, 'utf8'));
@@ -146,10 +159,20 @@ for (const f of files) {
   const controls = [
     { name: `drop key event ${manifest.events[keyIdx]?.code}@${manifest.events[keyIdx]?.site}#${manifest.events[keyIdx]?.count}`,
       apply: (st, ev) => ({ stream: st, events: ev.filter((_, i) => i !== keyIdx) }), usable: keyIdx >= 0 },
-    { name: 'drop one BIOS tick change (mid-scenario)',
+    { name: 'alter one recorded speaker write',
       apply: (st, ev) => {
-        const ticks = st.ticks.map((t) => [...t]);
-        ticks.splice(Math.floor(ticks.length / 2), 1);
+        const speaker = st.speaker.map((w) => [...w]);
+        const last = manifest.capture.checkpoints.at(-1).speakerWrites; // stay inside the compared range
+        const k = Math.floor(last / 2);
+        speaker[k][1] ^= 1;
+        return { stream: { ...st, speaker }, events: ev };
+      }, usable: (manifest.capture.checkpoints.at(-1)?.speakerWrites ?? 0) > 1 },
+    { name: 'advance BIOS ticks by one from mid-scenario',
+      apply: (st, ev) => {
+        const lastRead = manifest.capture.checkpoints.at(-1).tickReads; // inside the compared range
+        const inRange = st.ticks.filter((t) => t[0] < lastRead).length;
+        const from = Math.floor(inRange / 2);
+        const ticks = st.ticks.map((t, i) => (i >= from ? [t[0], (t[1] + 1) >>> 0] : [...t]));
         return { stream: { ...st, ticks }, events: ev };
       }, usable: true },
   ];
@@ -158,9 +181,9 @@ for (const f of files) {
     const detected = !!(nr.failures?.length);
     console.log(`${detected ? 'PASS' : 'FAIL'}  ${manifest.id} negative control detected: ${ctl.name}` +
       `${detected ? ` (${nr.failures[0].slice(0, 60)})` : ''}`);
-    if (!detected) bad++;
+    if (!detected) controlsFailed++;
   }
 }
 if (setup) process.exit(2);
-console.log(`reference: ${ran - bad}/${ran} scenarios, ${total} checkpoints compared`);
-if (ran === 0 || total === 0 || bad) process.exit(1);
+console.log(`reference: ${ran - bad}/${ran} scenarios, ${total} checkpoints compared${controlsFailed ? `, ${controlsFailed} negative control(s) NOT detected` : ''}`);
+if (controlsFailed || ran === 0 || total === 0 || bad) process.exit(1);

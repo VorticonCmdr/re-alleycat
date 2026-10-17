@@ -12,6 +12,7 @@ import { CgaAdapter } from '../machine/video.js';
 import { Speaker } from '../machine/speaker.js';
 import { Bios } from '../machine/bios.js';
 import { KeyboardController } from '../machine/keyboard.js';
+import { GamePort } from '../machine/joystick.js';
 import { keyboardInterrupt } from './input.js';
 import { program } from './main.js';
 
@@ -40,11 +41,14 @@ export class Game {
     this.speaker = new Speaker(this.clock);
     this.bios = new Bios(this.mem, this.cga, this.speaker);
     this.keyboard = new KeyboardController(this.clock);
+    this.gamePort = new GamePort(this.clock);
     this.shift = 0;
     this.df = 0; // CPU direction flag: persists between routines (CS:05f1 leaves it set)
     this.exited = false;
     this.trace = null; // optional hook: (event, data) => void
     this.replay = null; // RecordedEnv when replaying a reference capture
+    this.audioLog = null; // [[port, value]] speaker writes, collected during reference replays
+    this.audioExcluded = 0; // >0 inside routines whose speaker writes depend on unrecorded PIT samples
     this.yields = 0;
     this._gen = program(this);
   }
@@ -96,10 +100,19 @@ export class Game {
   modelByte() {
     return this.opts.modelId;
   }
-  // Port 201h. No joystick is attached; an open game port reads as all ones.
+  // Port 201h (game port). Reads 0xFF while no gamepad is connected.
   joystickPort() {
     this.c(2);
-    return 0xff;
+    return this.gamePort.read();
+  }
+  joystickFire() {
+    this.c(2);
+    this.gamePort.write();
+  }
+  // INT 11h equipment word: 80x25 colour; game port present while a gamepad is connected.
+  equipment() {
+    this.c(4);
+    return 0x0020 | (this.gamePort.isConnected() ? 0x1000 : 0);
   }
 
   // ---- hardware outputs ----
@@ -109,6 +122,7 @@ export class Game {
   }
   out42(v) {
     this.c(2);
+    if (this.audioLog && !this.audioExcluded) this.audioLog.push([0x42, v & 0xff]);
     this.speaker.writePort42(v);
   }
   in61() {
@@ -117,6 +131,7 @@ export class Game {
   }
   out61(v) {
     this.c(1);
+    if (this.audioLog && !this.audioExcluded) this.audioLog.push([0x61, v & 3]);
     this.speaker.writePort61(v);
   }
 

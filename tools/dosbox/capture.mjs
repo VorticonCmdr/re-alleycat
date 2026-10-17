@@ -26,7 +26,12 @@ import { DosBox } from './client.mjs';
 import { loadCatExe, LOCAL_DIR, ROOT } from '../lib/fixtures.mjs';
 import { SCANCODES } from '../../src/machine/keyboard.js';
 
-export const TOOL_REVISION = 'capture-v4';
+export const TOOL_REVISION = 'capture-v5';
+
+// Speaker writes compared by the replay: every OUT 42h/61h site except the INT 9
+// acknowledge pulse (14e9/14ed, bit 7 only) and the PIT-dependent hit sound / landing
+// thud (5a83/5a87/5a8d, 5b04/5b08/5b0e). [CS offset, port]
+export const SPEAKER_SITES = [[0x46e0, 0x42], [0x46e4, 0x42], [0x46ea, 0x61], [0x5306, 0x42], [0x530a, 0x42], [0x5310, 0x61], [0x53e9, 0x42], [0x53ed, 0x42], [0x53f3, 0x61], [0x56d6, 0x61], [0x572b, 0x61], [0x578a, 0x42], [0x578e, 0x42], [0x5794, 0x61], [0x57d2, 0x61], [0x5889, 0x42], [0x588d, 0x42], [0x5893, 0x61], [0x59b0, 0x42], [0x59b4, 0x42], [0x59ba, 0x61], [0x59cf, 0x61], [0x5a0f, 0x61], [0x5ab5, 0x42], [0x5ab9, 0x42], [0x5abf, 0x61], [0x5b25, 0x61], [0x5b2f, 0x42], [0x5b33, 0x42], [0x5b39, 0x61], [0x5b51, 0x61], [0x5bb2, 0x42], [0x5bb6, 0x42], [0x5bbc, 0x61], [0x609b, 0x42], [0x609f, 0x42], [0x60a5, 0x61], [0x60e0, 0x42], [0x60e4, 0x42]];
 const sha = (b) => createHash('sha256').update(b).digest('hex');
 
 const EXPECT_PSP = 0x01e5;
@@ -57,12 +62,18 @@ async function resume(d) {
 async function forceExit(d) {
   const st = await d.status();
   if (!/CAT/i.test(st.program || '')) return;
-  const p = await d.pause();
+  let p = await d.pause();
+  await d.clearBreakpoints();
   let regs = p.stop?.registers || (await d.regs()).registers || (await d.regs());
-  // paused inside a BIOS/DOS handler: single-step until execution is back in the game
-  for (let i = 0; i < 20000 && regs.cs !== CS; i++) {
-    const s = await d.step(64);
-    regs = (s.stop || s).registers || s.registers;
+  if (regs.cs !== CS) {
+    // somewhere in a BIOS/DOS handler: run on to a loop head that every game state reaches
+    for (const off of [0x0155, 0x5d71, 0x5ef7, 0x5f29, 0x5faa, 0x03fa, 0x0478, 0x03b2, 0x0364, 0x0319, 0x02c5, 0x027e, 0x13d8]) {
+      await d.addBreakpoint({ type: 'execute', segment: CS, offset: off, once: true });
+    }
+    const since = await resume(d);
+    const w = await waitStop(d, since, 30000);
+    regs = w.registers;
+    await d.clearBreakpoints();
   }
   if (regs.cs !== CS) throw new Error(`running CAT has CS=${regs.cs.toString(16)}, expected ${CS.toString(16)}`);
   const saved = await d.read(CS, 0x13df, 4);
@@ -232,6 +243,11 @@ async function main() {
   st.setBp = (await d.addBreakpoint({ type: 'interrupt', int: 0x1a, ah: 1 })).id;
   await armRetrace();
   const seedBp = (await d.addBreakpoint({ type: 'execute', segment: CS, offset: 0x2e25, once: true })).id;
+  const speakerBps = new Map();
+  for (const [off, port] of SPEAKER_SITES) {
+    speakerBps.set((await d.addBreakpoint({ type: 'execute', segment: CS, offset: off })).id, port);
+  }
+  const speaker = [];
   for (const site of plan.keys()) await armSync(site);
 
   const checkpoints = [];
@@ -240,7 +256,9 @@ async function main() {
   // Budget in BIOS ticks after the first recorded tick: scenarios whose later events are
   // never reached (e.g. the cat leaves a room early) end here and are trimmed.
   const budget = manifest.maxTicks ?? 3000;
+  const idleBudget = manifest.maxIdleTicks ?? 900; // ticks without any scenario event
   let firstTick = null;
+  let lastEventTick = null;
   let truncated = false;
   let stops = 0;
   const t0 = Date.now();
@@ -259,7 +277,8 @@ async function main() {
         if (st.tickLast === null || (v & 0xffff) !== (st.tickLast & 0xffff)) st.ticks.push([idx, v]);
         st.tickLast = v;
         if (firstTick === null) firstTick = v;
-        if (v - firstTick > budget) {
+        if (lastEventTick === null) lastEventTick = v;
+        if (v - firstTick > budget || v - lastEventTick > idleBudget) {
           truncated = true;
           break;
         }
@@ -274,6 +293,9 @@ async function main() {
       if (bit !== st.retrLast || st.retrace.length === 0) st.retrace.push([idx, bit]);
       st.retrLast = bit;
       await armRetrace();
+    } else if (speakerBps.has(id)) {
+      const port = speakerBps.get(id);
+      speaker.push([port, port === 0x61 ? r.eax & 3 : r.eax & 0xff]);
     } else if (id === seedBp) {
       st.seed = r.eax & 0xffff;
     } else {
@@ -292,6 +314,7 @@ async function main() {
       }
       const tickReads = st.tickCum + (await hitsOf(st.tickBp)) - st.setCalls.length; // AH=1 calls pass the IRET too
       const retrReads = st.retrCum + (await hitsOf(st.retrBp));
+      lastEventTick = st.tickLast;
       for (const a of entry.actions) {
         a.done = true;
         if (a.type === 'key') {
@@ -308,7 +331,7 @@ async function main() {
           const n = checkpoints.length;
           writeFileSync(join(outDir, `ds-${n}.bin`), ds);
           writeFileSync(join(outDir, `vram-${n}.bin`), vram);
-          checkpoints.push({ site: a.site, count: a.count, tickReads, retraceReads: retrReads, ds: sha(ds), vram: sha(vram) });
+          checkpoints.push({ site: a.site, count: a.count, tickReads, retraceReads: retrReads, speakerWrites: speaker.length, ds: sha(ds), vram: sha(vram) });
           log(`checkpoint ${n} @${a.site}#${a.count} ticks=${tickReads} retrace=${retrReads}`);
         }
       }
@@ -323,7 +346,7 @@ async function main() {
   if (truncated) {
     const before = manifest.events.length;
     manifest.events = manifest.events.filter((e) => e.done);
-    manifest.truncated = { reason: `tick budget ${budget} exhausted`, droppedEvents: before - manifest.events.length };
+    manifest.truncated = { reason: `tick budget exhausted (total ${budget}, idle ${idleBudget})`, droppedEvents: before - manifest.events.length };
     log(`budget exhausted: kept ${manifest.events.length} of ${before} events`);
   }
   for (const e of manifest.events) delete e.done;
@@ -334,6 +357,7 @@ async function main() {
     seed: st.seed,
     ticks: st.ticks,
     tickSets: st.setCalls,
+    speaker,
     retrace: st.retrace,
     checkpoints,
     applied,
@@ -351,7 +375,8 @@ async function main() {
     seed: st.seed,
     tickChanges: st.ticks.length,
     retraceEdges: st.retrace.length,
-    checkpoints: checkpoints.map(({ site, count, tickReads, retraceReads, ds, vram }) => ({ site, count, tickReads, retraceReads, ds, vram })),
+    speakerWrites: speaker.length,
+    checkpoints: checkpoints.map(({ site, count, tickReads, retraceReads, speakerWrites, ds, vram }) => ({ site, count, tickReads, retraceReads, speakerWrites, ds, vram })),
     artifacts: { 'stream.json': sha(streamBuf) },
     environmentChanges: st.retraceMoved ? [`CRTC vertical retrace moved from lines ${st.retraceMoved.from.join('-')} to ${st.retraceMoved.to.join('-')} at the first sync point (capture-only; values are recorded)`] : [],
   };

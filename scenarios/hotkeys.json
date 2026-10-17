@@ -431,250 +431,280 @@
     }
   ],
   "capture": {
-    "tool": "capture-v4",
+    "tool": "capture-v5",
     "emulator": "0.84.0-vc1 (f6d9b)",
     "date": "2026-10-17",
-    "stops": 611,
-    "seconds": 17,
-    "seed": 24696,
-    "tickChanges": 216,
-    "retraceEdges": 330,
+    "stops": 671,
+    "seconds": 18,
+    "seed": 8777,
+    "tickChanges": 226,
+    "retraceEdges": 314,
+    "speakerWrites": 66,
     "checkpoints": [
       {
         "site": "5d71",
         "count": 1,
         "tickReads": 1,
         "retraceReads": 0,
-        "ds": "9a2b804f65fb50b0f25ad191b5b6aa850a0128b7fa43d7f452c87baf4f18ebf0",
-        "vram": "3088f9a7327ce89ad35899a41b3fffcac965f2c95cb26e21ec46a539c9bd96f3"
+        "speakerWrites": 1,
+        "ds": "07d1661d0c8126954592d89ff318015fbc4e4e0c7f1784a9139e075ad59c5962",
+        "vram": "76bd5352f277ef08269b0d5be07ffb1a1dfb1cb8506842f9d3ead94124a14b7f"
       },
       {
         "site": "0155",
         "count": 90,
-        "tickReads": 751,
-        "retraceReads": 279,
-        "ds": "c8c1e61d122c28b46c4bfd0c57247e14a6a29d5ffbbaabe0e9b70ec80e9c58be",
-        "vram": "d8d8d9bc8f1068e58bf612f4fe83812ea2665cef73cc975c0485d650f328c323"
+        "tickReads": 744,
+        "retraceReads": 287,
+        "speakerWrites": 32,
+        "ds": "b520bea5f69dc85d0b3272c0d4f7e6bc0dce0da1877fa307812ae38ad20aa5d4",
+        "vram": "6189bb557cbefef687f506778f0b8307e5c2d71e62a6fb6aeb2d72535fb43aed"
       },
       {
         "site": "5faa",
         "count": 60,
-        "tickReads": 788,
-        "retraceReads": 285,
-        "ds": "481695c5b6097504454497f76dc23e7ebddf3eeb28b0fc366e4fea68a0b6bb0a",
-        "vram": "c2fca36eae7b6ee7599112c94d33b3055aed08344c9b18b17b5ce15881be59d8"
+        "tickReads": 781,
+        "retraceReads": 299,
+        "speakerWrites": 33,
+        "ds": "48396d164d1615a8d706f7597038e40bf83939e001d45b3d64e43e8277e79115",
+        "vram": "06b149c1fd75b92705a3ca14f79cfc7d53f85d3f593fcaaff4ee9fabab983d6d"
       },
       {
         "site": "0155",
         "count": 105,
-        "tickReads": 809,
-        "retraceReads": 292,
-        "ds": "e9552796da8156b8d2e6194adbc6c9ab44cf8a7e04574ce780d647439b196f7d",
-        "vram": "872b9e7502f20f91c0f9e18e1e169041649e2e1df1b6c44f2f3689d7f3c37b81"
+        "tickReads": 802,
+        "retraceReads": 306,
+        "speakerWrites": 33,
+        "ds": "27275846a76b9aed310e375e5fd332d219dc1341e2af6c7f708f068b381e079f",
+        "vram": "3da7dcc4baf98ba0dce8ca291b0e86f9c005ee46554b1eaa75fa3ab4b913a3f7"
       },
       {
         "site": "0155",
         "count": 120,
-        "tickReads": 863,
-        "retraceReads": 304,
-        "ds": "b4f8edac6654251a304be721643516547132c23f2e7cadbc43385e42d27718a0",
-        "vram": "44d112c64c4a90a983b13c101cc7881ba612e25eeda63f47d2012ef9c73cfd3e"
+        "tickReads": 856,
+        "retraceReads": 324,
+        "speakerWrites": 33,
+        "ds": "2af7f5af0e2f59c460f11eaf511f19da77d2676e394e923c347999e96e002cea",
+        "vram": "dadaeaab0708972efdeab6a82e205f5be7719a6db6c1d251826644462fc4db66"
       },
       {
         "site": "0155",
         "count": 180,
-        "tickReads": 1088,
-        "retraceReads": 372,
-        "ds": "b9561d436557c81afb3ee08bd0a9537cbd296407576e3843e544f734e52df95a",
-        "vram": "0678d8fddd6ead09a0a1fe4e6ed9bfa828d3b5fffe9de5f29f93d436ff989115"
+        "tickReads": 1081,
+        "retraceReads": 407,
+        "speakerWrites": 41,
+        "ds": "dee4d4bb3a70206e544c8fba2a938d0634accafa9ec58cf41c76889d88fbafa4",
+        "vram": "8908bd61ea50bc31137827a042e93c9abc1ee93c520c80204272caa163beb493"
       },
       {
         "site": "0155",
         "count": 240,
-        "tickReads": 1313,
-        "retraceReads": 461,
-        "ds": "0b1cb47a0df4965a50866f6435514793c7e245a1076e97ede9165d820563bdfa",
-        "vram": "4b27199e383bb1e6ba83d611c01566d6a1ac783b1c2dc122beb044b440b55177"
+        "tickReads": 1306,
+        "retraceReads": 486,
+        "speakerWrites": 45,
+        "ds": "7fc75117ec7f1b0aa2aaaad951fa1adb098805c4ea5b62a29ab5cf5bb5afc3d4",
+        "vram": "964928541dc4b8540f762c3c5eb11a0d6c30045395e0c165bb85c993907c12aa"
       },
       {
         "site": "0155",
         "count": 300,
-        "tickReads": 1539,
-        "retraceReads": 533,
-        "ds": "2ef3758e75173f5ade35b492d9f6bc6e84654983731555fb6f3bdff736907f33",
-        "vram": "eb270277d49abac8fa211afe6f679aa8d19aa4233142f91d81e9e4572541a3a7"
+        "tickReads": 1532,
+        "retraceReads": 593,
+        "speakerWrites": 57,
+        "ds": "912c5a7346b5e4deb9d1d9369e88a66b7062b02615a67562441baddf201b37f6",
+        "vram": "54d96e2f7e18e807766cd69e77e11b39e82695745cd27d04a9408190969385ed"
       },
       {
         "site": "0155",
         "count": 320,
-        "tickReads": 1612,
-        "retraceReads": 568,
-        "ds": "a0aa8454ab41a2a9e0291e9dce6061ced1c6ebc7af69ab95a3def3022f61dead",
-        "vram": "188fd22cb4c36ec4caca36803bdbf241c63485e91f00ef86b10e92f31504cecb"
+        "tickReads": 1605,
+        "retraceReads": 631,
+        "speakerWrites": 58,
+        "ds": "f4dadbdc0412af759fabf6c7f4920f423d07e23d3f01ea72677de4bc5bf250d3",
+        "vram": "c27819cbd3c1a07ace17b7bfbee23958672f1b14c68ef17d12c3e2b48354f5c3"
       },
       {
         "site": "0155",
         "count": 400,
-        "tickReads": 1892,
-        "retraceReads": 651,
-        "ds": "2b92d9b9f3448b4f1066ecf1261bbec9367c4c81cbee7b890d859ddf4777afd1",
-        "vram": "8b958301aadc8bf9bde2b6da81d3fcf41e9d4523d59453a1cd46274d139a6ca0"
+        "tickReads": 1885,
+        "retraceReads": 713,
+        "speakerWrites": 58,
+        "ds": "7e65c756ff3effcddb56ee8cfb8b0385cd9b11a7bd1340d60b83b7e57cbc37cd",
+        "vram": "0d77304e329f552ca923bb0d433d33ed429ed31d2086fcba53e4585c9b7f2499"
       },
       {
         "site": "0155",
         "count": 480,
-        "tickReads": 2172,
-        "retraceReads": 718,
-        "ds": "396e3cf504898eb55300321b629e0d776ab50f842b1f710568594205dd55e99a",
-        "vram": "1959ccdc7e0e426e8add7b8bc39740265c182842c181604f3b7d79ba1a09f783"
+        "tickReads": 2165,
+        "retraceReads": 772,
+        "speakerWrites": 58,
+        "ds": "58a22740bb7b00ee74fa7a58baa640df95291b71f55d511f205346676e9e1eaa",
+        "vram": "527d4394db44d175811db3031efe218db98e891cab1b59c03d9282076f1f3590"
       },
       {
         "site": "0155",
         "count": 560,
-        "tickReads": 2452,
-        "retraceReads": 768,
-        "ds": "eec39a6e14c9138b3e69558351f2d94f0bdc289e11c9534f6257b8d2ec94a208",
-        "vram": "91c7d3e6a68b014b907630350fc9c52acde9512511d3248f454d2ad392404b26"
+        "tickReads": 2445,
+        "retraceReads": 824,
+        "speakerWrites": 58,
+        "ds": "c2e92ec8308807a516a311546a1628de4becc513681f440565684f9e5130e5e6",
+        "vram": "0d31737d39c1585ace06a71a6ec93140a72e46883995e3baef27a44b8c6fe72f"
       },
       {
         "site": "0155",
         "count": 640,
-        "tickReads": 2733,
-        "retraceReads": 815,
-        "ds": "418210c06c0a9e0dfa55caf8e24b198439c452daf5ae1141d1c7e3b802bae443",
-        "vram": "b3982274b81c22ae8a92e385724d871dce09f7926ee0d3a763145ee902ed0b77"
+        "tickReads": 2778,
+        "retraceReads": 906,
+        "speakerWrites": 58,
+        "ds": "4527764b6e2092191ad8494daf0bf741b2add2eead55944ad372d7082a0efcc9",
+        "vram": "462623d4b4a10d64e612c567b9eb44f0f87c93059f21a6a159697acf2a005f4e"
       },
       {
         "site": "0155",
         "count": 720,
-        "tickReads": 3027,
-        "retraceReads": 888,
-        "ds": "fab3604eb1d17df956687f96786bb424b2e61843c1c4d303564759334a7c9735",
-        "vram": "4f6d9d6f854db95734837dbf2725bca733b38fd5a5e7efdb5adc6c06fa6f9819"
+        "tickReads": 3179,
+        "retraceReads": 992,
+        "speakerWrites": 58,
+        "ds": "f7764b40226ce81e826b52d3927e05070d9eda419464e6f5cdd67773016993f0",
+        "vram": "dd417000a1af437d5070195b8fb4226b35b970ddc3e513521c80d038ed997336"
       },
       {
         "site": "0155",
         "count": 800,
-        "tickReads": 3428,
-        "retraceReads": 997,
-        "ds": "fb5981387ada87622094b01ea23115d18bf8854a4281806f646668d0286c4c0b",
-        "vram": "f7424e3a32a1dd41c48325d5f6eff41baf0ed0d8d8a2293c854a50344d1e061f"
+        "tickReads": 3580,
+        "retraceReads": 1122,
+        "speakerWrites": 58,
+        "ds": "086d35959480483096ef2cfe54bdd22f8ccf2eefb8ca1e0e2dd7d8cea7b25849",
+        "vram": "fc56e6aee1fab50b65c98ca4b633753e6c6f33e711fb025f052f83c2728f798d"
       },
       {
         "site": "0155",
         "count": 880,
-        "tickReads": 3829,
-        "retraceReads": 1129,
-        "ds": "9eee6d00f91e11b2a5f1ef96a675716f1752ec731fbd2e1bfcca014210bd5856",
-        "vram": "2f26c2f1086c6087c51c1a17717b5070d55e64bbacba6edd0d289628c5f6dda1"
+        "tickReads": 3982,
+        "retraceReads": 1261,
+        "speakerWrites": 58,
+        "ds": "a01c739ae99662a5527d89322e1c760796820de8052331ab27dd9e144e276997",
+        "vram": "6da3b6744b9ffa358f96c1662017fc17e3fea207014d740f70c67bf910ea06d6"
       },
       {
         "site": "0155",
         "count": 960,
-        "tickReads": 4231,
-        "retraceReads": 1251,
-        "ds": "015ef1832cc90ebae54c7adc42ae521a8323881c6e8f8321bb9eca57ebb5516d",
-        "vram": "188e7935e54381f3c4934717ad7a0934aecc37589e07c12aa0985077d747de02"
+        "tickReads": 4383,
+        "retraceReads": 1401,
+        "speakerWrites": 58,
+        "ds": "0071149c4852bdd4e1e3deb957fa2fc9a56aaf3b8ce5d6b1f0d5ec51e8bdf50a",
+        "vram": "d4863d8141aeb8b239a45892fa2a188513e8d370af87c0b0c801a126d204d0bd"
       },
       {
         "site": "0155",
         "count": 1040,
-        "tickReads": 4632,
-        "retraceReads": 1388,
-        "ds": "5b65cb2644206c7901f68e0f5c4991584422a963fbbcdc4fc1b61e9ed2930a99",
-        "vram": "83a4665241426b03ee3d80249be0ec9404a5fe8dbdfabe526269881138d9218f"
+        "tickReads": 4784,
+        "retraceReads": 1516,
+        "speakerWrites": 58,
+        "ds": "1a6bc42b9a2d8ba5b8bcb8f87dd035b6bed55a1ed81cd77844e87ea79ecd762f",
+        "vram": "76656cb0a526431b017c95ce325e5a3a0d2a0a256fcf1642517f0a15d99d720e"
       },
       {
         "site": "0155",
         "count": 1120,
-        "tickReads": 5017,
-        "retraceReads": 1511,
-        "ds": "277569e45ae0c77fa939486f8b62620a7df640bc7d9f27ae589dd8d5b6159ad8",
-        "vram": "7db4a6006e15053f31987fa253a86cc1abdc669ee1d6d354ad276dd1786cd4ac"
+        "tickReads": 5185,
+        "retraceReads": 1636,
+        "speakerWrites": 58,
+        "ds": "c41e6205eaa25cfd4949fdaa8c0ab149959d8338c1c691da6248d62e5fa9e25f",
+        "vram": "67f1b7fd8b6c65e09ab87fa7c9fd93963dfcf57eb80b77d5697b7149c62aa545"
       },
       {
         "site": "0155",
         "count": 1200,
-        "tickReads": 5297,
-        "retraceReads": 1572,
-        "ds": "29a1f67f1cba7b8c9840e2cce9dee64ea016f62899f1da193f753c640cc481a9",
-        "vram": "5627dc4f18cf99e2f967085da0d0735784da988bd9870b73cf0b5d426a102fb9"
+        "tickReads": 5586,
+        "retraceReads": 1768,
+        "speakerWrites": 58,
+        "ds": "aa7c2d6464ef18b3990e30f80ba828fccb648f8f539f50338c344f91aabb22a4",
+        "vram": "dac4822a1b6fab6d0bfadcdb2dd584e968311b18aa2022db71b999be17a3a628"
       },
       {
         "site": "0155",
         "count": 1230,
-        "tickReads": 5400,
-        "retraceReads": 1597,
-        "ds": "3804d4e5d5aad81ce74961969fe3da7f0e970cb882a313190ca8d55e6284d4e6",
-        "vram": "0da397655e3a21df80f079e8052622b0e5b0d5792ce419fb9592264b6493d07c"
+        "tickReads": 5707,
+        "retraceReads": 1800,
+        "speakerWrites": 61,
+        "ds": "eafd570de8278298331a5765d031678ebce39b6d1d06c066ce938f2b9071e456",
+        "vram": "8a401fe73d45065b39bf35b504f1b526a7c857556e26535ad83018596ff6f9e6"
       },
       {
         "site": "0155",
         "count": 1315,
-        "tickReads": 5697,
-        "retraceReads": 1639,
-        "ds": "cae4a37203209f14e7905e19b1cf757935371e3b3ecfbead7e6bfed05a50f720",
-        "vram": "b1030bbf8577fcaae81c03ee2834cb43fcc6f01e583175533f71ace57c537ea1"
+        "tickReads": 6004,
+        "retraceReads": 1850,
+        "speakerWrites": 61,
+        "ds": "e2a29141953e9609e148fc1986afee62cf50a6da759d3406b8f7f8e91db2cd9c",
+        "vram": "7edb646eca27cca5272ecfed83475e571e07682b5bfb5729518ed7992b9c96d4"
       },
       {
         "site": "0155",
         "count": 1400,
-        "tickReads": 5996,
-        "retraceReads": 1753,
-        "ds": "e14ae54fb551463aa4a7b39107ee9a29bffffde8e6eab7c9d4321a053d2b6e5c",
-        "vram": "3543c0bf52836c67b8969280a7aa8c0c7d5a99807742f73740e8df55fc0119f8"
+        "tickReads": 6303,
+        "retraceReads": 1929,
+        "speakerWrites": 61,
+        "ds": "19c1964883e936a0faa09d713b1db333cbd1193cc243d05d1c8016273eed5828",
+        "vram": "0d60fdbda03849dff1a533631d0321335b8452569a9190b86e84ead3e709caf1"
       },
       {
         "site": "5faa",
         "count": 125,
-        "tickReads": 6038,
-        "retraceReads": 1774,
-        "ds": "5e785510de9956391c4b08fc9fb27e07549a98b16965951c60d0648a628ea5a3",
+        "tickReads": 6345,
+        "retraceReads": 1948,
+        "speakerWrites": 63,
+        "ds": "72301411e9a0f2c66e133c0aa5889e9832290244859a65728897edbc09fea98c",
         "vram": "94bb9095c6e53d837dea565857d7a62dc452ab23f89ad1fa03a280f7ace7d935"
       },
       {
         "site": "0155",
         "count": 1440,
-        "tickReads": 6133,
-        "retraceReads": 1794,
-        "ds": "23bfacd8d7227140a7a20c224faf3deeaf69e0ff4b09253798cac78f0f87e47a",
-        "vram": "62e971a5f11c314fa9e6a601419e4ed992e686550b9258b05db045b134a04ffa"
+        "tickReads": 6440,
+        "retraceReads": 1975,
+        "speakerWrites": 66,
+        "ds": "835689387fced391509584d86bb3042c95e2d7eeb8f28468dacc39f450414beb",
+        "vram": "f859b40e1e0ffe55e06a7cf4a9ee79174245b7edcdfd933befb8b578d716d6b7"
       },
       {
         "site": "0155",
         "count": 1530,
-        "tickReads": 6449,
-        "retraceReads": 1859,
-        "ds": "abcaba4358703998b128bd84ef8c6f982540c9ff5e506dea3b10567f190236a7",
-        "vram": "edf6693ec7c88cf9e43b8bf613f22c10397eb25f4396353ba5374313cf28e6e9"
+        "tickReads": 6756,
+        "retraceReads": 2028,
+        "speakerWrites": 66,
+        "ds": "6115fba9c5e230604a8dee762b95567045656cf2d8936445b359bde474bfb6f1",
+        "vram": "7db71a5a12093f9fd96d834e605fd010c00c4794e54e677052df0bda2af1db58"
       },
       {
         "site": "0155",
         "count": 1620,
-        "tickReads": 6763,
-        "retraceReads": 1967,
-        "ds": "461fc2c9745b5e7e366cab8e41449e4dcef001a3b0d528c0a043ccc0138f3881",
-        "vram": "e29b8a3228c5aee9b703766323edeb5e53b2775cfeeba3ccb1ade82fa075a495"
+        "tickReads": 7070,
+        "retraceReads": 2155,
+        "speakerWrites": 66,
+        "ds": "f6ea7d6e6a4adfddb3984b0ad2e568fe2cf2e27d773204f4a76373bfcc92bbe2",
+        "vram": "4cf672c333a662727e0c5f3f24d5a91f0198827233c3f83188fb59766f028458"
       },
       {
         "site": "0155",
         "count": 1710,
-        "tickReads": 7080,
-        "retraceReads": 2108,
-        "ds": "47ebf8c8b6a723fc692957c51d8096a0459c657b55096e0d99927d9434a550ea",
-        "vram": "66b83fa1d43fce3d0bbceaac349f74dd8026b258fbdff7b03a6c06272c2501a3"
+        "tickReads": 7387,
+        "retraceReads": 2337,
+        "speakerWrites": 66,
+        "ds": "ae998d2fea1f02c9675273adafa884b36d0f4b4c28cea8f9522d5de6e42ce5ba",
+        "vram": "df6dcbdd113784ccc0adebeff1bc5f5219f46800272177ef2b00f5da6da45587"
       },
       {
         "site": "0155",
         "count": 1800,
-        "tickReads": 7394,
-        "retraceReads": 2290,
-        "ds": "dde2fdf202fdaa052b9e3511b60359087a974d5ad2a8e478df9fa0a50267bcd9",
-        "vram": "4fc0573f09aeff1f18e4dbb66af229db6a440d7bec867393a5050fd6005e2866"
+        "tickReads": 7701,
+        "retraceReads": 2477,
+        "speakerWrites": 66,
+        "ds": "b6d8a60ce7643f568392b6f02c25804479ff3a54cda5d8ff5d07286d0e9f8136",
+        "vram": "e8e74bbef407dc354a0ae932b741fbb112276f6d09becef45ae99c517d6116db"
       }
     ],
     "artifacts": {
-      "stream.json": "28bef2e9b2850e791d24eef0874be5146ee865fa89ae42b8c17a5041cd966d8a"
+      "stream.json": "bd6a4470cab07b3bbd86f137e53b641a262b4997a246d20bc581c19ee4b9fd95"
     },
     "environmentChanges": [
       "CRTC vertical retrace moved from lines 412-414 to 405-410 at the first sync point (capture-only; values are recorded)"

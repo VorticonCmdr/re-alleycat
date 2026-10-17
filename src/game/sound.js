@@ -323,6 +323,7 @@ export function hitSound(g) {
   g.c(4);
   if (d >= 0 && d <= 0x260) return;
   g.ww(0x5a16, ax);
+  g.audioExcluded++; // CS:5a83..5a8d: values and count depend on PIT samples
   g.out43(0xb6);
   g.ww(0x5a18, g.rw(0x5a18) + 1);
   const bx = g.rw(0x5a18) & 0x1e;
@@ -335,6 +336,7 @@ export function hitSound(g) {
   g.ww(0x5a3c, g.rw(0x5a3c) + step);
   a = (a + (g.rw(0x5a3e) >> 3)) & 0xffff;
   tone(g, a);
+  g.audioExcluded--;
   g.c(20);
 }
 
@@ -366,7 +368,9 @@ export function* landThud(g) {
         const r = random(g);
         const ax = ((r & 0x7ff) + g.rw(0x5a12)) & 0xffff;
         g.ww(0x5a12, g.rw(0x5a12) - 2);
+        g.audioExcluded++; // CS:5b04..5b0e: PIT-timed
         tone(g, ax);
+        g.audioExcluded--;
         g.c(8);
       }
     }

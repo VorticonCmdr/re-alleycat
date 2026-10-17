@@ -81,7 +81,10 @@ export function pollInput(g) {
   g.c(6); // SUB AH,AH / MOV AX,DX / SUB / CMP / JNC / RET
   if (((t - g.rw(0x69f)) & 0xffff) < 2) return;
   g.ww(0x69f, t);
-  if (g.rb(JOYSTICK) !== 0) g.unsupported('joystick input CS:122e');
+  if (g.rb(JOYSTICK) !== 0) {
+    readJoystick(g); // CS:122e
+    return;
+  }
   readKeyboard(g);
   // short PIT-based settle delay: wait for the counter to move by 1..0x713 counts
   const start = g.pit0();
@@ -91,6 +94,45 @@ export function pollInput(g) {
     if (d >= 0xf8ed) break;
     if (guard > 1e6) throw new Error('PIT delay at CS:1223 did not terminate');
   }
+}
+
+// CS:12a1 - one-shot length so far -> axis direction (-1 short, 0 middle, +1 long).
+function axisFromTime(g) {
+  const bx = (g.pit0() - g.rw(0x69c)) & 0xffff;
+  g.c(8);
+  if (bx < 0xf5e6) return 1;
+  if (bx < 0xfafa) return 0;
+  return 0xff;
+}
+
+// CS:122e - read the joystick: fire button, then time both axis one-shots.
+function readJoystick(g) {
+  g.wb(FIRE, g.joystickPort() & 0x10);
+  g.wb(0x69e, 3);
+  g.ww(0x69c, g.pit0());
+  g.joystickFire();
+  g.c(8);
+  let cx = 0x7d0;
+  do {
+    const al = g.joystickPort();
+    if (!(al & 1) && g.rb(0x69e) & 1) {
+      g.wb(0x69e, g.rb(0x69e) & 0xfe);
+      g.wb(DIR_X, axisFromTime(g));
+    }
+    if (!(al & 2) && g.rb(0x69e) & 2) {
+      g.wb(0x69e, g.rb(0x69e) & 0xfd);
+      g.wb(DIR_Y, axisFromTime(g));
+    }
+    g.c(10);
+    if ((g.rb(0x69e) & 3) === 0) return;
+    const ax = (g.pit0() - g.rw(0x69c)) & 0xffff;
+    g.c(4);
+    cx = (cx - 1) & 0xffff;
+    if (ax === 0x1964) break; // LOOPNZ also ends on ZF from CMP AX,1964h
+  } while (cx !== 0);
+  if (g.rb(0x69e) & 1) g.wb(DIR_X, 0xff);
+  if (g.rb(0x69e) & 2) g.wb(DIR_Y, 0xff);
+  g.c(8);
 }
 
 // CS:1338 - global hot keys, checked when a new make code has arrived.

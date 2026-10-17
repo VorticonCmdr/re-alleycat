@@ -34,18 +34,20 @@ if (groups.length === 0) {
   process.exit(1);
 }
 
-let failed = 0;
+const results = [];
 for (const g of groups) {
   console.log(`\n=== ${g.name} ===`);
-  const r = spawnSync(g.cmd[0], g.cmd.slice(1), { cwd: ROOT, stdio: 'inherit' });
-  if (r.status !== 0) {
-    failed++;
-    console.log(`=== ${g.name}: FAILED (exit ${r.status}) ===`);
-    if (r.status === 2) {
-      console.error('setup failure inside a check group');
-      process.exit(2);
-    }
-  } else console.log(`=== ${g.name}: ok ===`);
+  const r = spawnSync(g.cmd[0], g.cmd.slice(1), { cwd: ROOT, stdio: ['ignore', 'inherit', 'pipe'], encoding: 'utf8' });
+  process.stderr.write(r.stderr || '');
+  const setup = (r.stderr || '').match(/SETUP FAILURE: (.*)/);
+  const status = r.status === 0 ? 'ok' : r.status === 2 ? 'SETUP' : 'FAILED';
+  results.push({ name: g.name, status, why: setup ? setup[1] : r.status === 0 ? '' : `exit ${r.status}` });
+  console.log(`=== ${g.name}: ${status} ===`);
 }
-console.log(`\n${groups.length - failed}/${groups.length} groups passed`);
-process.exit(failed ? 1 : 0);
+console.log('\nsummary');
+for (const r of results) console.log(`  ${r.name.padEnd(10)} ${r.status.padEnd(7)} ${r.why}`);
+const failed = results.filter((r) => r.status === 'FAILED').length;
+const setupFailed = results.filter((r) => r.status === 'SETUP').length;
+console.log(`${results.length - failed - setupFailed}/${results.length} groups passed` +
+  (setupFailed ? `; ${setupFailed} could not run (setup) — this is not a pass` : ''));
+process.exit(failed ? 1 : setupFailed ? 2 : 0);

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Alley Cat Port</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -23,24 +23,69 @@
     </section>
 
     <section id="player" hidden>
-      <div class="screen-wrap">
+      <div class="screen-wrap" id="screen-wrap">
         <canvas id="screen" width="320" height="200" tabindex="0" aria-label="Game screen"></canvas>
       </div>
+
       <div class="bar">
         <button data-combo="Escape" title="Esc">Pause</button>
         <button data-combo="ControlLeft+KeyS" title="Ctrl+S">Sound on/off</button>
         <button data-combo="ControlLeft+KeyR" title="Ctrl+R">Restart</button>
         <button data-combo="ControlLeft+KeyM" title="Ctrl+M">Menu</button>
+        <button id="fullscreen" title="Fullscreen">Fullscreen</button>
         <span class="spacer"></span>
         <span id="status" class="status" role="status"></span>
       </div>
+
+      <div id="touchpad" class="touchpad" hidden>
+        <div class="dpad" aria-label="Direction pad">
+          <button data-keys="Home" aria-label="Up-left">↖</button>
+          <button data-keys="ArrowUp" aria-label="Up">↑</button>
+          <button data-keys="PageUp" aria-label="Up-right">↗</button>
+          <button data-keys="ArrowLeft" aria-label="Left">←</button>
+          <span></span>
+          <button data-keys="ArrowRight" aria-label="Right">→</button>
+          <button data-keys="End" aria-label="Down-left">↙</button>
+          <button data-keys="ArrowDown" aria-label="Down">↓</button>
+          <button data-keys="PageDown" aria-label="Down-right">↘</button>
+        </div>
+        <div class="keys" aria-label="Keys">
+          <button class="big" data-keys="AltLeft">Alt</button>
+          <button data-keys="Escape">Esc</button>
+          <button data-keys="Space">Space</button>
+          <button data-keys="KeyY">Y</button>
+          <button data-keys="KeyN">N</button>
+          <button data-keys="KeyK">K</button>
+          <button data-keys="KeyH">H</button>
+          <button data-keys="KeyT">T</button>
+          <button data-keys="KeyA">A</button>
+        </div>
+      </div>
+
       <details class="help">
-        <summary>Controls</summary>
+        <summary>Controls &amp; settings</summary>
         <ul>
-          <li>Arrow keys (or numeric keypad incl. diagonals 7 9 1 3) move the cat.</li>
-          <li>Alt performs special actions. Esc pauses.</li>
-          <li>Ctrl+S sound, Ctrl+R restart, Ctrl+M menu (also available as buttons, since browsers reserve some Ctrl shortcuts).</li>
+          <li>Arrow keys (or numeric keypad incl. diagonals 7 9 1 3) move the cat; Alt performs special actions; Esc pauses.</li>
+          <li>Ctrl+S sound, Ctrl+R restart, Ctrl+M menu (also the buttons above).</li>
+          <li>Gamepad: stick/D-pad moves, A = Alt, Start = Esc, Select = Space. Answer “Y” to the joystick question to use the original's joystick mode instead.</li>
         </ul>
+        <div class="settings">
+          <label>Machine <select id="profile"></select></label>
+          <label>Scaling
+            <select id="scale">
+              <option value="fit">Fit width</option>
+              <option value="integer">Whole pixels</option>
+            </select>
+          </label>
+          <label>Touch controls
+            <select id="touch">
+              <option value="auto">Automatic</option>
+              <option value="on">Always</option>
+              <option value="off">Never</option>
+            </select>
+          </label>
+        </div>
+        <p class="hint">Changing the machine restarts the game. Only the DOSBox reference machine is verified against the original.</p>
       </details>
       <pre id="diag" class="diag" hidden></pre>
     </section>

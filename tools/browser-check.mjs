@@ -39,6 +39,11 @@ async function main() {
     }
     throw e;
   }
+  const { findChrome } = await import('./lib/cdp.mjs');
+  if (!findChrome()) {
+    console.error('SETUP FAILURE: no Chrome/Chromium found for browser checks (set CHROME_PATH)');
+    process.exit(2);
+  }
   const server = await serve(0);
   const base = `http://127.0.0.1:${server.address().port}/`;
   const chrome = await launch();
@@ -81,28 +86,22 @@ async function main() {
     const audioState = await waitFor(s, `__alleycat.audio.ctx && __alleycat.audio.ctx.state === 'running' && __alleycat.audio.ctx.state`, 3000);
     check('a key press started the speaker audio (AudioContext running)', audioState === 'running', String(audioState));
 
-    // 4. hold Right: the cat must walk
+    // 4. hold Right: the cat must walk (wait on the game, not on wall time)
     const x0 = await evaluate(s, `__alleycat.game.rw(0x579)`);
     await key(s, 'ArrowRight', 'keyDown');
-    await sleep(1500);
+    const walked = await waitFor(s, `__alleycat.game.rw(0x579) > ${x0 + 40}`, 15000);
     await key(s, 'ArrowRight', 'keyUp');
     const x1 = await evaluate(s, `__alleycat.game.rw(0x579)`);
-    check('ArrowRight moves the cat', x1 > x0 + 40, `x ${x0} -> ${x1}`);
+    check('ArrowRight moves the cat', !!walked, `x ${x0} -> ${x1}`);
 
-    // 5. jump: y decreases then the cat lands again
+    // 5. jump: y decreases, then the cat lands again
+    await sleep(300);
     const y0 = await evaluate(s, `__alleycat.game.rb(0x57b)`);
     await key(s, 'ArrowUp', 'keyDown');
-    const minY = await (async () => {
-      let m = 999;
-      const end = Date.now() + 1200;
-      while (Date.now() < end) {
-        m = Math.min(m, await evaluate(s, `__alleycat.game.rb(0x57b)`));
-        await sleep(20);
-      }
-      return m;
-    })();
+    const rose = await waitFor(s, `__alleycat.game.rb(0x57b) < ${y0 - 10}`, 10000);
     await key(s, 'ArrowUp', 'keyUp');
-    check('ArrowUp makes the cat jump', minY < y0 - 10, `y ${y0}, min ${minY}`);
+    const landed = await waitFor(s, `__alleycat.game.rb(0x57b) === ${y0}`, 15000);
+    check('ArrowUp makes the cat jump and land', !!rose && !!landed, `y ${y0}`);
 
     // 6. sound toggle via the on-screen button (Ctrl+S)
     const snd0 = await evaluate(s, `__alleycat.game.rb(0)`);
@@ -111,6 +110,28 @@ async function main() {
     const snd1 = await evaluate(s, `__alleycat.game.rb(0)`);
     check('Sound button toggles the sound switch', snd0 !== snd1, `${snd0} -> ${snd1}`);
 
+    // 6a. touch pad: trusted pointer (mouse) events on the on-screen Left button
+    await evaluate(s, `(() => { const t = document.getElementById('touch'); t.value = 'on'; t.dispatchEvent(new Event('change')); return 1; })()`);
+    const rect = await evaluate(s, `(() => { const r = document.querySelector('[data-keys="ArrowLeft"]').getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; })()`);
+    const tx0 = await evaluate(s, `__alleycat.game.rw(0x579)`);
+    await s.send('Input.dispatchMouseEvent', { type: 'mousePressed', x: rect[0], y: rect[1], button: 'left', clickCount: 1 });
+    const touchMoved = await waitFor(s, `__alleycat.game.rw(0x579) < ${tx0} - 20 || __alleycat.game.rw(0x579) <= 8`, 15000);
+    await s.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: rect[0], y: rect[1], button: 'left', clickCount: 1 });
+    const released = await waitFor(s, `!__alleycat.game.keyboard.down.has('ArrowLeft')`, 3000);
+    check('touch pad Left moves the cat and releases', !!touchMoved && !!released, `x ${tx0} -> ${await evaluate(s, '__alleycat.game.rw(0x579)')}`);
+
+    // 6a2. gamepad (Gamepad API stubbed: headless Chrome has no pads)
+    await evaluate(s, `(() => { globalThis.__pad = { connected: true, axes: [1, 0], buttons: Array.from({ length: 16 }, () => ({ pressed: false })) };
+      navigator.getGamepads = () => [globalThis.__pad]; return 1; })()`);
+    const gx0 = await evaluate(s, `__alleycat.game.rw(0x579)`);
+    const padMoved = await waitFor(s, `__alleycat.game.rw(0x579) > ${gx0 + 20}`, 15000);
+    const portOn = await evaluate(s, `__alleycat.game.gamePort.isConnected()`);
+    await evaluate(s, `(() => { globalThis.__pad.axes = [0, 0]; return 1; })()`);
+    const padReleased = await waitFor(s, `!__alleycat.game.keyboard.down.has('ArrowRight')`, 3000);
+    await evaluate(s, `(() => { navigator.getGamepads = () => []; return 1; })()`);
+    const portOff = await waitFor(s, `!__alleycat.game.gamePort.isConnected()`, 3000);
+    check('gamepad stick moves the cat; game port follows connect/disconnect', !!padMoved && portOn && !!padReleased && !!portOff);
+
     // 6b. a room runs in the page (room forced like the reference scenarios)
     await evaluate(s, `(() => { const g = __alleycat.game; for (let a = 0x421; a <= 0x431; a++) g.wb(a, 3);
       g.ww(0x41d, 0xffff); g.ww(0x41f, 0xffff); g.wb(0x418, 0); g.wb(0x551, 1); return 1; })()`);
@@ -118,6 +139,13 @@ async function main() {
     await sleep(2000);
     const diag = await evaluate(s, `document.getElementById('diag').hidden ? '' : document.getElementById('diag').textContent`);
     check('room 3 runs in the browser (no diagnostic)', !!inRoom && diag === '', diag.slice(0, 80));
+
+    // 6c. the approximate IBM PC profile boots (machine change restarts the game)
+    await evaluate(s, `(() => { const p = document.getElementById('profile'); p.value = 'ibmpc'; p.dispatchEvent(new Event('change')); return 1; })()`);
+    const pcOk = await waitFor(s, `__alleycat.game.opts.modelId === 0xff && __alleycat.game.clock.ms() > 3000`, 20000);
+    const pcDiag = await evaluate(s, `document.getElementById('diag').hidden ? '' : document.getElementById('diag').textContent`);
+    check('IBM PC profile boots to the title', !!pcOk && pcDiag === '', pcDiag.slice(0, 80));
+    await evaluate(s, `(() => { const p = document.getElementById('profile'); p.value = 'reference'; p.dispatchEvent(new Event('change')); localStorage.clear(); return 1; })()`);
 
     // 7. page health
     check('no uncaught page errors', consoleErrors.length === 0, consoleErrors.join(' | '));

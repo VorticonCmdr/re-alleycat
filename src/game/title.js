@@ -11,7 +11,7 @@ const held = (g, a) => !(g.rb(a) & 0x80);
 // CS:5c60 - INT 11h video check. Only the colour adapter path is supported.
 export function equipmentCheck(g) {
   g.c(5);
-  if ((g.bios.equipment & 0x30) === 0x30) g.unsupported('monochrome adapter start-up path (CS:5c68)');
+  if ((g.equipment() & 0x30) === 0x30) g.unsupported('monochrome adapter start-up path (CS:5c68)');
 }
 
 // CS:1419 - installs the INT 9 handler (and the PCjr NMI hook).
@@ -96,17 +96,41 @@ function* waitMake(g, site) {
   }
 }
 
-// CS:5f97
+// CS:5f97 - wait for a key, or for the fire button when the joystick is selected.
 function* waitKey(g) {
   g.c(3);
-  if (g.rb(0x69b)) g.unsupported('joystick button wait (CS:5f9e)');
+  if (g.rb(0x69b)) {
+    for (;;) {
+      yield 0x5f9e;
+      g.c(3);
+      if ((g.joystickPort() & 0x10) === 0) return;
+    }
+  }
   yield* waitMake(g, 0x5faa);
+}
+
+// CS:600f - fire the one-shots and wait (up to 18 ticks) for both axes to finish. CF=1 = absent.
+function* stickResponds(g) {
+  g.joystickFire();
+  g.ww(0x6dfa, g.ticks());
+  g.c(4);
+  for (;;) {
+    g.c(3);
+    if ((g.joystickPort() & 3) === 0) return true;
+    const d = (g.ticks() - g.rw(0x6dfa)) & 0xffff;
+    g.c(4);
+    if (d >= 0x12) return false;
+    yield;
+  }
 }
 
 // CS:5fe5 - "use a joystick" check; no game port is present, so this always fails (CF=1).
 function* joystickCheck(g) {
   g.c(4);
-  if (g.bios.equipment & 0x1000) g.unsupported('joystick detection with a game port (CS:600f)');
+  if (g.equipment() & 0x1000) {
+    if (yield* stickResponds(g)) return false;
+    if (yield* stickResponds(g)) return false;
+  }
   g.ww(0x6d8f, 0x24);
   for (let i = 0; i < 4; i++) menuLine(g);
   yield* waitMake(g, 0x6007);
@@ -312,7 +336,12 @@ export function* titleScreen(g) {
       titleMusic(g);
       yield* attractCat(g);
       g.c(3);
-      if (g.rb(0x69b)) g.unsupported('joystick button on the title screen (CS:5db4)');
+      if (g.rb(0x69b)) {
+        // CS:5db4: the fire button starts the game once it has been seen released
+        if (g.joystickPort() & 0x10) g.wb(0x6a8a, 1);
+        else if (g.rb(0x6a8a) !== 0) return;
+        g.c(6);
+      }
       if (g.rw(0x6150) !== g.rw(MAKE_COUNT)) return;
     }
   }
