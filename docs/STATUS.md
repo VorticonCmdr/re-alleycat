@@ -29,7 +29,7 @@ their creatures, chaser, goals, bonuses, fish-bowl room) and back, game over →
 | `npm run verify` | all required groups | passing |
 | `npm run verify -- --only=unit` | unit: machine layer and primitives vs. definitions | 24 checks |
 | `npm run verify -- --only=slice` | independent runtime scenario + determinism + negative control | 11 checks |
-| `npm run verify -- --only=reference` | closed-loop replay of DOSBox captures, byte-exact DS+VRAM | 8 scenarios, 167 checkpoints, 16 negative controls |
+| `npm run verify -- --only=reference` | closed-loop replay of DOSBox captures, byte-exact DS+VRAM | 10 scenarios, 227 checkpoints, 20 negative controls |
 | `npm run verify -- --only=browser` | browser acceptance (headless Chrome) | 10 checks |
 
 Reference scenarios (`scenarios/*.json`, captures in `local/captures/`, recapture with
@@ -39,6 +39,13 @@ Reference scenarios (`scenarios/*.json`, captures in `local/captures/`, recaptur
 |---|---|---|
 | boot-title-alley | entry, title + attract mode + tune, menu N/K (DS only), alley 3000 iterations, walk, jump | 34/34 identical |
 | room-1 … room-7 | intro, room forced at alley pass 60 (state injection, see manifest), transition wipe, room background, 1600 room loop passes with walking/jumping | 19/19 identical each |
+| room-exits | skill H; room 3 solved → bonus animation CS:38b0; room 1 → room 2 via the fish bowl; dog bite CS:5be0; last life lost → game over → attract title | 30/30 identical |
+| room7-win | room 7 solved → win sequences CS:528b and CS:5313 → alley | 30/30 identical |
+
+Outcomes in room-exits/room7-win are triggered by state injection (documented `poke`
+events), not by playing the room to its goal. Captures move the CRTC retrace window
+(environment change recorded in each manifest) because breakpoint stops quantise DOSBox's
+emulated time and the stock window would never be observed by retrace-wait loops.
 
 Room scenarios exclude four sound-only variable ranges written from unrecorded PIT samples
 (listed with reasons in each manifest, `compare.dsExclude`).
@@ -49,9 +56,9 @@ The free-running browser timing is an approximation of DOSBox at 3000 cycles/ms.
 
 ## Known limitations
 
-- Room goals, bonus animations (CS:38b0, 5313/528b), the fish-bowl handover and the
-  return-to-alley sequences are translated and run in the sandbox, but no reference
-  scenario reaches them yet (the room scenarios cover entry and 1600 loop passes).
+- Not covered by any reference scenario: Esc pause (INT 1Ah AH=1), Ctrl+R/Ctrl+M during
+  play, rooms solved by actual play (outcomes are injected), the title timeout before the
+  first game, skills T and A, sound off.
 - Joystick input is not supported (no game port is reported, so the original's own
   "joystick not found" path is taken when Y is chosen).
 - Menu/pause text uses an original substitute 8x8 font (the BIOS ROM font is not part of
@@ -64,5 +71,5 @@ The free-running browser timing is an approximation of DOSBox at 3000 cycles/ms.
 
 ## Next milestone
 
-Reference scenarios that reach room goals and exits (bonus animation, room 2 from room 1,
-return to the alley, game over), then calibration of the remaining hot paths.
+Reference scenarios for pause/restart/menu hot keys and sound-off play; calibrate the cost
+model on room loops and the title; browser playtest pass on all rooms.

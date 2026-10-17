@@ -131,3 +131,16 @@ Jump table CS:0250 (index = DS:0004): 0/1 → room 1 (CS:03e2, loop head 03fa), 
   CS:4277) would then never end, in the original as well. CS:2e10 only replaces a PIT value
   of 0, so a start-up PIT sample of 0001 (≈1/65536) reproduces this original hang; the
   port behaves identically (not guarded).
+
+## Capture-time retrace window [obs]
+Under capture every breakpoint stop ends DOSBox's 1 ms cycle slice, so reads of 3DAh land
+at whole milliseconds after the VGA frame start. Evidence: bit 0 (display disabled) was set
+in 65/400 samples ≈ 2 of the 14 whole-ms positions after display end (12.7 ms); the stock
+retrace window 13.24–13.30 ms contains no whole millisecond, so retrace-wait loops (CS:3a1c,
+CS:6040) never terminated. capture-v3 moves the window to lines 405–410 (12.87–13.03 ms)
+via CRTC registers 10h/11h at the first sync point. Recorded per manifest
+(`capture.environmentChanges`).
+
+## Translation bug found by reference replay
+CS:5be0 stores DX from the wait loop's last INT 1Ah (`MOV [5f66],DX`); the first translation
+re-read the clock, shifting the tick-read alignment (room-exits checkpoint 16, DS:5a83/5a85).

@@ -24,6 +24,16 @@ node tools/run.mjs --script "3000:Space;1000:KeyN;1000:KeyK;1000:Space" --ms 900
                                     # exploratory headless run; frames go to local/frames/
 ```
 
+Reference captures (need the dosbox-automation emulator running with C: = game/; one owner
+at a time, never run two captures concurrently):
+
+```sh
+node tools/make-scenarios.mjs [id ...] [--reset]   # (re)generate scenario manifests
+node tools/dosbox/capture.mjs scenarios/<id>.json  # capture into local/captures/<id>/
+node tests/reference.mjs --scenario=<id> [--all]   # replay + byte compare (--all: don't stop at first failure)
+node tools/room-sandbox.mjs --room N --ms 6000 --every 500   # headless room run, frames in local/frames/
+```
+
 Browser checks need Chrome (`CHROME_PATH`); originals are found in `game/` or `ALLEYCAT_GAME_DIR`.
 A missing/corrupt `CAT.EXE` is a setup failure (exit 2), not a pass.
 

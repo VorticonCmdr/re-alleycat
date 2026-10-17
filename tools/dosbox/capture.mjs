@@ -26,7 +26,7 @@ import { DosBox } from './client.mjs';
 import { loadCatExe, LOCAL_DIR, ROOT } from '../lib/fixtures.mjs';
 import { SCANCODES } from '../../src/machine/keyboard.js';
 
-export const TOOL_REVISION = 'capture-v2';
+export const TOOL_REVISION = 'capture-v3';
 const sha = (b) => createHash('sha256').update(b).digest('hex');
 
 const EXPECT_PSP = 0x01e5;
@@ -115,6 +115,24 @@ async function applyKeyByte(d, byte) {
   const tab = await d.read(DS, KEYTAB, 22);
   const i = tab.indexOf(byte & 0x7f);
   if (i >= 0) await d.req('PUT', `/api/v1/memory/${DS}/${0x6b7 + i}`, { data: Buffer.from([byte & 0x80]).toString('base64') });
+}
+
+async function crtc(d, index, value) {
+  await d.req('PUT', '/api/v1/io/port', { port: 0x3d4, value: index, width: 1 });
+  if (value === undefined) return (await d.req('GET', '/api/v1/io/port?port=981&width=1')).value;
+  await d.req('PUT', '/api/v1/io/port', { port: 0x3d5, value, width: 1 });
+  return value;
+}
+
+async function moveRetraceWindow(d) {
+  const r10 = await crtc(d, 0x10);
+  const r11 = await crtc(d, 0x11);
+  const r07 = await crtc(d, 0x07);
+  const vrs = r10 | ((r07 & 0x04) << 6) | ((r07 & 0x80) << 2);
+  if (vrs !== 412 || (r11 & 0x0f) !== 0x0e) throw new Error(`unexpected CRTC retrace setup VRS=${vrs} VRE=${r11 & 15}`);
+  await crtc(d, 0x10, 405 & 0xff);
+  await crtc(d, 0x11, (r11 & 0xf0) | 0x0a);
+  return { from: [412, 414], to: [405, 410] };
 }
 
 export function keyBytes(code, down) {
@@ -265,6 +283,13 @@ async function main() {
       const entry = plan.get(site)[s.next];
       const hits = s.cum + (await hitsOf(id));
       if (hits !== entry.count) throw new Error(`site ${site.toString(16)} stopped at ${hits}, expected ${entry.count}`);
+      if (!st.retraceMoved) {
+        // Breakpoint stops quantise emulated time to 1 ms slices, so retrace reads land at
+        // whole milliseconds after frame start and never inside the stock window (lines
+        // 412..414 = 13.24..13.30 ms). Move it to lines 405..410 (12.87..13.03 ms). This only
+        // changes an environment value; every value the game reads is recorded.
+        st.retraceMoved = await moveRetraceWindow(d);
+      }
       const tickReads = st.tickCum + (await hitsOf(st.tickBp));
       const retrReads = st.retrCum + (await hitsOf(st.retrBp));
       for (const a of entry.actions) {
@@ -328,6 +353,7 @@ async function main() {
     retraceEdges: st.retrace.length,
     checkpoints: checkpoints.map(({ site, count, tickReads, retraceReads, ds, vram }) => ({ site, count, tickReads, retraceReads, ds, vram })),
     artifacts: { 'stream.json': sha(streamBuf) },
+    environmentChanges: st.retraceMoved ? [`CRTC vertical retrace moved from lines ${st.retraceMoved.from.join('-')} to ${st.retraceMoved.to.join('-')} at the first sync point (capture-only; values are recorded)`] : [],
   };
   writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
   log(`done: ${stops} stops, ${checkpoints.length} checkpoints, ${st.ticks.length} tick changes, ${st.retrace.length} retrace edges`);

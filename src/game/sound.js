@@ -598,14 +598,15 @@ export function* gameOver(g) {
     const bx = g.rw(0x5f60) & 2;
     g.ww(0x5f60, g.rw(0x5f60) + 2);
     copyRect(g, SEG_VRAM, 0x0a74, g.rw(0x5f62 + bx), 4, 0x44);
+    let dx;
     for (;;) {
       returnTune(g);
-      const d = (g.ticks() - g.rw(0x5f66)) & 0xffff;
+      dx = g.ticks();
       g.c(3);
-      if (d >= 4) break;
+      if (((dx - g.rw(0x5f66)) & 0xffff) >= 4) break;
       yield;
     }
-    g.ww(0x5f66, g.ticks());
+    g.ww(0x5f66, dx); // MOV [5f66],DX: the value from the loop's last INT 1Ah
     if (g.rw(0x5f60) === 4) copyRect(g, SEG_VRAM, 0x0668, 0x5f68, 4, 0x10);
     const b = g.rw(0x5f60) - 8;
     if (b >= 0 && b < 6) copyRect(g, SEG_VRAM, g.rw(0x60e4 + b), 0x5fe8, 6, 0x15);

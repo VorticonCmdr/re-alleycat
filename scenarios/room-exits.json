@@ -1,0 +1,645 @@
+{
+  "id": "room-exits",
+  "description": "Room exits: room 3 solved (bonus), room 1 -> room 2 via the fish bowl, dog bite, last life lost -> attract title.",
+  "exe": {
+    "file": "CAT.EXE",
+    "sha256": "4979c8867826e08881d1d4bec95c95d6bc1ac70fd21050ccdb4f733a50d7bfdd"
+  },
+  "emulator": {
+    "name": "dosbox-automation",
+    "machine": "svga_s3",
+    "cpu_cycles": 3000,
+    "core": "auto",
+    "launch": "C:\\CAT.EXE from the shell, C: = game/ (read-only), PSP 01E5"
+  },
+  "startState": "program entry CS:0000 after a clean launch; environment values come from the capture stream",
+  "keyInjection": "at sync points, by writing the memory effects of the game INT 9 handler (CS:14b3)",
+  "stateInjection": "room choice and room outcomes forced by memory writes at sync points (same bytes written in capture and replay); see poke events",
+  "compare": {
+    "ds": "0000..7130 (data segment; code segment excluded)",
+    "vram": "0000..4000",
+    "dsExclude": [
+      {
+        "from": "5a0e",
+        "to": "5a10",
+        "reason": "CS:5ac2 stores a PIT ch0 sample (sound timing only)"
+      },
+      {
+        "from": "5a12",
+        "to": "5a14",
+        "reason": "CS:5ac2 sweep value advanced per PIT-timed step (sound only)"
+      },
+      {
+        "from": "5a16",
+        "to": "5a1a",
+        "reason": "CS:5a1c PIT sample and retune counter (sound only)"
+      },
+      {
+        "from": "5a3c",
+        "to": "5a40",
+        "reason": "CS:5a1c sweep accumulators advanced per PIT-timed retune (sound only)"
+      }
+    ]
+  },
+  "verify": "npm run verify -- --only=reference   (single: node tests/reference.mjs --scenario=room-exits)",
+  "maxTicks": 6000,
+  "events": [
+    {
+      "type": "checkpoint",
+      "site": "5d71",
+      "count": 1
+    },
+    {
+      "type": "key",
+      "site": "5d71",
+      "count": 200,
+      "code": "Space",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "5ef7",
+      "count": 5,
+      "code": "Space",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "5ef7",
+      "count": 50,
+      "code": "KeyN",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "5f29",
+      "count": 10,
+      "code": "KeyN",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "5f29",
+      "count": 50,
+      "code": "KeyH",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "5faa",
+      "count": 10,
+      "code": "KeyH",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "5faa",
+      "count": 50,
+      "code": "Space",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 5,
+      "code": "Space",
+      "down": false
+    },
+    {
+      "type": "poke",
+      "site": "0155",
+      "count": 60,
+      "addr": "0421",
+      "bytes": "0303030303030303030303030303030303",
+      "note": "room-choice tables"
+    },
+    {
+      "type": "poke",
+      "site": "0155",
+      "count": 60,
+      "addr": "041d",
+      "bytes": "ffffffff",
+      "note": "last two rooms"
+    },
+    {
+      "type": "poke",
+      "site": "0155",
+      "count": 60,
+      "addr": "0418",
+      "bytes": "00"
+    },
+    {
+      "type": "poke",
+      "site": "0155",
+      "count": 60,
+      "addr": "0551",
+      "bytes": "01",
+      "note": "entered a window"
+    },
+    {
+      "type": "checkpoint",
+      "site": "03b2",
+      "count": 50
+    },
+    {
+      "type": "checkpoint",
+      "site": "03b2",
+      "count": 100
+    },
+    {
+      "type": "checkpoint",
+      "site": "03b2",
+      "count": 150
+    },
+    {
+      "type": "checkpoint",
+      "site": "03b2",
+      "count": 200
+    },
+    {
+      "type": "poke",
+      "site": "03b2",
+      "count": 200,
+      "addr": "0553",
+      "bytes": "01",
+      "note": "room 3 solved -> bonus animation CS:38b0"
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 70
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 85
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 100
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 115
+    },
+    {
+      "type": "poke",
+      "site": "0155",
+      "count": 120,
+      "addr": "0421",
+      "bytes": "0101010101010101010101010101010101",
+      "note": "room-choice tables"
+    },
+    {
+      "type": "poke",
+      "site": "0155",
+      "count": 120,
+      "addr": "041d",
+      "bytes": "ffffffff",
+      "note": "last two rooms"
+    },
+    {
+      "type": "poke",
+      "site": "0155",
+      "count": 120,
+      "addr": "0418",
+      "bytes": "00"
+    },
+    {
+      "type": "poke",
+      "site": "0155",
+      "count": 120,
+      "addr": "0551",
+      "bytes": "01",
+      "note": "entered a window"
+    },
+    {
+      "type": "checkpoint",
+      "site": "03fa",
+      "count": 50
+    },
+    {
+      "type": "checkpoint",
+      "site": "03fa",
+      "count": 100
+    },
+    {
+      "type": "checkpoint",
+      "site": "03fa",
+      "count": 150
+    },
+    {
+      "type": "poke",
+      "site": "03fa",
+      "count": 150,
+      "addr": "0554",
+      "bytes": "01",
+      "note": "fish bowl reached -> room 2"
+    },
+    {
+      "type": "checkpoint",
+      "site": "0478",
+      "count": 50
+    },
+    {
+      "type": "checkpoint",
+      "site": "0478",
+      "count": 100
+    },
+    {
+      "type": "checkpoint",
+      "site": "0478",
+      "count": 150
+    },
+    {
+      "type": "checkpoint",
+      "site": "0478",
+      "count": 200
+    },
+    {
+      "type": "poke",
+      "site": "0478",
+      "count": 200,
+      "addr": "0552",
+      "bytes": "dd",
+      "note": "thrown out by the dog -> bite animation CS:5be0"
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 140
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 155
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 170
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 185
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 200
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 215
+    },
+    {
+      "type": "poke",
+      "site": "0155",
+      "count": 220,
+      "addr": "1f80",
+      "bytes": "01",
+      "note": "one life left"
+    },
+    {
+      "type": "poke",
+      "site": "0155",
+      "count": 240,
+      "addr": "0421",
+      "bytes": "0505050505050505050505050505050505",
+      "note": "room-choice tables"
+    },
+    {
+      "type": "poke",
+      "site": "0155",
+      "count": 240,
+      "addr": "041d",
+      "bytes": "ffffffff",
+      "note": "last two rooms"
+    },
+    {
+      "type": "poke",
+      "site": "0155",
+      "count": 240,
+      "addr": "0418",
+      "bytes": "00"
+    },
+    {
+      "type": "poke",
+      "site": "0155",
+      "count": 240,
+      "addr": "0551",
+      "bytes": "01",
+      "note": "entered a window"
+    },
+    {
+      "type": "checkpoint",
+      "site": "0319",
+      "count": 25
+    },
+    {
+      "type": "checkpoint",
+      "site": "0319",
+      "count": 50
+    },
+    {
+      "type": "checkpoint",
+      "site": "0319",
+      "count": 75
+    },
+    {
+      "type": "checkpoint",
+      "site": "0319",
+      "count": 100
+    },
+    {
+      "type": "poke",
+      "site": "0319",
+      "count": 100,
+      "addr": "0552",
+      "bytes": "01",
+      "note": "thrown out on the last life -> game over"
+    },
+    {
+      "type": "checkpoint",
+      "site": "5d71",
+      "count": 220
+    },
+    {
+      "type": "checkpoint",
+      "site": "5d71",
+      "count": 240
+    },
+    {
+      "type": "checkpoint",
+      "site": "5d71",
+      "count": 260
+    },
+    {
+      "type": "checkpoint",
+      "site": "5d71",
+      "count": 280
+    }
+  ],
+  "capture": {
+    "tool": "capture-v3",
+    "emulator": "0.84.0-vc1 (f6d9b)",
+    "date": "2026-10-17",
+    "stops": 676,
+    "seconds": 20,
+    "seed": 4158,
+    "tickChanges": 267,
+    "retraceEdges": 366,
+    "checkpoints": [
+      {
+        "site": "5d71",
+        "count": 1,
+        "tickReads": 1,
+        "retraceReads": 0,
+        "ds": "d02fdf9416b1f95c65087c361e330373870aa3b6e430c095e17ba250a2bb8e00",
+        "vram": "71d0c435c79e4e62fca5122d76900bb43d7bc8bd0725123053bc108b91714edf"
+      },
+      {
+        "site": "03b2",
+        "count": 50,
+        "tickReads": 992,
+        "retraceReads": 290,
+        "ds": "48032ca819c4800d5c643c5803171649752d760608746f9bd026835ac85af386",
+        "vram": "e65e87ff17c6f67883556f5880eb83c1f323651f1b51c774373374fe6a5f494c"
+      },
+      {
+        "site": "03b2",
+        "count": 100,
+        "tickReads": 1346,
+        "retraceReads": 329,
+        "ds": "52982cbece5410b0ef418fd06acef95d66206c313e8c731c5b98e02fed6acf2d",
+        "vram": "29dd4e8a769c4152d807abd84efb2fffee851b0dabffc3e5a4918a52e4f31560"
+      },
+      {
+        "site": "03b2",
+        "count": 150,
+        "tickReads": 1700,
+        "retraceReads": 373,
+        "ds": "ec25ae034837e4f261d59447ccdac6756314d480591cdf1c9323c7af9d2d6f95",
+        "vram": "bbcf12d786037603999c17a362596e6ed83d603bcc35b89dcd5a9d84574500ed"
+      },
+      {
+        "site": "03b2",
+        "count": 200,
+        "tickReads": 2053,
+        "retraceReads": 420,
+        "ds": "215d69aed2bb883eec13810f2bf8a7645220d31e20fe4b54eb6fbe1b67842320",
+        "vram": "d6f91052ec489f5d241810804d3cb093e317fcd398489a0088d7fdff4db68e4f"
+      },
+      {
+        "site": "0155",
+        "count": 70,
+        "tickReads": 3637,
+        "retraceReads": 1863,
+        "ds": "84ec8036a2028b909e82453ae4317fed1b7bb6c9f1e0d56b9208902b07ecc348",
+        "vram": "eab4d2e213f8465ad00320689e68712ab4e55f97ccc7bd8d430ecfda60a8b51f"
+      },
+      {
+        "site": "0155",
+        "count": 85,
+        "tickReads": 3694,
+        "retraceReads": 1890,
+        "ds": "9fba5a56ee668692e5180d839522fb7c54dd12219baeb7953b83e40edf000ee6",
+        "vram": "a7099d79a2fd19434e2971bb8e21920195cfad1306c64e8b1fcbea032dfe7d37"
+      },
+      {
+        "site": "0155",
+        "count": 100,
+        "tickReads": 3748,
+        "retraceReads": 1907,
+        "ds": "3ae96e2b4da0011bf7bf1d865f177e453d9f5cb5c1b2efa5a8536b36fc95dddb",
+        "vram": "ceda9c0c26b736072a8e1d3ce3971da2220b956735e6e45448ce5a0667ddcd8e"
+      },
+      {
+        "site": "0155",
+        "count": 115,
+        "tickReads": 3805,
+        "retraceReads": 1925,
+        "ds": "461b30ccc6f28e57a2c8ee872dc2e2798b2990319dc89bd9c8241739c04096b7",
+        "vram": "04b6008eeddd03449ac59632cba8ef36a736b88e194897103b6b172213412d53"
+      },
+      {
+        "site": "03fa",
+        "count": 50,
+        "tickReads": 4132,
+        "retraceReads": 1985,
+        "ds": "517a797a5b0d15ae51f28119c1d370d2a3e6026d2bf74289b645a91d78b25e65",
+        "vram": "aa6c2784309ceaca50d87c1026f882c5946dc73f69177c7d746fa6fd2becdb98"
+      },
+      {
+        "site": "03fa",
+        "count": 100,
+        "tickReads": 4440,
+        "retraceReads": 2056,
+        "ds": "a3b9134715565f72f54b058941b622c5aed3368d397f3f43cc5b3bb09b150bc4",
+        "vram": "30c97e4d6fe2871c8dacfb0c3d921f4cfefb9dab5f8f783183ae1f32f6f7576b"
+      },
+      {
+        "site": "03fa",
+        "count": 150,
+        "tickReads": 4748,
+        "retraceReads": 2137,
+        "ds": "56c5e1f8415992f168a366dc41434cbe48e0ecac9838bbcbe67c2edaed05e59c",
+        "vram": "18bf804edb931b4301bc3ba045d1512ffc936137b2b76afbe8d871c326929277"
+      },
+      {
+        "site": "0478",
+        "count": 50,
+        "tickReads": 5000,
+        "retraceReads": 2177,
+        "ds": "00aefcd374fe898a431a915b54c3762fc92c3a6a29afc3e2ed6327daf12c5322",
+        "vram": "1d9c44e0e99bf83177499f4df823f16ded560891181e3a4d6f8b3071e6677d79"
+      },
+      {
+        "site": "0478",
+        "count": 100,
+        "tickReads": 5250,
+        "retraceReads": 2210,
+        "ds": "af34c2e5083252db01ac5c72f193c011a399c9f4e7646dfd9a0975d197646ef8",
+        "vram": "5d863335a33f93a23b3ff8ed672f20e5923142d01f86e4d2a28677cb21ecf69c"
+      },
+      {
+        "site": "0478",
+        "count": 150,
+        "tickReads": 5500,
+        "retraceReads": 2248,
+        "ds": "c063038766e18cb5178ac29cd1ddc6495ba075791e9437f8be108c9346005b7c",
+        "vram": "3ab97be12349af2f9036eeea3e653404826b18b66ec00a5877366c4f76416acf"
+      },
+      {
+        "site": "0478",
+        "count": 200,
+        "tickReads": 5750,
+        "retraceReads": 2294,
+        "ds": "8e95a6c7f9be2c369db40d996085ae6cd1bfabb987838b691891d86804871819",
+        "vram": "6f5e1f0b23a37a459f52d65f54f3e411f90c0814a2d75f2177e92717c34a47ba"
+      },
+      {
+        "site": "0155",
+        "count": 140,
+        "tickReads": 7555,
+        "retraceReads": 2319,
+        "ds": "435c6e8f182caafae308930ee49a50aecc42332cfa90f09dfbcbd1d52c54f387",
+        "vram": "07472769b8e2d8983987bf1b9a573bbf00baabd81501c3f18c1ab1af1956fdb1"
+      },
+      {
+        "site": "0155",
+        "count": 155,
+        "tickReads": 7612,
+        "retraceReads": 2336,
+        "ds": "c284967041e59569020b0bc27ba2137a950e36f00c41e58b42ec9dabf2f01a0f",
+        "vram": "f30527e891d5665f42d03394584939e5b31be1ccd3934f9522a0f528f4fa88e3"
+      },
+      {
+        "site": "0155",
+        "count": 170,
+        "tickReads": 7669,
+        "retraceReads": 2340,
+        "ds": "d584239c80943cc5b9785043d9b899cba2755f14b17a63e0685adddeea691da5",
+        "vram": "f30527e891d5665f42d03394584939e5b31be1ccd3934f9522a0f528f4fa88e3"
+      },
+      {
+        "site": "0155",
+        "count": 185,
+        "tickReads": 7726,
+        "retraceReads": 2348,
+        "ds": "3e7adf7e6c7dc4d82a7734ee819e4bdef34be10acf172d25dff11486e370fc39",
+        "vram": "722e239d49df33e76c678219198d9f65a3858b3d131b0f5eba377d052bd420eb"
+      },
+      {
+        "site": "0155",
+        "count": 200,
+        "tickReads": 7780,
+        "retraceReads": 2366,
+        "ds": "7075403ab42e5daea5188f547878e42f1dc19f7397e581fc6a1c0c67c3db8ccf",
+        "vram": "722e239d49df33e76c678219198d9f65a3858b3d131b0f5eba377d052bd420eb"
+      },
+      {
+        "site": "0155",
+        "count": 215,
+        "tickReads": 7837,
+        "retraceReads": 2385,
+        "ds": "c20867f34ff9d3c0a786102d4180c715e709c322a90988b0d4568c61b4c335da",
+        "vram": "06944d51c240588bb8a2cd05a6db6d6dfb1a00d80fed0b1703d629789588690b"
+      },
+      {
+        "site": "0319",
+        "count": 25,
+        "tickReads": 8109,
+        "retraceReads": 2422,
+        "ds": "905482a790a75699f5a6d17ccfa00b77b11f465969ea3e98b4005abea0dce999",
+        "vram": "2bae9d28055b46003fe8d6ffbb0f579a20fd2132e07afc0b4a0d83133f8456bc"
+      },
+      {
+        "site": "0319",
+        "count": 50,
+        "tickReads": 8288,
+        "retraceReads": 2437,
+        "ds": "f25a6ebb8db77ab595e47197b9cf72bb40a3c1f6bf0c0dba38ae21fa6dd051f3",
+        "vram": "acb6ec3f6748d0f9e367c7f10c5db12f88a022c038d8900f2dceecb630030d3c"
+      },
+      {
+        "site": "0319",
+        "count": 75,
+        "tickReads": 8467,
+        "retraceReads": 2461,
+        "ds": "0434b64eb57861dcb9b71f94277ee88a805a5952d95a6608a1ba0cf12f599f4a",
+        "vram": "661ab260705163fda0d34c099559cd088100aee3af1ef025bbc032f631fdf675"
+      },
+      {
+        "site": "0319",
+        "count": 100,
+        "tickReads": 8646,
+        "retraceReads": 2476,
+        "ds": "c5859c0764bf1a9a65111dbd15dd7b425a95a274fe74924e0a54302121a64f3e",
+        "vram": "4e894d7316a28a2cfae57d660706be50800cd0fd51a5307bcdc48aa5e1b6bcb5"
+      },
+      {
+        "site": "5d71",
+        "count": 220,
+        "tickReads": 10183,
+        "retraceReads": 2496,
+        "ds": "b04089924b6de2ecae37ced6d735e81f488d18068060f94f5aac90120f770c74",
+        "vram": "519e643047d34e182bf22a893b761c380bc60498671346396ca08fdb6a8fc72a"
+      },
+      {
+        "site": "5d71",
+        "count": 240,
+        "tickReads": 10224,
+        "retraceReads": 2516,
+        "ds": "25cce914142080d2733f00aa3f629089f514954a5ac54d4c44835d738884472c",
+        "vram": "519e643047d34e182bf22a893b761c380bc60498671346396ca08fdb6a8fc72a"
+      },
+      {
+        "site": "5d71",
+        "count": 260,
+        "tickReads": 10266,
+        "retraceReads": 2536,
+        "ds": "0c455018f8fa21b621caf17016cf6f2266e200737ec9f2da1f407edabf6de43b",
+        "vram": "519e643047d34e182bf22a893b761c380bc60498671346396ca08fdb6a8fc72a"
+      },
+      {
+        "site": "5d71",
+        "count": 280,
+        "tickReads": 10307,
+        "retraceReads": 2556,
+        "ds": "f624e88ee7b50589483ab92b22ab14019107d73ea9830057767c102b3e2ce0ae",
+        "vram": "519e643047d34e182bf22a893b761c380bc60498671346396ca08fdb6a8fc72a"
+      }
+    ],
+    "artifacts": {
+      "stream.json": "ea8f6f97aae93d2c77f1f79e70964c9b772c73aab28fc20427f37b4e0ef454da"
+    },
+    "environmentChanges": [
+      "CRTC vertical retrace moved from lines 412-414 to 405-410 at the first sync point (capture-only; values are recorded)"
+    ]
+  }
+}
