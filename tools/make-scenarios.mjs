@@ -159,7 +159,39 @@ function hotkeysScenario() {
   return common('hotkeys', 'Skill T; Esc pause and resume (INT 1Ah AH=1); Ctrl+S sound off and play; Ctrl+R restart; Ctrl+M menu, skill A, new game.', ev);
 }
 
-const extraScenarios = [exitsScenario(), room7WinScenario(), hotkeysScenario()];
+// Natural play: a policy (tools/bots/policies.mjs) climbs onto a clothes line and drops
+// into an open window. Its key presses are logged by the capture and become the
+// scenario's input stream; no state is injected.
+function naturalWindowScenario() {
+  const ev = [];
+  intro(ev);
+  for (let c = 300; c <= 30000; c += 300) ev.push({ type: 'checkpoint', site: '0155', count: c });
+  for (const site of Object.values(LOOP_HEAD)) {
+    for (const c of [1, 50, 100, 150, 200]) ev.push({ type: 'checkpoint', site, count: c, ...(c === 200 ? { final: true } : {}) });
+  }
+  const m = common('natural-window', 'Natural play: the enterWindow policy climbs the cans, fence and a clothes line and drops into an open window; the capture logs its key presses; checkpoints in the alley and the first 200 passes of the room it reaches.', ev, {
+    policy: { name: 'enterWindow', site: '0155', start: 10, every: 8 },
+    maxIdleTicks: 1500,
+  });
+  m.stateInjection = 'none';
+  return m;
+}
+
+function naturalRoom1Scenario() {
+  const ev = [];
+  intro(ev);
+  forceRoom(ev, 60, 1);
+  for (let c = 1; c <= 3000; c += 25) ev.push({ type: 'checkpoint', site: '03fa', count: c });
+  for (const c of [1, 25, 50, 100, 150, 200]) ev.push({ type: 'checkpoint', site: '0478', count: c, ...(c === 200 ? { final: true } : {}) });
+  const m = common('natural-room1', 'Room 1 chosen by state injection; then the room1 policy plays: lands on the chair, jumps onto the table into the fish bowl, and the original hands over to room 2 (DS:0554).', ev, {
+    policy: { name: 'play', site: '03fa', start: 2, every: 8 },
+    maxIdleTicks: 900,
+  });
+  m.stateInjection = 'room choice only (DS:0421-0431, 041d-0420, 0551 at alley pass 60); the room goal is reached by play';
+  return m;
+}
+
+const extraScenarios = [exitsScenario(), room7WinScenario(), hotkeysScenario(), naturalWindowScenario(), naturalRoom1Scenario()];
 
 const wanted = process.argv.slice(2).filter((a) => !a.startsWith('--'));
 const reset = process.argv.includes('--reset');

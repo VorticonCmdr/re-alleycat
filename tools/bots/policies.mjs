@@ -19,7 +19,46 @@ function tallCans(rb, rw) {
   return out;
 }
 
+// Room loop heads (sync points) -> room number.
+export const ROOM_SITES = { 0x03fa: 1, 0x0478: 2, 0x03b2: 3, 0x0364: 4, 0x0319: 5, 0x02c5: 6, 0x027e: 7 };
+
 export const policies = {
+  // Whole game: alley -> window; inside a room, the room's own policy (if any).
+  play(mem) {
+    const room = mem.rw(0x0004);
+    if (room === 0) return policies.enterWindow(mem);
+    const p = policies[`room${room}`];
+    return p ? p(mem) : new Set();
+  },
+
+  // Room 1: reach the fish bowl (overlap test at x E4h, y 8Ah in CS:3850 sets DS:0554).
+  room1({ rb, rw, scratch }) {
+    const x = rw(0x579);
+    const y = rb(0x57b);
+    const vdir = rb(0x571);
+    const keys = new Set();
+    const takeoff = scratch.takeoff ?? 160; // 158..166: 8/8 seeds on the port
+    if (y === 136) {
+      // on the table: the bowl test needs x within [204, 244]
+      if (x < 212) keys.add('ArrowRight');
+      else if (x > 236) keys.add('ArrowLeft');
+      return keys;
+    }
+    if (vdir !== 0) {
+      if (y < 120 && x < 150) keys.add('ArrowRight'); // steer onto the chair while dropping in
+      return keys;
+    }
+    // standing on the chair (or elsewhere): run right and jump at the take-off point
+    keys.add('ArrowRight');
+    if (x >= takeoff) keys.add('ArrowUp');
+    return keys;
+  },
+
+  // Room 6 (bowls): Alt makes the cat go for the nearest bowl (CS:4943).
+  room6() {
+    return new Set(['AltLeft']);
+  },
+
   // Alley: running jump onto a tall can, standing jump onto the fence top, then hop into
   // a window of the lowest row when it opens directly above.
   enterWindow({ rb, rw, scratch }) {
@@ -32,6 +71,15 @@ export const policies = {
     const wx = rw(0x1666);
     const wy = rb(0x1668);
     const onLine = rb(0x55c) !== 0 && vdir === 0 && (y === 8 || y === 0x28 || y === 0x48);
+    // dodge a thrown object that is coming down near the cat (above the ground)
+    if (rb(0x1673) !== 0 && y < 0xb4) {
+      const tx = rw(0x1671);
+      const aligned = winOpen && Math.abs(wx + 4 - x) <= 3 && wy === y + 16;
+      if (Math.abs(tx - x) < 48 && !aligned) {
+        keys.add(x >= tx ? 'ArrowRight' : 'ArrowLeft');
+        return keys;
+      }
+    }
     if (onLine) {
       // ride the line; drop through an open window in the row just below
       if (winOpen && wy === y + 16) {

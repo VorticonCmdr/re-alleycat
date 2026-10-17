@@ -29,7 +29,7 @@ their creatures, chaser, goals, bonuses, fish-bowl room) and back, game over →
 | `npm run verify` | all required groups | passing |
 | `npm run verify -- --only=unit` | unit: machine layer and primitives vs. definitions | 24 checks |
 | `npm run verify -- --only=slice` | independent runtime scenario + determinism + negative control | 11 checks |
-| `npm run verify -- --only=reference` | closed-loop replay of DOSBox captures, byte-exact DS+VRAM | 11 scenarios, 256 checkpoints, 22 negative controls |
+| `npm run verify -- --only=reference` | closed-loop replay of DOSBox captures, byte-exact DS+VRAM | 13 scenarios, 391 checkpoints, 39 negative controls (incl. speaker writes) |
 | `npm run verify -- --only=browser` | browser acceptance (headless Chrome) | 11 checks (incl. a room) |
 
 Reference scenarios (`scenarios/*.json`, captures in `local/captures/`, recapture with
@@ -41,6 +41,8 @@ Reference scenarios (`scenarios/*.json`, captures in `local/captures/`, recaptur
 | room-1 … room-7 | intro, room forced at alley pass 60 (state injection, see manifest), transition wipe, room background, 1600 room loop passes with walking/jumping | 19/19 identical each |
 | room-exits | skill H; room 3 solved → bonus animation CS:38b0; room 1 → room 2 via the fish bowl; dog bite CS:5be0; last life lost → game over → attract title | 30/30 identical |
 | room7-win | room 7 solved → win sequences CS:528b and CS:5313 → alley | 30/30 identical |
+| natural-window | no state injection: the `enterWindow` play policy climbs cans → fence → clothes line and drops into an open window (room 6 in this capture); its key presses are logged and replayed | 76/76 identical |
+| natural-room1 | room choice injected; the `play` policy lands on the chair, jumps onto the table into the fish bowl; original hands over to room 2 | 76/76 identical |
 | hotkeys | skill T; Esc pause/resume (INT 1Ah AH=1 checked); Ctrl+S sound off and play; Ctrl+R restart; Ctrl+M menu, skill A, new game | 29/29 identical |
 
 Outcomes in room-exits/room7-win are triggered by state injection (documented `poke`
@@ -57,8 +59,9 @@ The free-running browser timing is an approximation of DOSBox at 3000 cycles/ms.
 
 ## Known limitations
 
-- Not covered by any reference scenario: rooms solved by actual play (outcomes are
-  injected), the 46-second title timeout before the first game, Ctrl+9 and Ctrl+Y.
+- Room goals reached by actual play: room 1 (fish bowl) only; the other rooms' goals are
+  verified with injected outcomes. Not covered at all: the 46-second title timeout before
+  the first game, Ctrl+9 and Ctrl+Y.
 - Joystick input is not supported (no game port is reported, so the original's own
   "joystick not found" path is taken when Y is chosen).
 - Menu/pause text uses an original substitute 8x8 font (the BIOS ROM font is not part of

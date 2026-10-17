@@ -1,0 +1,2340 @@
+{
+  "id": "natural-window",
+  "description": "Natural play: the enterWindow policy climbs the cans, fence and a clothes line and drops into an open window; the capture logs its key presses; checkpoints in the alley and the first 200 passes of the room it reaches.",
+  "exe": {
+    "file": "CAT.EXE",
+    "sha256": "4979c8867826e08881d1d4bec95c95d6bc1ac70fd21050ccdb4f733a50d7bfdd"
+  },
+  "emulator": {
+    "name": "dosbox-automation",
+    "machine": "svga_s3",
+    "cpu_cycles": 3000,
+    "core": "auto",
+    "launch": "C:\\CAT.EXE from the shell, C: = game/ (read-only), PSP 01E5"
+  },
+  "startState": "program entry CS:0000 after a clean launch; environment values come from the capture stream",
+  "keyInjection": "at sync points, by writing the memory effects of the game INT 9 handler (CS:14b3)",
+  "stateInjection": "none",
+  "compare": {
+    "ds": "0000..7130 (data segment; code segment excluded)",
+    "vram": "0000..4000",
+    "dsExclude": [
+      {
+        "from": "5a0e",
+        "to": "5a10",
+        "reason": "CS:5ac2 stores a PIT ch0 sample (sound timing only)"
+      },
+      {
+        "from": "5a12",
+        "to": "5a14",
+        "reason": "CS:5ac2 sweep value advanced per PIT-timed step (sound only)"
+      },
+      {
+        "from": "5a16",
+        "to": "5a1a",
+        "reason": "CS:5a1c PIT sample and retune counter (sound only)"
+      },
+      {
+        "from": "5a3c",
+        "to": "5a40",
+        "reason": "CS:5a1c sweep accumulators advanced per PIT-timed retune (sound only)"
+      }
+    ]
+  },
+  "verify": "npm run verify -- --only=reference   (single: node tests/reference.mjs --scenario=natural-window)",
+  "maxTicks": 6000,
+  "policy": {
+    "name": "enterWindow",
+    "site": "0155",
+    "start": 10,
+    "every": 8
+  },
+  "maxIdleTicks": 1500,
+  "events": [
+    {
+      "type": "checkpoint",
+      "site": "5d71",
+      "count": 1
+    },
+    {
+      "type": "key",
+      "site": "5d71",
+      "count": 200,
+      "code": "Space",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "5ef7",
+      "count": 5,
+      "code": "Space",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "5ef7",
+      "count": 50,
+      "code": "KeyN",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "5f29",
+      "count": 10,
+      "code": "KeyN",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "5f29",
+      "count": 50,
+      "code": "KeyK",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "5faa",
+      "count": 10,
+      "code": "KeyK",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "5faa",
+      "count": 50,
+      "code": "Space",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 5,
+      "code": "Space",
+      "down": false
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 300
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 600
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 900
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 1200
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 1500
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 1800
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 2100
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 2400
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 2700
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 3000
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 3300
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 3600
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 3900
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 4200
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 4500
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 4800
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 5100
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 5400
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 5700
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 6000
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 6300
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 6600
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 6900
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 7200
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 7500
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 7800
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 8100
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 8400
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 8700
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 9000
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 9300
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 9600
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 9900
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 10200
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 10500
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 10800
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 11100
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 11400
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 11700
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 12000
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 12300
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 12600
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 12900
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 13200
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 13500
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 13800
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 14100
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 14400
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 14700
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 15000
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 15300
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 15600
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 15900
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 16200
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 16500
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 16800
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 17100
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 17400
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 17700
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 18000
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 18300
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 18600
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 18900
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 19200
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 19500
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 19800
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 20100
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 20400
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 20700
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 21000
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 1
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 50
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 100
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 150
+    },
+    {
+      "type": "checkpoint",
+      "site": "02c5",
+      "count": 200,
+      "final": true
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 10,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 146,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 154,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 346,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 370,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 570,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 570,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 586,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 586,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 658,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 658,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 682,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 1234,
+      "code": "ArrowLeft",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 2346,
+      "code": "ArrowLeft",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 2346,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 2394,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 2394,
+      "code": "ArrowLeft",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 2826,
+      "code": "ArrowLeft",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 2834,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 3122,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 3130,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 3338,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 3338,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 3362,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 3362,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 3442,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 3442,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 3466,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 3746,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 3794,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 3794,
+      "code": "ArrowLeft",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 4226,
+      "code": "ArrowLeft",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 4234,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 4522,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 4530,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 4722,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 4722,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 4754,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 4754,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 4842,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 4842,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 4858,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 5154,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 5202,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 5202,
+      "code": "ArrowLeft",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 5626,
+      "code": "ArrowLeft",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 5634,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 5914,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 5922,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 6138,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 6138,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 6154,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 6154,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 6242,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 6242,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 6274,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 6538,
+      "code": "ArrowLeft",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 8098,
+      "code": "ArrowLeft",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 8674,
+      "code": "ArrowLeft",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 10074,
+      "code": "ArrowLeft",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 10186,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 10218,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 10218,
+      "code": "ArrowLeft",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 10650,
+      "code": "ArrowLeft",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 10658,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 10946,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 10954,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 11162,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 11162,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 11178,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 11178,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 11274,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 11274,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 11298,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 11530,
+      "code": "ArrowLeft",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 12938,
+      "code": "ArrowLeft",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 14234,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 14266,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 14266,
+      "code": "ArrowLeft",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 14330,
+      "code": "ArrowLeft",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 14330,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 14362,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 14434,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 14482,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 14482,
+      "code": "ArrowLeft",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 14914,
+      "code": "ArrowLeft",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 14922,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 15202,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 15210,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 15418,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 15418,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 15442,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 15442,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 15530,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 15530,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 15554,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 15794,
+      "code": "ArrowLeft",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 15810,
+      "code": "ArrowLeft",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 15810,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 15858,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 15858,
+      "code": "ArrowLeft",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 16282,
+      "code": "ArrowLeft",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 16290,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 16570,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 16578,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 16802,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 16802,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 16818,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 16818,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 16914,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 16914,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 16930,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 17026,
+      "code": "ArrowLeft",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 17306,
+      "code": "ArrowLeft",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 17514,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 17546,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 17546,
+      "code": "ArrowLeft",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 17978,
+      "code": "ArrowLeft",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 17986,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 18282,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 18290,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 18498,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 18498,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 18538,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 18538,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 18618,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 18618,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 18634,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 19394,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 19434,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 19434,
+      "code": "ArrowLeft",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 19850,
+      "code": "ArrowLeft",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 19858,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 20146,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 20162,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 20362,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 20362,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 20378,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 20378,
+      "code": "ArrowRight",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 20474,
+      "code": "ArrowRight",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 20474,
+      "code": "ArrowUp",
+      "down": true,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 20498,
+      "code": "ArrowUp",
+      "down": false,
+      "by": "enterWindow"
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 20946,
+      "code": "ArrowLeft",
+      "down": true,
+      "by": "enterWindow"
+    }
+  ],
+  "endedBy": "final checkpoint",
+  "capture": {
+    "tool": "capture-v5",
+    "emulator": "0.84.0-vc1 (f6d9b)",
+    "date": "2026-10-17",
+    "stops": 11856,
+    "seconds": 250,
+    "seed": 64015,
+    "tickChanges": 2543,
+    "retraceEdges": 3383,
+    "speakerWrites": 3189,
+    "checkpoints": [
+      {
+        "site": "5d71",
+        "count": 1,
+        "tickReads": 1,
+        "retraceReads": 0,
+        "speakerWrites": 1,
+        "ds": "84eaf72f3fac29970ff3568bb7d9c655ceeccdd44fb4450fab89ca8d6995e8d9",
+        "vram": "915a53489fb6b5f56f5dabf8b7d663c0699226b0685b2eec54041b363994c6dd"
+      },
+      {
+        "site": "0155",
+        "count": 300,
+        "tickReads": 1531,
+        "retraceReads": 465,
+        "speakerWrites": 48,
+        "ds": "e6452298bacb0632379b491d4267612c30bbef7472f266f5efa27fa287e4e4d2",
+        "vram": "52fe2f97f51a6bdb8c2623e53b7218f96a0e4cb983ce3aaec755e8f0478d5904"
+      },
+      {
+        "site": "0155",
+        "count": 600,
+        "tickReads": 2657,
+        "retraceReads": 726,
+        "speakerWrites": 80,
+        "ds": "f97a9890fb24e7b0265c639f3f0f8d009041b5a4124e621d9e99d10d7e30f642",
+        "vram": "414f33d2d495c836d6f5d28f0c4eaed029e6657b3face54f9769b1c2aab611b4"
+      },
+      {
+        "site": "0155",
+        "count": 900,
+        "tickReads": 3891,
+        "retraceReads": 1080,
+        "speakerWrites": 136,
+        "ds": "8fae23ba51275332d82d178223d41a559064a7f401a2eeec1785b22557c21a4d",
+        "vram": "e99f4795285dbf84995ceee0b8fc9ee207035a7e63c83a26b31db1e962a7cbd9"
+      },
+      {
+        "site": "0155",
+        "count": 1200,
+        "tickReads": 5019,
+        "retraceReads": 1570,
+        "speakerWrites": 184,
+        "ds": "b8bc40e540afc9b60fa3e343cbcfecf48bc9b7713f2705cbe98c0e1c78f0b099",
+        "vram": "7e651243bd664ba4a50753b874a4e9880becd564897a73f242ddac527aa81540"
+      },
+      {
+        "site": "0155",
+        "count": 1500,
+        "tickReads": 6147,
+        "retraceReads": 2067,
+        "speakerWrites": 232,
+        "ds": "5ec2e8b2eac1fe4c79a8b6ae5966650b0843d6a0c6ec5dc0913240a1715e05dd",
+        "vram": "131a01ebf84b6bc31b5e3b1606d700904f3ddccdd6a7b196733214e01aade04c"
+      },
+      {
+        "site": "0155",
+        "count": 1800,
+        "tickReads": 7289,
+        "retraceReads": 2569,
+        "speakerWrites": 285,
+        "ds": "307bf0e3f167cc02c9f96be009a5c7ada481fbffc125330360f948f92d3fe3a7",
+        "vram": "697f9f67d695ccda3d38a23e6c2b278f2148710e4689b20c2ffb0d723eb35e37"
+      },
+      {
+        "site": "0155",
+        "count": 2100,
+        "tickReads": 8424,
+        "retraceReads": 3092,
+        "speakerWrites": 317,
+        "ds": "a4cf26236904cec55c63a34ca13e1ed6a9d1818c0f962573134b6bc66fd16ad3",
+        "vram": "bf5f3d17284984e70371f85e655380a80a289302f74fc534c4fa4735c3532f95"
+      },
+      {
+        "site": "0155",
+        "count": 2400,
+        "tickReads": 9872,
+        "retraceReads": 3452,
+        "speakerWrites": 428,
+        "ds": "35064699748e98944ee18be1fe17e819d8de4496770077d166bfbbffdf57b820",
+        "vram": "6b5fa22aea4a5619b70eaad5a94094564cd2bebc34147daedcc113155ffba62d"
+      },
+      {
+        "site": "0155",
+        "count": 2700,
+        "tickReads": 10998,
+        "retraceReads": 3712,
+        "speakerWrites": 448,
+        "ds": "597f9fa6b696723fb342f17b20584daaa42d973bf5cd7bf1309393922a11dda3",
+        "vram": "917be9bdc4425fcca562e2b66df5d031c81b6b56eb75e1a9617b800a4acb4f30"
+      },
+      {
+        "site": "0155",
+        "count": 3000,
+        "tickReads": 12124,
+        "retraceReads": 3997,
+        "speakerWrites": 472,
+        "ds": "9fa9b9abfb72163fb8b4f1d2681f3fcea0f929ac7112d6a2c709485a44dffd1e",
+        "vram": "24c7f274e671d0191497372220b1b87fca42a4350df59bfdf8abf28e0c003c60"
+      },
+      {
+        "site": "0155",
+        "count": 3300,
+        "tickReads": 13250,
+        "retraceReads": 4288,
+        "speakerWrites": 492,
+        "ds": "676e8bab2da62f9a59434c77aef7c6d21823b062c540beac5c159fabf1754bc1",
+        "vram": "db5b472da6f578d4360074c9eb3bbc403e58a8d099ba4f3674469e7209283df6"
+      },
+      {
+        "site": "0155",
+        "count": 3600,
+        "tickReads": 14485,
+        "retraceReads": 4575,
+        "speakerWrites": 521,
+        "ds": "d69e115ea43663e843f5382272ad8d6088b6401cf4203b3ba62101b14872aaa5",
+        "vram": "ee2472fadaec48c10875e55d2f06b491e759bf1374e23f24055628db0e90db47"
+      },
+      {
+        "site": "0155",
+        "count": 3900,
+        "tickReads": 15929,
+        "retraceReads": 4832,
+        "speakerWrites": 612,
+        "ds": "fc6e8d778521d08400423b24fd6f77a2d893a901d7497e7a8e6d806740a9cf77",
+        "vram": "6bc21fdb28476ca34a9d4196e411e855fee07eba1b870e109ca7ad883d0aa85e"
+      },
+      {
+        "site": "0155",
+        "count": 4200,
+        "tickReads": 17054,
+        "retraceReads": 5114,
+        "speakerWrites": 632,
+        "ds": "fdfca420304ac232a255e52b2fd41e70bad6e86d403c315438242c9242e240aa",
+        "vram": "a4bfef6b67250a675f8507ba1fe46437c553579f510caaa78b91fa041e15a00d"
+      },
+      {
+        "site": "0155",
+        "count": 4500,
+        "tickReads": 18181,
+        "retraceReads": 5396,
+        "speakerWrites": 652,
+        "ds": "939976e423ce128111c774b6ad45857f6e95f53a6a1eb3e5b5f9e8b2fb820909",
+        "vram": "e71f56edcaf10572b166d0e28f2f31314c9b037ec86c8e21d68a37a5613f2508"
+      },
+      {
+        "site": "0155",
+        "count": 4800,
+        "tickReads": 19338,
+        "retraceReads": 5710,
+        "speakerWrites": 728,
+        "ds": "44a2e0e86c8432e0caae5a9702bc9307ef426e7c1d29b10ecfbf9ab5230c3e03",
+        "vram": "0ed0280bdca01a80add6a9acc7007ac2cf2b008bdf838a975955491bdb8fa7be"
+      },
+      {
+        "site": "0155",
+        "count": 5100,
+        "tickReads": 20575,
+        "retraceReads": 5990,
+        "speakerWrites": 757,
+        "ds": "1b754562b78e6e7886bbdca63cb06d9103c06f4594347e78ecc63c525a4fa867",
+        "vram": "47446c85ff5901f5f91b682116e0da50e0fc59249e79e59919d35a60650e0ecd"
+      },
+      {
+        "site": "0155",
+        "count": 5400,
+        "tickReads": 22015,
+        "retraceReads": 6283,
+        "speakerWrites": 848,
+        "ds": "c82fd067b257d99b0d80a53d360337dd43b885086575e4763f91923e72e5b90c",
+        "vram": "2c6bca1f3bf20b49b91337527f00091a6d1c65c5ce93b93bbbe1ae9b57cd0949"
+      },
+      {
+        "site": "0155",
+        "count": 5700,
+        "tickReads": 23141,
+        "retraceReads": 6573,
+        "speakerWrites": 876,
+        "ds": "dcd38ecfff02396b4f5b8b67ffb42e4089b9528c28a0ffc1b3b085e1003b68f3",
+        "vram": "6631d0a30350dfdb1125cefd5973df9d0cf287ee7080e508ea7305dc590b6dcd"
+      },
+      {
+        "site": "0155",
+        "count": 6000,
+        "tickReads": 24266,
+        "retraceReads": 6862,
+        "speakerWrites": 900,
+        "ds": "0aba2a32bb9f4e4ada41fd2441693c8e15d96c7b0b233d7f66637e3751a1bbb2",
+        "vram": "44afc14255423da0c9e7d479e3b2238618394dd564046bf2e2a94912be693071"
+      },
+      {
+        "site": "0155",
+        "count": 6300,
+        "tickReads": 25393,
+        "retraceReads": 7127,
+        "speakerWrites": 932,
+        "ds": "ff7feaccf1c1f889275b1249a23a888d35694821f5a9f1a66953c310dcd40b98",
+        "vram": "faf6bd282ed42d9dd5ba95eadab1fe4881c779f466da162774495faa497a5a28"
+      },
+      {
+        "site": "0155",
+        "count": 6600,
+        "tickReads": 26625,
+        "retraceReads": 7565,
+        "speakerWrites": 961,
+        "ds": "129b1a327cdb872c0eb395139c324a90bfa5ed7bff38270d18159bd37011940b",
+        "vram": "8196c45352de9bef43b3264a492a967aed7cd186b7be8c86d5221904d559515c"
+      },
+      {
+        "site": "0155",
+        "count": 6900,
+        "tickReads": 27753,
+        "retraceReads": 8017,
+        "speakerWrites": 989,
+        "ds": "1b420c20ea4c57b4416fc08936307f1fde18fede43fa3c4166cd91ca159c73af",
+        "vram": "31b82c7af70bea072846301347399c41447e291944dcfc23a682c102cad5635b"
+      },
+      {
+        "site": "0155",
+        "count": 7200,
+        "tickReads": 28897,
+        "retraceReads": 8513,
+        "speakerWrites": 1041,
+        "ds": "447f7254f3b737f94e123faaa675134bcb2c061f67bdf4606c435c4bcc538d50",
+        "vram": "d4d917d3be8fdc68deb7acdb40f4911fbf1f77d6cd5bebf161950f35203e0626"
+      },
+      {
+        "site": "0155",
+        "count": 7500,
+        "tickReads": 30029,
+        "retraceReads": 8974,
+        "speakerWrites": 1069,
+        "ds": "0a333bd45a74e9d18bfba47b80d8640d2081497930d40550ffa5f0f9dde915b1",
+        "vram": "536294c71e124c978787e47455e88caa98b7992f00259b789d08bf7595505d6c"
+      },
+      {
+        "site": "0155",
+        "count": 7800,
+        "tickReads": 31158,
+        "retraceReads": 9469,
+        "speakerWrites": 1097,
+        "ds": "4e8a827e5d588afe5d601a32ad2d4110c891b8b809b3f1864cc041fb94d6bb4b",
+        "vram": "27b5e64b37402bc840b41715d6dab32960d9c70152f528e86b0e5da93d77e208"
+      },
+      {
+        "site": "0155",
+        "count": 8100,
+        "tickReads": 32286,
+        "retraceReads": 9947,
+        "speakerWrites": 1121,
+        "ds": "a4d6838f0aceb60aa89c577c4fbcc3890c7b79b0c321deac618242df4374e231",
+        "vram": "d085e0c478942f87d67999395b039bcf9f18ef5c01cd38dddd0b6a2c12dabc98"
+      },
+      {
+        "site": "0155",
+        "count": 8400,
+        "tickReads": 33414,
+        "retraceReads": 10425,
+        "speakerWrites": 1153,
+        "ds": "2fe102b2f45818ede189cfece1d9d49e87180ba1822f90c48f47503bbcfe3623",
+        "vram": "9f2ea2c3b37fb287a8ba9ad2f401cdb4f4b00898fb81e67d282ce42b19fc7396"
+      },
+      {
+        "site": "0155",
+        "count": 8700,
+        "tickReads": 34542,
+        "retraceReads": 10938,
+        "speakerWrites": 1181,
+        "ds": "386a658d4b766bbbe979a0ded8d3e0be85bc569b8ef1bc02505eac006b4b80a2",
+        "vram": "e944d757bd1214f241373f7587b8d4ad1b14ee53d17d8db675dce75635da9a6c"
+      },
+      {
+        "site": "0155",
+        "count": 9000,
+        "tickReads": 35670,
+        "retraceReads": 11414,
+        "speakerWrites": 1217,
+        "ds": "d5522db070f1fe5a0ebbfe7d3eaf198500b75878303d2e6aa42e4b4fdc1ce589",
+        "vram": "48e24059648bbb4be118beb9a66da82758382e2aaffad14ef8b3d2ce41ce2182"
+      },
+      {
+        "site": "0155",
+        "count": 9300,
+        "tickReads": 36816,
+        "retraceReads": 11888,
+        "speakerWrites": 1273,
+        "ds": "c7c8617b8c31ccf57c1b1ce2cd5fb80c466b149066b66f9607bb237b42e8a679",
+        "vram": "3e3f3084737a575e603b715bd0c921211544d569b3304bc31123313b0b061c25"
+      },
+      {
+        "site": "0155",
+        "count": 9600,
+        "tickReads": 37948,
+        "retraceReads": 12411,
+        "speakerWrites": 1301,
+        "ds": "81fe6c447b8e5e829832523096e545c02ef00f5a1941a33bc9c1173706a19cc2",
+        "vram": "e8b5f41806ee41822a85b19fc9f61284bf7b5fe3f7d7877ec365ba3e532558ff"
+      },
+      {
+        "site": "0155",
+        "count": 9900,
+        "tickReads": 39076,
+        "retraceReads": 12908,
+        "speakerWrites": 1333,
+        "ds": "16682a3b35bef3afdf70193edef71a758295728fb68a0ed9f5098bba073a71d6",
+        "vram": "fd0c1f1170111b3722dbc5e60dd478cc2c3f6af5d1aa413e227eb568d8f96088"
+      },
+      {
+        "site": "0155",
+        "count": 10200,
+        "tickReads": 40607,
+        "retraceReads": 13389,
+        "speakerWrites": 1393,
+        "ds": "4609c46623c77a22ac4d5d4c0c2649506c85efb5320a8ad024b7aada16aff69c",
+        "vram": "1adb89f99ed05d7d4051f77b815755314d336446bfa95b50ff29761cca51c29c"
+      },
+      {
+        "site": "0155",
+        "count": 10500,
+        "tickReads": 42048,
+        "retraceReads": 13684,
+        "speakerWrites": 1492,
+        "ds": "3cfc90eb75f2f776ea8154d76956c7116ac6555363b9534dbff965bc716005af",
+        "vram": "847ab553921726ca278a8202881c4c5a53cadb20feb9ab4a5f7fc0c04b0273e1"
+      },
+      {
+        "site": "0155",
+        "count": 10800,
+        "tickReads": 43174,
+        "retraceReads": 13956,
+        "speakerWrites": 1516,
+        "ds": "4c0838850bba997289101e6ced16e51a3220f265befa16edb918f40f738bc22a",
+        "vram": "725c9b93d3a740a0693cf2a7c2f12aed8d7b700aabb1458a819a390fba15ee72"
+      },
+      {
+        "site": "0155",
+        "count": 11100,
+        "tickReads": 44300,
+        "retraceReads": 14234,
+        "speakerWrites": 1544,
+        "ds": "139b3ef18686a4997fec48be69d4b8349ffa83ec22d022a978b987359d5f81de",
+        "vram": "a0a98d984c9885bf7114843034040b1d3330880113a8a1749ca707fd6365cc0d"
+      },
+      {
+        "site": "0155",
+        "count": 11400,
+        "tickReads": 45428,
+        "retraceReads": 14522,
+        "speakerWrites": 1587,
+        "ds": "0df66957091e8107c30da2aaecb87590f02cf5065cf5cefc0e1d29769c608cd0",
+        "vram": "716d40cf296b349eb0f145e5eb5e361d5efe6d7e86a58f3cd11a39b5898a5718"
+      },
+      {
+        "site": "0155",
+        "count": 11700,
+        "tickReads": 46664,
+        "retraceReads": 15045,
+        "speakerWrites": 1616,
+        "ds": "a526498f72e199f7369c4cdd8ee569b12d43e8315f91f33676160c92f2e2b235",
+        "vram": "8b18925fb2db83c7e729adceba4cfbfeeeb8ac3515484cbe2ae0653d3fbf1920"
+      },
+      {
+        "site": "0155",
+        "count": 12000,
+        "tickReads": 47793,
+        "retraceReads": 15580,
+        "speakerWrites": 1660,
+        "ds": "aceb60e13d54c11b9b775b6337c126d4d542ce68f6fc45891548f5013c8d5882",
+        "vram": "62cdaa51c60eec9251b2fec1b3e3bcb27a38238cdc94384b03f86417965e6718"
+      },
+      {
+        "site": "0155",
+        "count": 12300,
+        "tickReads": 48937,
+        "retraceReads": 16071,
+        "speakerWrites": 1700,
+        "ds": "0d74ecaa6f25d2d2979cee0504570b9f5c5d1f497ff5ae3bb6e700f4654edcf9",
+        "vram": "5542e2cf99d5311aac2d1b2006c9123afa82c42c5ed350370fb9b39915a41a9d"
+      },
+      {
+        "site": "0155",
+        "count": 12600,
+        "tickReads": 50068,
+        "retraceReads": 16548,
+        "speakerWrites": 1732,
+        "ds": "df4d51b3b5d5188a49a5e384177e8a0c95b4e663e9d70ff947da9c6694d740a6",
+        "vram": "5990cd7d9ad9f48dff13ba9a8fcda426bf55bd5a9c0ba678fb8a7bb2d48d8aad"
+      },
+      {
+        "site": "0155",
+        "count": 12900,
+        "tickReads": 51196,
+        "retraceReads": 17034,
+        "speakerWrites": 1772,
+        "ds": "54f5d4f9b1e60097c2724d4ffcc7dbd598c9f0638cc5b09aa5a96bc76e87a456",
+        "vram": "0dc083c2854c7451a2effa193c76d6349328138f54e27b988cf2568558aa360b"
+      },
+      {
+        "site": "0155",
+        "count": 13200,
+        "tickReads": 52324,
+        "retraceReads": 17555,
+        "speakerWrites": 1796,
+        "ds": "eb45e7a89af7aeca6e90628d7b2ac86ba9e32222d71e7706132de6fd0e341017",
+        "vram": "cafb86b75790c56e6ca5ddf90cd53d22d2f53047d1141739b49f17bd17aa6774"
+      },
+      {
+        "site": "0155",
+        "count": 13500,
+        "tickReads": 53452,
+        "retraceReads": 17994,
+        "speakerWrites": 1832,
+        "ds": "16ee4447ec9144342d93235a2b10e1086f6327763ef7bb326b7c3873179a8d1a",
+        "vram": "253052a6286d8e0796912d6ef2f57285b517b237a842df2cf151e2bfedd44449"
+      },
+      {
+        "site": "0155",
+        "count": 13800,
+        "tickReads": 54580,
+        "retraceReads": 18542,
+        "speakerWrites": 1864,
+        "ds": "865d7a44a1646587e35eda6cd067d27b356c4ef96499974028ec56635bdecced",
+        "vram": "82f7e8873adf3a5179efa623a796b28226a2998943f6ed9e6985ba99cea8a261"
+      },
+      {
+        "site": "0155",
+        "count": 14100,
+        "tickReads": 55709,
+        "retraceReads": 19066,
+        "speakerWrites": 1884,
+        "ds": "d9c5e8aa54c752e618dec331f674b6dec41e32c03bd148267ced232e2fbaa282",
+        "vram": "ec7739a59711bf661be4b9614ff52fc4e0a5db3dd6e1581a91871e6b01ba19d8"
+      },
+      {
+        "site": "0155",
+        "count": 14400,
+        "tickReads": 57402,
+        "retraceReads": 19551,
+        "speakerWrites": 1997,
+        "ds": "c1151cac0934e24444bec055cfd12a879c8916df47d1d1b20290c0ed3bd3054b",
+        "vram": "cb2a2a1dd13afe512527e511a2b0f0c5779494ec739cb208c1e010958cc12561"
+      },
+      {
+        "site": "0155",
+        "count": 14700,
+        "tickReads": 58847,
+        "retraceReads": 19851,
+        "speakerWrites": 2100,
+        "ds": "988870c6fd5a005719ef411fe4fc366193df0eaff4c99ad46f73fa4421b4e630",
+        "vram": "7930907583b5b62c5b52ff7427074633962e1c0a096b5ef8bd6f2715a8294954"
+      },
+      {
+        "site": "0155",
+        "count": 15000,
+        "tickReads": 59973,
+        "retraceReads": 20148,
+        "speakerWrites": 2120,
+        "ds": "11aa06100a2edf32a549c058a415dd8ce07bbc83e5522779551d78368180a3a0",
+        "vram": "3e77386b1253e49d13986f0622bc18aed8e2ecd4f05e7c5ae4208e6071b97acc"
+      },
+      {
+        "site": "0155",
+        "count": 15300,
+        "tickReads": 61099,
+        "retraceReads": 20455,
+        "speakerWrites": 2148,
+        "ds": "4252e0deecb444710606cbfa3e9a0ebb3c681718361b793d57c1f1d5f771b3e1",
+        "vram": "567bc38d0562d7276db092b5f562cd83ce865d52855bac214782438580daee9c"
+      },
+      {
+        "site": "0155",
+        "count": 15600,
+        "tickReads": 62226,
+        "retraceReads": 20728,
+        "speakerWrites": 2172,
+        "ds": "d4929242d50201011119222a2319f07c87271f811a343cb9033029ad2ba01807",
+        "vram": "bbe2b38ea9f2f2da84d90c1e37de25022b496330549e57d54fa7cb1d6b24266b"
+      },
+      {
+        "site": "0155",
+        "count": 15900,
+        "tickReads": 63782,
+        "retraceReads": 21004,
+        "speakerWrites": 2264,
+        "ds": "e49769f3cec909a2510f4b10ff7057c2a141a28674f0815bc9b3f8134407178b",
+        "vram": "0555eb362ba3c948442641af383aac1cbab3cff2a51f1fbc4f18a747f0a6d04e"
+      },
+      {
+        "site": "0155",
+        "count": 16200,
+        "tickReads": 64907,
+        "retraceReads": 21263,
+        "speakerWrites": 2292,
+        "ds": "4a754b5401ff08a5e53fd57e66be7380d160e6f52df01bd1b6ee8bcb6896cb02",
+        "vram": "ec02d4123b35b6362f5b3935b62f8a6063d5ef1d1fc65ed8fbd0314a68b96efa"
+      },
+      {
+        "site": "0155",
+        "count": 16500,
+        "tickReads": 66051,
+        "retraceReads": 21531,
+        "speakerWrites": 2356,
+        "ds": "ac3b26786ac6724a514a7811526442fb54732c6673cf299c15d7b7d671e1ef2d",
+        "vram": "23676206d04edb4f63247964f5e28f65bf3996afc9d2102d260a56aba3f49fc7"
+      },
+      {
+        "site": "0155",
+        "count": 16800,
+        "tickReads": 67181,
+        "retraceReads": 21773,
+        "speakerWrites": 2384,
+        "ds": "cc9bfbf1dd597b4cf562fc3da4bd6994c15079e6ea6a2fd5a7886d796af90c8d",
+        "vram": "804697fa3e4d1a1ad6ce6e035f7f90217c9465bef5f342df7a4c4f7abc90f855"
+      },
+      {
+        "site": "0155",
+        "count": 17100,
+        "tickReads": 68415,
+        "retraceReads": 22081,
+        "speakerWrites": 2417,
+        "ds": "7c5638ab22943b950454d6aed8ff43b78a9f1b6af03947c5526fd665219b172e",
+        "vram": "24d3cef9018d388ead68d22561851efb11988919def9fa4658e556e3a4c21f69"
+      },
+      {
+        "site": "0155",
+        "count": 17400,
+        "tickReads": 69543,
+        "retraceReads": 22628,
+        "speakerWrites": 2437,
+        "ds": "e498bb7783bee9e23dc6fb1636a0cb23feb770c9bf366550b912d87490599f9a",
+        "vram": "f03b3995ea21427347c2e3d76421725cd54ab48f7ea6335e381925fa9d8d7170"
+      },
+      {
+        "site": "0155",
+        "count": 17700,
+        "tickReads": 71385,
+        "retraceReads": 22945,
+        "speakerWrites": 2556,
+        "ds": "90a6f0f5cf1835be6571df39d7b3233f741824ed041b4e7cd9913c967382b22a",
+        "vram": "78e0cc7c3d517dc47afa5321a0d1df6ea3ebeddb91755115f5e64b93735997a8"
+      },
+      {
+        "site": "0155",
+        "count": 18000,
+        "tickReads": 72511,
+        "retraceReads": 23216,
+        "speakerWrites": 2580,
+        "ds": "b5687c5e70fabf020a7d7d54daab6bc73d08b96cd9225687a689c3d20000348f",
+        "vram": "8d2b1b186c01b8752ea02ebb8f280f86fd5d62d1c60c54dcc07fc6f137bb0760"
+      },
+      {
+        "site": "0155",
+        "count": 18300,
+        "tickReads": 73636,
+        "retraceReads": 23451,
+        "speakerWrites": 2596,
+        "ds": "b9452f90e395cb6c6337b0d8bc1c40b3afda6aa1b6657eba5d0f5b0157c4f4c5",
+        "vram": "fdb4b0a2938fc7e59711f4c6bbd92b6f99991ac111942936367fdc0d4cddd738"
+      },
+      {
+        "site": "0155",
+        "count": 18600,
+        "tickReads": 74762,
+        "retraceReads": 23778,
+        "speakerWrites": 2628,
+        "ds": "fbca08d32f95f764717a1dcbfb054b258bfa3631c599c05d3712e9308d500c3a",
+        "vram": "f7f3a9c761f96e2564f423e80e7f0c47e63ef3c5e5c1a0ada99028be7ee9ecc7"
+      },
+      {
+        "site": "0155",
+        "count": 18900,
+        "tickReads": 75997,
+        "retraceReads": 24157,
+        "speakerWrites": 2653,
+        "ds": "3373cca9642ea757c8c2374afaeaf3a97fd3e2e5bd7ace9fa065c8fe797e62e4",
+        "vram": "64509fc27177815d89a7b34c37dcd469a414bec08d9199f389364ede18da7400"
+      },
+      {
+        "site": "0155",
+        "count": 19200,
+        "tickReads": 77125,
+        "retraceReads": 24669,
+        "speakerWrites": 2681,
+        "ds": "61a38b5bc951ccba23edb75884c8e208f029c85b3a56675e267df2d843924236",
+        "vram": "1ddc3993dcbda618817b630581253dae60f43398bb0921cc28419ac8009c860b"
+      },
+      {
+        "site": "0155",
+        "count": 19500,
+        "tickReads": 78971,
+        "retraceReads": 25064,
+        "speakerWrites": 2813,
+        "ds": "bf36fd33e73e5fc903de96b51f81645230feda0f26659c6ffc72a1bbdedaed86",
+        "vram": "baae3c23c624742e573f17654e2ca8bf0bb9f2a21e754a3117d2cd6fd1e35a2d"
+      },
+      {
+        "site": "0155",
+        "count": 19800,
+        "tickReads": 80132,
+        "retraceReads": 25298,
+        "speakerWrites": 2881,
+        "ds": "7d6b526a898bcf76afd60272af6382987b5dace4b6b8e9c5a3732c7e3412d552",
+        "vram": "549f7ee7a91e8634016ca947206881dd3ebb60747ba08171e6d02279fc4fff1a"
+      },
+      {
+        "site": "0155",
+        "count": 20100,
+        "tickReads": 81258,
+        "retraceReads": 25591,
+        "speakerWrites": 2905,
+        "ds": "dae42d8e3deb1c899f72cc7a065636267a143556a77c64773ccef57997a7f747",
+        "vram": "76abb74a70824021fe6fbce5b3c7c9c323b16a33f717eba6741ec71ad5962453"
+      },
+      {
+        "site": "0155",
+        "count": 20400,
+        "tickReads": 82384,
+        "retraceReads": 25865,
+        "speakerWrites": 2937,
+        "ds": "e9ad643da52e8922194aa3c53492a14800b7105dc990c7bdc29b4c57e500b4c5",
+        "vram": "7cb26ac08f254118d7eaa8b29b3a80557d9b82a2b2392be8b416bc17d3afb558"
+      },
+      {
+        "site": "0155",
+        "count": 20700,
+        "tickReads": 83619,
+        "retraceReads": 26239,
+        "speakerWrites": 2966,
+        "ds": "75952cba26166d55674022a779c14a4cd6fb95729407943421d91427120e0b7d",
+        "vram": "b88ed9d66ddc4d1b28a89ee981928f816c92f24e42d44f2243535b2795342a84"
+      },
+      {
+        "site": "0155",
+        "count": 21000,
+        "tickReads": 84747,
+        "retraceReads": 26710,
+        "speakerWrites": 2994,
+        "ds": "4e6ccfb0576dc2c3b9ba8b839714b33925e1933e0b43073f70e6243bf76b1089",
+        "vram": "0decababbc656450d42058c01a7d27dbf44467aa4f2268c43c6e128eea63b4a3"
+      },
+      {
+        "site": "02c5",
+        "count": 1,
+        "tickReads": 86096,
+        "retraceReads": 27152,
+        "speakerWrites": 3165,
+        "ds": "e7d2fe9c10a393e24823537161f96fa61640a0628769d2f3a9ad0ccc77ce65c3",
+        "vram": "22f8f65fb8d21552fc9c0219a14c475c7a683a71adaee9b03311da7b6c272e3e"
+      },
+      {
+        "site": "02c5",
+        "count": 50,
+        "tickReads": 86398,
+        "retraceReads": 27152,
+        "speakerWrites": 3169,
+        "ds": "cb8330eab4cf162796af3b11869d35b9317442b8fdff8f4011d23689a0e67c92",
+        "vram": "5132f0af60ae51973bcb9a6822b6920e2112e62f92e2fbcd2f8f4fd3e98c8a9c"
+      },
+      {
+        "site": "02c5",
+        "count": 100,
+        "tickReads": 86704,
+        "retraceReads": 27152,
+        "speakerWrites": 3177,
+        "ds": "14b086a468c685f9e132e0add834967af075acd98c2c27a184764b86824b7ff6",
+        "vram": "8717f8040f34861efce62da7f5cd2ca4fb8b77d0a738d9e8db7febc680fe5511"
+      },
+      {
+        "site": "02c5",
+        "count": 150,
+        "tickReads": 87011,
+        "retraceReads": 27152,
+        "speakerWrites": 3185,
+        "ds": "be10223eacfa1a98f4c0e45057757b8c71185dfe5c4d16289d5e5fd51e6104ce",
+        "vram": "fcd9d29720d07239b6569c81a1aec9effc2e84f1d8baced160585ae4c5d513b1"
+      },
+      {
+        "site": "02c5",
+        "count": 200,
+        "tickReads": 87317,
+        "retraceReads": 27153,
+        "speakerWrites": 3189,
+        "ds": "4c3a22834f1354f674590dd7956d02c2029f6a0a98e9043c5457f78c01069388",
+        "vram": "7b6609fb9cd87adfc2323d1f8f3a4624ee3e4f85cec47efe0e98e2f6da059a59"
+      }
+    ],
+    "artifacts": {
+      "stream.json": "f39b76a986b106f527638936954a75639f8c7f57e394f9e3f658463fb324a225"
+    },
+    "environmentChanges": [
+      "CRTC vertical retrace moved from lines 412-414 to 405-410 at the first sync point (capture-only; values are recorded)"
+    ]
+  }
+}

@@ -25,6 +25,7 @@ import { join } from 'node:path';
 import { DosBox } from './client.mjs';
 import { loadCatExe, LOCAL_DIR, ROOT } from '../lib/fixtures.mjs';
 import { SCANCODES } from '../../src/machine/keyboard.js';
+import { policies } from '../bots/policies.mjs';
 
 export const TOOL_REVISION = 'capture-v5';
 
@@ -175,6 +176,24 @@ async function main() {
   };
   for (const ev of manifest.events) add(ev.site, ev.count, ev);
   for (const list of plan.values()) list.sort((a, b) => a.count - b.count);
+  // Play policy: a recurring pseudo-event; the keys it presses are logged as key events.
+  const policy = manifest.policy ? policies[manifest.policy.name] : null;
+  if (manifest.policy && !policy) throw new Error(`unknown policy ${manifest.policy.name}`);
+  const policyState = { held: new Set(), scratch: {}, log: [] };
+  const insert = (siteHex, count, action) => {
+    const key = parseInt(siteHex, 16);
+    const list = plan.get(key);
+    let e = list.find((x) => x.count === count);
+    const fresh = !e;
+    if (!e) {
+      list.push((e = { count, actions: [] }));
+      list.sort((a, b) => a.count - b.count);
+    }
+    e.actions.push(action);
+    return fresh;
+  };
+  if (policy) add(manifest.policy.site, manifest.policy.start, { type: 'policy', site: manifest.policy.site, count: manifest.policy.start });
+  for (const list of plan.values()) list.sort((a, b) => a.count - b.count);
 
   await forceExit(d);
   let since = await launch(d, exe);
@@ -260,6 +279,7 @@ async function main() {
   let firstTick = null;
   let lastEventTick = null;
   let truncated = false;
+  let finishedByFinal = false;
   let stops = 0;
   const t0 = Date.now();
   since = await resume(d);
@@ -320,6 +340,23 @@ async function main() {
         if (a.type === 'key') {
           for (const b of keyBytes(a.code, a.down)) await applyKeyByte(d, b);
           applied.push({ site: a.site, count: a.count, code: a.code, down: a.down });
+        } else if (a.type === 'policy') {
+          const ds = await d.read(DS, 0, 0x7130);
+          const mem = { rb: (x) => ds[x & 0xffff], rw: (x) => ds[x & 0xffff] | (ds[(x + 1) & 0xffff] << 8), scratch: policyState.scratch };
+          const want = policy(mem);
+          for (const k of [...policyState.held]) {
+            if (want.has(k)) continue;
+            for (const b of keyBytes(k, false)) await applyKeyByte(d, b);
+            policyState.held.delete(k);
+            policyState.log.push({ type: 'key', site: a.site, count: a.count, code: k, down: false, by: manifest.policy.name });
+          }
+          for (const k of want) {
+            if (policyState.held.has(k)) continue;
+            for (const b of keyBytes(k, true)) await applyKeyByte(d, b);
+            policyState.held.add(k);
+            policyState.log.push({ type: 'key', site: a.site, count: a.count, code: k, down: true, by: manifest.policy.name });
+          }
+          if (insert(a.site, a.count + manifest.policy.every, { type: 'policy', site: a.site, count: a.count + manifest.policy.every })) remaining++;
         } else if (a.type === 'poke') {
           // state injection (conditional evidence): same bytes are written in the replay
           const bytes = Buffer.from(a.bytes, 'hex');
@@ -337,17 +374,27 @@ async function main() {
       }
       s.next++;
       remaining--;
+      if (entry.actions.some((a) => a.type === 'checkpoint' && a.final)) {
+        finishedByFinal = true;
+        break;
+      }
       await armSync(site);
     }
     since = await resume(d);
   }
   await d.pause();
   await d.clearBreakpoints();
-  if (truncated) {
+  if (truncated || finishedByFinal || policy) {
     const before = manifest.events.length;
     manifest.events = manifest.events.filter((e) => e.done);
-    manifest.truncated = { reason: `tick budget exhausted (total ${budget}, idle ${idleBudget})`, droppedEvents: before - manifest.events.length };
-    log(`budget exhausted: kept ${manifest.events.length} of ${before} events`);
+    if (policy) {
+      // the logged policy inputs become ordinary key events (independent input stream)
+      // appended after the planned events: within one sync point, planned actions ran first
+      manifest.events.push(...policyState.log);
+    }
+    if (truncated) manifest.truncated = { reason: `tick budget exhausted (total ${budget}, idle ${idleBudget})`, droppedEvents: before - manifest.events.length };
+    if (finishedByFinal) manifest.endedBy = 'final checkpoint';
+    log(`kept ${manifest.events.length} events (${policyState.log.length} from the policy)`);
   }
   for (const e of manifest.events) delete e.done;
   const stream = {

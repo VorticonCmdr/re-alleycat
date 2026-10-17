@@ -9,13 +9,14 @@ import { parseMZ } from '../src/machine/exe.js';
 import { Game } from '../src/game/game.js';
 import { keyboardInterrupt } from '../src/game/input.js';
 import { keyBytes } from './dosbox/capture.mjs';
-import { policies } from './bots/policies.mjs';
+import { policies, ROOM_SITES } from './bots/policies.mjs';
 
 const args = {};
 for (let i = 2; i < process.argv.length; i++) {
   if (process.argv[i].startsWith('--')) args[process.argv[i].slice(2)] = process.argv[++i];
 }
 const policy = policies[args.policy || 'enterWindow'];
+const until = args.until || 'room'; // 'room': stop on entering a room; 'solved': stop when DS:0553 is set
 const site = parseInt(args.site || '0155', 16);
 const every = Number(args.every || 8);
 const seconds = Number(args.seconds || 60);
@@ -36,8 +37,9 @@ export function runBot(seed) {
   while (g.clock.ms() < seconds * 1000 && !g.exited) {
     g.serviceInterrupts();
     const s = g.step();
-    if (g.rw(0x0004) !== 0) return { ok: true, g, hits, log, ms: g.clock.ms(), room: g.rw(0x0004) };
-    if (s !== site) continue;
+    if (until === 'room' && g.rw(0x0004) !== 0) return { ok: true, g, hits, log, ms: g.clock.ms(), room: g.rw(0x0004) };
+    if (until === 'solved' && g.rb(0x553)) return { ok: true, g, hits, log, ms: g.clock.ms(), room: g.rw(0x0004) };
+    if (s !== site && !(until === 'solved' && ROOM_SITES[s])) continue;
     hits++;
     if (hits % every) continue;
     const want = policy(mem);
@@ -62,7 +64,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const rgba = new Uint8Array(320 * 200 * 4);
     r.g.cga.render(r.g.mem.vram, rgba);
     writeFileSync(localPath('frames', `bot-${seed.toString(16)}.png`), encodePng(320, 200, rgba));
-    console.log(JSON.stringify({ seed: seed.toString(16), ok: r.ok, room: r.room, passes: r.hits, keyEvents: r.log.length, secs: (r.ms / 1000).toFixed(1),
+    console.log(JSON.stringify({ seed: seed.toString(16), ok: r.ok, room: r.room ?? r.g.rw(4), prev: r.g.rw(6), score: [...r.g.mem.ds.subarray(0x1f82,0x1f89)].join(''), passes: r.hits, keyEvents: r.log.length, secs: (r.ms / 1000).toFixed(1),
       x: r.g.rw(0x579), y: r.g.rb(0x57b), lives: r.g.rb(0x1f80), window: r.g.rb(0x1665) }));
   }
 }
