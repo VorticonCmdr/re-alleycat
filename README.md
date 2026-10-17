@@ -4,7 +4,9 @@ A faithful, playable port of the 1984 IBM PC game *Alley Cat* to HTML, CSS and v
 JavaScript. It is a translation of the original program's behaviour, not an emulator:
 every routine is reimplemented in JavaScript and runs against the original data.
 
-**No game data is included.** You need your own copy of the original `CAT.EXE`
+![Title screen of the port](screenshots/title.png)
+
+**No game data is included** (apart from the screenshot above). You need your own copy of the original `CAT.EXE`
 (IBM PC version, SHA-256 `4979c886…7bfdd`). The browser reads it locally: graphics,
 sound tables and texts come from that file at runtime and are never uploaded or stored
 anywhere except, if you tick the box, in your own browser's IndexedDB.

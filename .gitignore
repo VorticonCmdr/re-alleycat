@@ -9,5 +9,3 @@
 *.COM
 node_modules/
 .DS_Store
-# Renders of the original game (original artwork)
-/screenshots/
