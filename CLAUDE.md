@@ -37,7 +37,7 @@ node tools/room-sandbox.mjs --room N --ms 6000 --every 500   # headless room run
 Captures expect CAT at PSP 01E5 in the managed emulator (svga_s3). After an emulator restart
 mount C: = game/ again and type `C:`. A failed capture runs `forceExit`, which restores the
 BIOS INT 9 vector; if the shell ignores keys, a dead CAT handler is still hooked, so restart the
-emulator. `hostkey` events press real DOSBox keys (`KBD_*` names; single-byte keys only), and the
+emulator. `hostkey` events press real DOSBox keys (`KBD_*` names; single-byte keys only; title/menu/alley sites 5d71, 5ef7, 5f29, 5faa, 0155 only), and the
 capture writes the resulting `scan` events. The Tandy edition runs on a separate instance:
 `local/dosbox-tandy/start.sh` (port 8387, `DOSBOX_URL`/`DOSBOX_TOKEN` env for the client).
 

@@ -11,8 +11,11 @@ _Last updated: 2026-10-17_
 
 Reference machine profile: DOSBox 0.84.0-vc1, machine=svga_s3 (model byte 0xFC),
 cpu_cycles=3000. The port defaults to the same profile. The IBM PC/XT (0xFF) and PCjr
-(0xFD) branches of the original are only partly implemented: PCjr paths stop with a
-diagnostic; PC/XT-specific waits exist in code but are unverified.
+(0xFD) branches of the original are only partly implemented. CAT.EXE tests for the PCjr
+in 20 places; the port translates its sound/timing branches but stops with a diagnostic at
+the PCjr palette registers (CS:1d48), keyboard handler (CS:14fb) and its installation. No
+machine=pcjr reference exists (captures assume PSP 01E5). PC/XT-specific waits exist in
+code but are unverified.
 
 ## Working playable route (browser)
 
@@ -73,9 +76,11 @@ The free-running browser timing is an approximation of DOSBox at 3000 cycles/ms.
   unit tests only).
 - Room 6 (bowls): the play policy eats bowls by itself but does not dodge the chaser
   (port free-run: 4 of 8 seeds reach the goal; the capture ate 10 of 12 bowls).
-- Captures run room loops far slower in emulated time than free play (room 6: ~7 passes
-  per BIOS tick instead of ~2000) because every breakpoint stop ends a 1 ms DOSBox slice;
-  replays are exact, but play policies must be tuned to the capture's pass rate.
+- Captures run main loops far slower in emulated time than free play: natural-room6 has
+  ~7 room-6 passes per BIOS tick and ~9 alley passes per tick (0155#100→#400 in 34 ticks),
+  against 2088 alley passes per tick in free-running DOSBox [obs]. The cause, breakpoint
+  stops ending 1 ms DOSBox slices, is [inferred]. Replays are exact, but play policies
+  must be tuned to the capture's pass rate.
 - Menu/pause text uses an original substitute 8x8 font (the BIOS ROM font is not part of
   the game files).
 - Instruction-cost model is calibrated on the alley loop (+1.3 % passes per tick), the

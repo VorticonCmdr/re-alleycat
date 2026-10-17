@@ -189,3 +189,20 @@ update rates in rooms are dominated by what the cat runs into (two DOSBox runs: 
 - Sound [static]: a three-voice SN76496 music player (CS:173e..1827, tables near DS:1228),
   mute at CS:1732 (9Fh/BFh/DFh/FFh to port C0h).
 - Video [obs]: DOSBox reports CGA timing at 59.92 Hz for machine=tandy.
+
+## Real keyboard interrupts under capture [obs]
+- A key injected through the DOSBox input API while the debugger is stopped at a loop head
+  raises IRQ 1 right after the first instruction there (interrupted IP = site + its length,
+  no further pass), so the original INT 9 handler runs at a known position. At the menu
+  waits (5ef7/5f29/5faa/6007) that first instruction is `CMP AX,[0693]`, so the game sees
+  the key on the next pass: the capture places those bytes at count + 1.
+- Grey arrows send E0 + code as two IRQs; the second lands at an arbitrary instruction, so
+  only single-byte keys are used (keypad arrows).
+- The Enter that launched CAT is released after CAT has hooked INT 9 (byte 9Ch reaches the
+  game's handler); it is not in the key table and changes no state.
+
+## Room 6 mechanics [static + port runs]
+- DS:069a (0 while Alt is held) gates the bowl search in CS:4943: only then does the room
+  walk the cat to the nearest non-empty bowl on its floor row (row DS:4499+bx = cat y + 8)
+  and count it down (DS:44c4+bx; DS:44d6 bowls left; DS:0553 set at 0).
+- Holding Down steps the standing cat between the floor rows y = 136, 152, 168, 180.

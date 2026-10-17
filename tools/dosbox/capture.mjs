@@ -50,7 +50,10 @@ const KEYTAB = 0x6a1;
 // pass: the byte is placed at count + 1. At every other site the first instruction does
 // not read keyboard state (SUB AH,AH / MOV DX / CALL 1338 / CMP [1f80]): placed at count.
 const FIRST_READS_KEYS = new Set([0x5ef7, 0x5f29, 0x5faa, 0x6007]);
-const FIRST_LEN = { 0x0155: 5, 0x5d71: 2, 0x5ef7: 4, 0x5f29: 4, 0x5faa: 4, 0x6007: 4, 0x5f9e: 3, 0x03fa: 3, 0x0478: 3, 0x03b2: 3, 0x0364: 3, 0x0319: 3, 0x02c5: 3, 0x027e: 3 };
+// Host keys are accepted only at sites whose IRQ position has been validated by a capture
+// (title, menu waits, alley). Room loop heads start with CALL 1338, so the IRQ would be
+// taken inside 1338 and needs its own rule; they are refused until one is validated.
+const FIRST_LEN = { 0x0155: 5, 0x5d71: 2, 0x5ef7: 4, 0x5f29: 4, 0x5faa: 4 };
 const INT9_AFTER_IN = 0x14be; // after IN AL,60h; AX ES DI CX pushed
 
 function log(...a) {
@@ -193,6 +196,9 @@ async function main() {
     e.actions.push(action);
   };
   manifest.events = manifest.events.filter((e) => e.type !== 'scan'); // outputs of an earlier capture
+  for (const e of manifest.events) {
+    if (e.type === 'hostkey' && !FIRST_LEN[parseInt(e.site, 16)]) throw new Error(`hostkey at ${e.site}: only title/menu/alley sites are validated`);
+  }
   for (const ev of manifest.events) add(ev.site, ev.count, ev);
   for (const list of plan.values()) list.sort((a, b) => a.count - b.count);
   // Play policy: a recurring pseudo-event; the keys it presses are logged as key events.
