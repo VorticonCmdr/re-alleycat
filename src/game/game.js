@@ -79,6 +79,7 @@ export class Game {
   // INT 1Ah AH=1
   setTicks(cx, dx) {
     this.c(4);
+    if (this.replay) this.replay.setTicks(cx & 0xffff, dx & 0xffff);
     this.clock.setBiosTicks(((cx & 0xffff) << 16) | (dx & 0xffff));
   }
   // CS:13d8: IN AL,3DAh / AND AL,8. Returns true while in vertical retrace.

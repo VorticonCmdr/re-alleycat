@@ -26,7 +26,7 @@ import { DosBox } from './client.mjs';
 import { loadCatExe, LOCAL_DIR, ROOT } from '../lib/fixtures.mjs';
 import { SCANCODES } from '../../src/machine/keyboard.js';
 
-export const TOOL_REVISION = 'capture-v3';
+export const TOOL_REVISION = 'capture-v4';
 const sha = (b) => createHash('sha256').update(b).digest('hex');
 
 const EXPECT_PSP = 0x01e5;
@@ -290,7 +290,7 @@ async function main() {
         // changes an environment value; every value the game reads is recorded.
         st.retraceMoved = await moveRetraceWindow(d);
       }
-      const tickReads = st.tickCum + (await hitsOf(st.tickBp));
+      const tickReads = st.tickCum + (await hitsOf(st.tickBp)) - st.setCalls.length; // AH=1 calls pass the IRET too
       const retrReads = st.retrCum + (await hitsOf(st.retrBp));
       for (const a of entry.actions) {
         a.done = true;

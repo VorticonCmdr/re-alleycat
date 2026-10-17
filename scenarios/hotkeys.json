@@ -1,0 +1,683 @@
+{
+  "id": "hotkeys",
+  "description": "Skill T; Esc pause and resume (INT 1Ah AH=1); Ctrl+S sound off and play; Ctrl+R restart; Ctrl+M menu, skill A, new game.",
+  "exe": {
+    "file": "CAT.EXE",
+    "sha256": "4979c8867826e08881d1d4bec95c95d6bc1ac70fd21050ccdb4f733a50d7bfdd"
+  },
+  "emulator": {
+    "name": "dosbox-automation",
+    "machine": "svga_s3",
+    "cpu_cycles": 3000,
+    "core": "auto",
+    "launch": "C:\\CAT.EXE from the shell, C: = game/ (read-only), PSP 01E5"
+  },
+  "startState": "program entry CS:0000 after a clean launch; environment values come from the capture stream",
+  "keyInjection": "at sync points, by writing the memory effects of the game INT 9 handler (CS:14b3)",
+  "stateInjection": "room choice and room outcomes forced by memory writes at sync points (same bytes written in capture and replay); see poke events",
+  "compare": {
+    "ds": "0000..7130 (data segment; code segment excluded)",
+    "vram": "0000..4000",
+    "dsExclude": [
+      {
+        "from": "5a0e",
+        "to": "5a10",
+        "reason": "CS:5ac2 stores a PIT ch0 sample (sound timing only)"
+      },
+      {
+        "from": "5a12",
+        "to": "5a14",
+        "reason": "CS:5ac2 sweep value advanced per PIT-timed step (sound only)"
+      },
+      {
+        "from": "5a16",
+        "to": "5a1a",
+        "reason": "CS:5a1c PIT sample and retune counter (sound only)"
+      },
+      {
+        "from": "5a3c",
+        "to": "5a40",
+        "reason": "CS:5a1c sweep accumulators advanced per PIT-timed retune (sound only)"
+      }
+    ]
+  },
+  "verify": "npm run verify -- --only=reference   (single: node tests/reference.mjs --scenario=hotkeys)",
+  "maxTicks": 6000,
+  "events": [
+    {
+      "type": "checkpoint",
+      "site": "5d71",
+      "count": 1
+    },
+    {
+      "type": "key",
+      "site": "5d71",
+      "count": 200,
+      "code": "Space",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "5ef7",
+      "count": 5,
+      "code": "Space",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "5ef7",
+      "count": 50,
+      "code": "KeyN",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "5f29",
+      "count": 10,
+      "code": "KeyN",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "5f29",
+      "count": 50,
+      "code": "KeyT",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "5faa",
+      "count": 10,
+      "code": "KeyT",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "5faa",
+      "count": 50,
+      "code": "Space",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 5,
+      "code": "Space",
+      "down": false
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 90
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 100,
+      "code": "Escape",
+      "down": true
+    },
+    {
+      "type": "checkpoint",
+      "site": "5faa",
+      "count": 60,
+      "vram": false
+    },
+    {
+      "type": "key",
+      "site": "5faa",
+      "count": 70,
+      "code": "Escape",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "5faa",
+      "count": 90,
+      "code": "Space",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 102,
+      "code": "Space",
+      "down": false
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 105
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 120
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 180
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 240
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 300
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 310,
+      "code": "ControlLeft",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 312,
+      "code": "KeyS",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 314,
+      "code": "KeyS",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 316,
+      "code": "ControlLeft",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 330,
+      "code": "ArrowRight",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 900,
+      "code": "ArrowRight",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 950,
+      "code": "ArrowUp",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 980,
+      "code": "ArrowUp",
+      "down": false
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 320
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 400
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 480
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 560
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 640
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 720
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 800
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 880
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 960
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 1040
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 1120
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 1200
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 1210,
+      "code": "ControlLeft",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 1212,
+      "code": "KeyR",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 1214,
+      "code": "KeyR",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 1216,
+      "code": "ControlLeft",
+      "down": false
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 1230
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 1315
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 1400
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 1410,
+      "code": "ControlLeft",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 1412,
+      "code": "KeyM",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "5ef7",
+      "count": 60,
+      "code": "KeyM",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "5ef7",
+      "count": 65,
+      "code": "ControlLeft",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "5ef7",
+      "count": 100,
+      "code": "KeyN",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "5f29",
+      "count": 70,
+      "code": "KeyN",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "5f29",
+      "count": 100,
+      "code": "KeyA",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "5faa",
+      "count": 120,
+      "code": "KeyA",
+      "down": false
+    },
+    {
+      "type": "checkpoint",
+      "site": "5faa",
+      "count": 125,
+      "vram": false
+    },
+    {
+      "type": "key",
+      "site": "5faa",
+      "count": 160,
+      "code": "Space",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 1430,
+      "code": "Space",
+      "down": false
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 1440
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 1530
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 1620
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 1710
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 1800
+    }
+  ],
+  "capture": {
+    "tool": "capture-v4",
+    "emulator": "0.84.0-vc1 (f6d9b)",
+    "date": "2026-10-17",
+    "stops": 611,
+    "seconds": 17,
+    "seed": 24696,
+    "tickChanges": 216,
+    "retraceEdges": 330,
+    "checkpoints": [
+      {
+        "site": "5d71",
+        "count": 1,
+        "tickReads": 1,
+        "retraceReads": 0,
+        "ds": "9a2b804f65fb50b0f25ad191b5b6aa850a0128b7fa43d7f452c87baf4f18ebf0",
+        "vram": "3088f9a7327ce89ad35899a41b3fffcac965f2c95cb26e21ec46a539c9bd96f3"
+      },
+      {
+        "site": "0155",
+        "count": 90,
+        "tickReads": 751,
+        "retraceReads": 279,
+        "ds": "c8c1e61d122c28b46c4bfd0c57247e14a6a29d5ffbbaabe0e9b70ec80e9c58be",
+        "vram": "d8d8d9bc8f1068e58bf612f4fe83812ea2665cef73cc975c0485d650f328c323"
+      },
+      {
+        "site": "5faa",
+        "count": 60,
+        "tickReads": 788,
+        "retraceReads": 285,
+        "ds": "481695c5b6097504454497f76dc23e7ebddf3eeb28b0fc366e4fea68a0b6bb0a",
+        "vram": "c2fca36eae7b6ee7599112c94d33b3055aed08344c9b18b17b5ce15881be59d8"
+      },
+      {
+        "site": "0155",
+        "count": 105,
+        "tickReads": 809,
+        "retraceReads": 292,
+        "ds": "e9552796da8156b8d2e6194adbc6c9ab44cf8a7e04574ce780d647439b196f7d",
+        "vram": "872b9e7502f20f91c0f9e18e1e169041649e2e1df1b6c44f2f3689d7f3c37b81"
+      },
+      {
+        "site": "0155",
+        "count": 120,
+        "tickReads": 863,
+        "retraceReads": 304,
+        "ds": "b4f8edac6654251a304be721643516547132c23f2e7cadbc43385e42d27718a0",
+        "vram": "44d112c64c4a90a983b13c101cc7881ba612e25eeda63f47d2012ef9c73cfd3e"
+      },
+      {
+        "site": "0155",
+        "count": 180,
+        "tickReads": 1088,
+        "retraceReads": 372,
+        "ds": "b9561d436557c81afb3ee08bd0a9537cbd296407576e3843e544f734e52df95a",
+        "vram": "0678d8fddd6ead09a0a1fe4e6ed9bfa828d3b5fffe9de5f29f93d436ff989115"
+      },
+      {
+        "site": "0155",
+        "count": 240,
+        "tickReads": 1313,
+        "retraceReads": 461,
+        "ds": "0b1cb47a0df4965a50866f6435514793c7e245a1076e97ede9165d820563bdfa",
+        "vram": "4b27199e383bb1e6ba83d611c01566d6a1ac783b1c2dc122beb044b440b55177"
+      },
+      {
+        "site": "0155",
+        "count": 300,
+        "tickReads": 1539,
+        "retraceReads": 533,
+        "ds": "2ef3758e75173f5ade35b492d9f6bc6e84654983731555fb6f3bdff736907f33",
+        "vram": "eb270277d49abac8fa211afe6f679aa8d19aa4233142f91d81e9e4572541a3a7"
+      },
+      {
+        "site": "0155",
+        "count": 320,
+        "tickReads": 1612,
+        "retraceReads": 568,
+        "ds": "a0aa8454ab41a2a9e0291e9dce6061ced1c6ebc7af69ab95a3def3022f61dead",
+        "vram": "188fd22cb4c36ec4caca36803bdbf241c63485e91f00ef86b10e92f31504cecb"
+      },
+      {
+        "site": "0155",
+        "count": 400,
+        "tickReads": 1892,
+        "retraceReads": 651,
+        "ds": "2b92d9b9f3448b4f1066ecf1261bbec9367c4c81cbee7b890d859ddf4777afd1",
+        "vram": "8b958301aadc8bf9bde2b6da81d3fcf41e9d4523d59453a1cd46274d139a6ca0"
+      },
+      {
+        "site": "0155",
+        "count": 480,
+        "tickReads": 2172,
+        "retraceReads": 718,
+        "ds": "396e3cf504898eb55300321b629e0d776ab50f842b1f710568594205dd55e99a",
+        "vram": "1959ccdc7e0e426e8add7b8bc39740265c182842c181604f3b7d79ba1a09f783"
+      },
+      {
+        "site": "0155",
+        "count": 560,
+        "tickReads": 2452,
+        "retraceReads": 768,
+        "ds": "eec39a6e14c9138b3e69558351f2d94f0bdc289e11c9534f6257b8d2ec94a208",
+        "vram": "91c7d3e6a68b014b907630350fc9c52acde9512511d3248f454d2ad392404b26"
+      },
+      {
+        "site": "0155",
+        "count": 640,
+        "tickReads": 2733,
+        "retraceReads": 815,
+        "ds": "418210c06c0a9e0dfa55caf8e24b198439c452daf5ae1141d1c7e3b802bae443",
+        "vram": "b3982274b81c22ae8a92e385724d871dce09f7926ee0d3a763145ee902ed0b77"
+      },
+      {
+        "site": "0155",
+        "count": 720,
+        "tickReads": 3027,
+        "retraceReads": 888,
+        "ds": "fab3604eb1d17df956687f96786bb424b2e61843c1c4d303564759334a7c9735",
+        "vram": "4f6d9d6f854db95734837dbf2725bca733b38fd5a5e7efdb5adc6c06fa6f9819"
+      },
+      {
+        "site": "0155",
+        "count": 800,
+        "tickReads": 3428,
+        "retraceReads": 997,
+        "ds": "fb5981387ada87622094b01ea23115d18bf8854a4281806f646668d0286c4c0b",
+        "vram": "f7424e3a32a1dd41c48325d5f6eff41baf0ed0d8d8a2293c854a50344d1e061f"
+      },
+      {
+        "site": "0155",
+        "count": 880,
+        "tickReads": 3829,
+        "retraceReads": 1129,
+        "ds": "9eee6d00f91e11b2a5f1ef96a675716f1752ec731fbd2e1bfcca014210bd5856",
+        "vram": "2f26c2f1086c6087c51c1a17717b5070d55e64bbacba6edd0d289628c5f6dda1"
+      },
+      {
+        "site": "0155",
+        "count": 960,
+        "tickReads": 4231,
+        "retraceReads": 1251,
+        "ds": "015ef1832cc90ebae54c7adc42ae521a8323881c6e8f8321bb9eca57ebb5516d",
+        "vram": "188e7935e54381f3c4934717ad7a0934aecc37589e07c12aa0985077d747de02"
+      },
+      {
+        "site": "0155",
+        "count": 1040,
+        "tickReads": 4632,
+        "retraceReads": 1388,
+        "ds": "5b65cb2644206c7901f68e0f5c4991584422a963fbbcdc4fc1b61e9ed2930a99",
+        "vram": "83a4665241426b03ee3d80249be0ec9404a5fe8dbdfabe526269881138d9218f"
+      },
+      {
+        "site": "0155",
+        "count": 1120,
+        "tickReads": 5017,
+        "retraceReads": 1511,
+        "ds": "277569e45ae0c77fa939486f8b62620a7df640bc7d9f27ae589dd8d5b6159ad8",
+        "vram": "7db4a6006e15053f31987fa253a86cc1abdc669ee1d6d354ad276dd1786cd4ac"
+      },
+      {
+        "site": "0155",
+        "count": 1200,
+        "tickReads": 5297,
+        "retraceReads": 1572,
+        "ds": "29a1f67f1cba7b8c9840e2cce9dee64ea016f62899f1da193f753c640cc481a9",
+        "vram": "5627dc4f18cf99e2f967085da0d0735784da988bd9870b73cf0b5d426a102fb9"
+      },
+      {
+        "site": "0155",
+        "count": 1230,
+        "tickReads": 5400,
+        "retraceReads": 1597,
+        "ds": "3804d4e5d5aad81ce74961969fe3da7f0e970cb882a313190ca8d55e6284d4e6",
+        "vram": "0da397655e3a21df80f079e8052622b0e5b0d5792ce419fb9592264b6493d07c"
+      },
+      {
+        "site": "0155",
+        "count": 1315,
+        "tickReads": 5697,
+        "retraceReads": 1639,
+        "ds": "cae4a37203209f14e7905e19b1cf757935371e3b3ecfbead7e6bfed05a50f720",
+        "vram": "b1030bbf8577fcaae81c03ee2834cb43fcc6f01e583175533f71ace57c537ea1"
+      },
+      {
+        "site": "0155",
+        "count": 1400,
+        "tickReads": 5996,
+        "retraceReads": 1753,
+        "ds": "e14ae54fb551463aa4a7b39107ee9a29bffffde8e6eab7c9d4321a053d2b6e5c",
+        "vram": "3543c0bf52836c67b8969280a7aa8c0c7d5a99807742f73740e8df55fc0119f8"
+      },
+      {
+        "site": "5faa",
+        "count": 125,
+        "tickReads": 6038,
+        "retraceReads": 1774,
+        "ds": "5e785510de9956391c4b08fc9fb27e07549a98b16965951c60d0648a628ea5a3",
+        "vram": "94bb9095c6e53d837dea565857d7a62dc452ab23f89ad1fa03a280f7ace7d935"
+      },
+      {
+        "site": "0155",
+        "count": 1440,
+        "tickReads": 6133,
+        "retraceReads": 1794,
+        "ds": "23bfacd8d7227140a7a20c224faf3deeaf69e0ff4b09253798cac78f0f87e47a",
+        "vram": "62e971a5f11c314fa9e6a601419e4ed992e686550b9258b05db045b134a04ffa"
+      },
+      {
+        "site": "0155",
+        "count": 1530,
+        "tickReads": 6449,
+        "retraceReads": 1859,
+        "ds": "abcaba4358703998b128bd84ef8c6f982540c9ff5e506dea3b10567f190236a7",
+        "vram": "edf6693ec7c88cf9e43b8bf613f22c10397eb25f4396353ba5374313cf28e6e9"
+      },
+      {
+        "site": "0155",
+        "count": 1620,
+        "tickReads": 6763,
+        "retraceReads": 1967,
+        "ds": "461fc2c9745b5e7e366cab8e41449e4dcef001a3b0d528c0a043ccc0138f3881",
+        "vram": "e29b8a3228c5aee9b703766323edeb5e53b2775cfeeba3ccb1ade82fa075a495"
+      },
+      {
+        "site": "0155",
+        "count": 1710,
+        "tickReads": 7080,
+        "retraceReads": 2108,
+        "ds": "47ebf8c8b6a723fc692957c51d8096a0459c657b55096e0d99927d9434a550ea",
+        "vram": "66b83fa1d43fce3d0bbceaac349f74dd8026b258fbdff7b03a6c06272c2501a3"
+      },
+      {
+        "site": "0155",
+        "count": 1800,
+        "tickReads": 7394,
+        "retraceReads": 2290,
+        "ds": "dde2fdf202fdaa052b9e3511b60359087a974d5ad2a8e478df9fa0a50267bcd9",
+        "vram": "4fc0573f09aeff1f18e4dbb66af229db6a440d7bec867393a5050fd6005e2866"
+      }
+    ],
+    "artifacts": {
+      "stream.json": "28bef2e9b2850e791d24eef0874be5146ee865fa89ae42b8c17a5041cd966d8a"
+    },
+    "environmentChanges": [
+      "CRTC vertical retrace moved from lines 412-414 to 405-410 at the first sync point (capture-only; values are recorded)"
+    ]
+  }
+}

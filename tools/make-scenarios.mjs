@@ -117,7 +117,49 @@ function room7WinScenario() {
   return common('room7-win', 'Room 7 solved: win sequences CS:528b and CS:5313, back to the alley.', ev);
 }
 
-const extraScenarios = [exitsScenario(), room7WinScenario()];
+function hotkeysScenario() {
+  const ev = [];
+  intro(ev, 'KeyT'); // skill 2
+  const key = (site, count, code, down) => ev.push({ type: 'key', site, count, code, down });
+  const cp = (site, count, extra) => ev.push({ type: 'checkpoint', site, count, ...(extra || {}) });
+  cp('0155', 90);
+  key('0155', 100, 'Escape', true); // pause: INT 1Ah AH=0 save, box, wait at CS:5faa
+  cp('5faa', 60, { vram: false });
+  key('5faa', 70, 'Escape', false);
+  key('5faa', 90, 'Space', true); // resume: screen restored, INT 1Ah AH=1
+  key('0155', 102, 'Space', false);
+  cp('0155', 105);
+  for (let c = 120; c <= 300; c += 60) cp('0155', c);
+  key('0155', 310, 'ControlLeft', true); // Ctrl+S: sound off
+  key('0155', 312, 'KeyS', true);
+  key('0155', 314, 'KeyS', false);
+  key('0155', 316, 'ControlLeft', false);
+  key('0155', 330, 'ArrowRight', true);
+  key('0155', 900, 'ArrowRight', false);
+  key('0155', 950, 'ArrowUp', true);
+  key('0155', 980, 'ArrowUp', false);
+  for (let c = 320; c <= 1200; c += 80) cp('0155', c);
+  key('0155', 1210, 'ControlLeft', true); // Ctrl+R: restart
+  key('0155', 1212, 'KeyR', true);
+  key('0155', 1214, 'KeyR', false);
+  key('0155', 1216, 'ControlLeft', false);
+  for (let c = 1230; c <= 1400; c += 85) cp('0155', c);
+  key('0155', 1410, 'ControlLeft', true); // Ctrl+M: back to the menu
+  key('0155', 1412, 'KeyM', true);
+  key('5ef7', 60, 'KeyM', false);
+  key('5ef7', 65, 'ControlLeft', false);
+  key('5ef7', 100, 'KeyN', true);
+  key('5f29', 70, 'KeyN', false);
+  key('5f29', 100, 'KeyA', true); // skill 3
+  key('5faa', 120, 'KeyA', false);
+  cp('5faa', 125, { vram: false });
+  key('5faa', 160, 'Space', true);
+  key('0155', 1430, 'Space', false);
+  for (let c = 1440; c <= 1800; c += 90) cp('0155', c);
+  return common('hotkeys', 'Skill T; Esc pause and resume (INT 1Ah AH=1); Ctrl+S sound off and play; Ctrl+R restart; Ctrl+M menu, skill A, new game.', ev);
+}
+
+const extraScenarios = [exitsScenario(), room7WinScenario(), hotkeysScenario()];
 
 const wanted = process.argv.slice(2).filter((a) => !a.startsWith('--'));
 const reset = process.argv.includes('--reset');
