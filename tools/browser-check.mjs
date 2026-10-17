@@ -111,6 +111,14 @@ async function main() {
     const snd1 = await evaluate(s, `__alleycat.game.rb(0)`);
     check('Sound button toggles the sound switch', snd0 !== snd1, `${snd0} -> ${snd1}`);
 
+    // 6b. a room runs in the page (room forced like the reference scenarios)
+    await evaluate(s, `(() => { const g = __alleycat.game; for (let a = 0x421; a <= 0x431; a++) g.wb(a, 3);
+      g.ww(0x41d, 0xffff); g.ww(0x41f, 0xffff); g.wb(0x418, 0); g.wb(0x551, 1); return 1; })()`);
+    const inRoom = await waitFor(s, `__alleycat.game.rw(4) === 3 && __alleycat.game.rw(0x579) > 0`, 8000);
+    await sleep(2000);
+    const diag = await evaluate(s, `document.getElementById('diag').hidden ? '' : document.getElementById('diag').textContent`);
+    check('room 3 runs in the browser (no diagnostic)', !!inRoom && diag === '', diag.slice(0, 80));
+
     // 7. page health
     check('no uncaught page errors', consoleErrors.length === 0, consoleErrors.join(' | '));
 

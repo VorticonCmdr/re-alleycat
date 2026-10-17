@@ -30,7 +30,7 @@ their creatures, chaser, goals, bonuses, fish-bowl room) and back, game over →
 | `npm run verify -- --only=unit` | unit: machine layer and primitives vs. definitions | 24 checks |
 | `npm run verify -- --only=slice` | independent runtime scenario + determinism + negative control | 11 checks |
 | `npm run verify -- --only=reference` | closed-loop replay of DOSBox captures, byte-exact DS+VRAM | 11 scenarios, 256 checkpoints, 22 negative controls |
-| `npm run verify -- --only=browser` | browser acceptance (headless Chrome) | 10 checks |
+| `npm run verify -- --only=browser` | browser acceptance (headless Chrome) | 11 checks (incl. a room) |
 
 Reference scenarios (`scenarios/*.json`, captures in `local/captures/`, recapture with
 `node tools/dosbox/capture.mjs scenarios/<id>.json` against a running dosbox-automation):
