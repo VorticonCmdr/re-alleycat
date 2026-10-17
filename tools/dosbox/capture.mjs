@@ -219,6 +219,11 @@ async function main() {
   const checkpoints = [];
   const applied = [];
   let remaining = [...plan.values()].reduce((n, l) => n + l.length, 0);
+  // Budget in BIOS ticks after the first recorded tick: scenarios whose later events are
+  // never reached (e.g. the cat leaves a room early) end here and are trimmed.
+  const budget = manifest.maxTicks ?? 3000;
+  let firstTick = null;
+  let truncated = false;
   let stops = 0;
   const t0 = Date.now();
   since = await resume(d);
@@ -235,6 +240,11 @@ async function main() {
         const v = (((r.ecx & 0xffff) << 16) | (r.edx & 0xffff)) >>> 0;
         if (st.tickLast === null || (v & 0xffff) !== (st.tickLast & 0xffff)) st.ticks.push([idx, v]);
         st.tickLast = v;
+        if (firstTick === null) firstTick = v;
+        if (v - firstTick > budget) {
+          truncated = true;
+          break;
+        }
       }
       await armTick();
     } else if (id === st.setBp) {
@@ -258,9 +268,15 @@ async function main() {
       const tickReads = st.tickCum + (await hitsOf(st.tickBp));
       const retrReads = st.retrCum + (await hitsOf(st.retrBp));
       for (const a of entry.actions) {
+        a.done = true;
         if (a.type === 'key') {
           for (const b of keyBytes(a.code, a.down)) await applyKeyByte(d, b);
           applied.push({ site: a.site, count: a.count, code: a.code, down: a.down });
+        } else if (a.type === 'poke') {
+          // state injection (conditional evidence): same bytes are written in the replay
+          const bytes = Buffer.from(a.bytes, 'hex');
+          await d.req('PUT', `/api/v1/memory/${DS}/${parseInt(a.addr, 16)}`, { data: bytes.toString('base64') });
+          applied.push({ site: a.site, count: a.count, poke: a.addr, bytes: a.bytes });
         } else if (a.type === 'checkpoint') {
           const ds = await d.read(DS, 0, 0x7130);
           const vram = await d.read(0xb800, 0, 0x4000);
@@ -279,6 +295,13 @@ async function main() {
   }
   await d.pause();
   await d.clearBreakpoints();
+  if (truncated) {
+    const before = manifest.events.length;
+    manifest.events = manifest.events.filter((e) => e.done);
+    manifest.truncated = { reason: `tick budget ${budget} exhausted`, droppedEvents: before - manifest.events.length };
+    log(`budget exhausted: kept ${manifest.events.length} of ${before} events`);
+  }
+  for (const e of manifest.events) delete e.done;
   const stream = {
     format: 1,
     scenario: manifest.id,

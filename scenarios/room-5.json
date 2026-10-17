@@ -1,0 +1,438 @@
+{
+  "id": "room-5",
+  "description": "Intro, then room 5 forced at alley pass 60; walk right, jump, walk left inside the room.",
+  "exe": {
+    "file": "CAT.EXE",
+    "sha256": "4979c8867826e08881d1d4bec95c95d6bc1ac70fd21050ccdb4f733a50d7bfdd"
+  },
+  "emulator": {
+    "name": "dosbox-automation",
+    "machine": "svga_s3",
+    "cpu_cycles": 3000,
+    "core": "auto",
+    "launch": "C:\\CAT.EXE from the shell, C: = game/ (read-only), PSP 01E5"
+  },
+  "startState": "program entry CS:0000 after a clean launch; environment values come from the capture stream",
+  "keyInjection": "at sync points, by writing the memory effects of the game INT 9 handler (CS:14b3)",
+  "stateInjection": "room choice forced by overwriting DS:0421-0431 and DS:041d-0420 and setting DS:0551 at alley pass 60 (same bytes written in capture and replay)",
+  "compare": {
+    "ds": "0000..7130 (data segment; code segment excluded)",
+    "vram": "0000..4000",
+    "dsExclude": [
+      {
+        "from": "5a0e",
+        "to": "5a10",
+        "reason": "CS:5ac2 stores a PIT ch0 sample (sound timing only)"
+      },
+      {
+        "from": "5a12",
+        "to": "5a14",
+        "reason": "CS:5ac2 sweep value advanced per PIT-timed step (sound only)"
+      },
+      {
+        "from": "5a16",
+        "to": "5a1a",
+        "reason": "CS:5a1c PIT sample and retune counter (sound only)"
+      },
+      {
+        "from": "5a3c",
+        "to": "5a40",
+        "reason": "CS:5a1c sweep accumulators advanced per PIT-timed retune (sound only)"
+      }
+    ]
+  },
+  "verify": "npm run verify -- --only=reference   (single: node tests/reference.mjs --scenario=room-5)",
+  "events": [
+    {
+      "type": "checkpoint",
+      "site": "5d71",
+      "count": 1
+    },
+    {
+      "type": "key",
+      "site": "5d71",
+      "count": 200,
+      "code": "Space",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "5ef7",
+      "count": 5,
+      "code": "Space",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "5ef7",
+      "count": 50,
+      "code": "KeyN",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "5f29",
+      "count": 10,
+      "code": "KeyN",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "5f29",
+      "count": 50,
+      "code": "KeyK",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "5faa",
+      "count": 10,
+      "code": "KeyK",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "5faa",
+      "count": 50,
+      "code": "Space",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "0155",
+      "count": 5,
+      "code": "Space",
+      "down": false
+    },
+    {
+      "type": "checkpoint",
+      "site": "0155",
+      "count": 59
+    },
+    {
+      "type": "poke",
+      "site": "0155",
+      "count": 60,
+      "addr": "0421",
+      "bytes": "0505050505050505050505050505050505",
+      "note": "room-choice tables"
+    },
+    {
+      "type": "poke",
+      "site": "0155",
+      "count": 60,
+      "addr": "041d",
+      "bytes": "ffffffff",
+      "note": "last two rooms"
+    },
+    {
+      "type": "poke",
+      "site": "0155",
+      "count": 60,
+      "addr": "0418",
+      "bytes": "00"
+    },
+    {
+      "type": "poke",
+      "site": "0155",
+      "count": 60,
+      "addr": "0551",
+      "bytes": "01",
+      "note": "entered a window"
+    },
+    {
+      "type": "checkpoint",
+      "site": "0319",
+      "count": 1
+    },
+    {
+      "type": "checkpoint",
+      "site": "0319",
+      "count": 101
+    },
+    {
+      "type": "checkpoint",
+      "site": "0319",
+      "count": 201
+    },
+    {
+      "type": "checkpoint",
+      "site": "0319",
+      "count": 301
+    },
+    {
+      "type": "checkpoint",
+      "site": "0319",
+      "count": 401
+    },
+    {
+      "type": "checkpoint",
+      "site": "0319",
+      "count": 501
+    },
+    {
+      "type": "checkpoint",
+      "site": "0319",
+      "count": 601
+    },
+    {
+      "type": "checkpoint",
+      "site": "0319",
+      "count": 701
+    },
+    {
+      "type": "checkpoint",
+      "site": "0319",
+      "count": 801
+    },
+    {
+      "type": "checkpoint",
+      "site": "0319",
+      "count": 901
+    },
+    {
+      "type": "checkpoint",
+      "site": "0319",
+      "count": 1001
+    },
+    {
+      "type": "checkpoint",
+      "site": "0319",
+      "count": 1101
+    },
+    {
+      "type": "checkpoint",
+      "site": "0319",
+      "count": 1201
+    },
+    {
+      "type": "checkpoint",
+      "site": "0319",
+      "count": 1301
+    },
+    {
+      "type": "checkpoint",
+      "site": "0319",
+      "count": 1401
+    },
+    {
+      "type": "checkpoint",
+      "site": "0319",
+      "count": 1501
+    },
+    {
+      "type": "checkpoint",
+      "site": "0319",
+      "count": 1601
+    },
+    {
+      "type": "key",
+      "site": "0319",
+      "count": 300,
+      "code": "ArrowRight",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "0319",
+      "count": 700,
+      "code": "ArrowRight",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "0319",
+      "count": 800,
+      "code": "ArrowUp",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "0319",
+      "count": 830,
+      "code": "ArrowUp",
+      "down": false
+    },
+    {
+      "type": "key",
+      "site": "0319",
+      "count": 1000,
+      "code": "ArrowLeft",
+      "down": true
+    },
+    {
+      "type": "key",
+      "site": "0319",
+      "count": 1300,
+      "code": "ArrowLeft",
+      "down": false
+    }
+  ],
+  "capture": {
+    "tool": "capture-v2",
+    "emulator": "0.84.0-vc1 (f6d9b)",
+    "date": "2026-10-17",
+    "stops": 344,
+    "seconds": 18,
+    "seed": 43696,
+    "tickChanges": 309,
+    "retraceEdges": 0,
+    "checkpoints": [
+      {
+        "site": "5d71",
+        "count": 1,
+        "tickReads": 1,
+        "retraceReads": 0,
+        "ds": "35d163bc04dc0ed5b99c7e45547b8204ad4cae951ebf9a7a2f344068c3570619",
+        "vram": "e7ad6a9d860123a13f42c7ed4f6bfdb39f690a2489723a5f931ec88a3ae8c100"
+      },
+      {
+        "site": "0155",
+        "count": 59,
+        "tickReads": 619,
+        "retraceReads": 273,
+        "ds": "c436b2988eeeb9b4b0401cc553b00026b206b21f8b2e2c4e3da6f6318f70eb43",
+        "vram": "384b36367c8e62ca1dc4359094079950748dda1f6f710f031e484de228228fa5"
+      },
+      {
+        "site": "0319",
+        "count": 1,
+        "tickReads": 629,
+        "retraceReads": 276,
+        "ds": "16c79f2a53d9a274426e81b40e443c48774e170167e8703a11c7805d019e6844",
+        "vram": "112096ca222206889e68947aa10568aeecbe64cf7bd91a5e938a9efe7d559425"
+      },
+      {
+        "site": "0319",
+        "count": 101,
+        "tickReads": 1347,
+        "retraceReads": 376,
+        "ds": "9ff8fb657050c1eae92360210d8291c898a976d9c22a56fd21dbda155c1746eb",
+        "vram": "8c8bfe89a49193ea850d658edd01539703d3f920a32ca129d4927a9330e6934d"
+      },
+      {
+        "site": "0319",
+        "count": 201,
+        "tickReads": 2064,
+        "retraceReads": 476,
+        "ds": "df3e0bc99d54fe1c4d7815acba8d84c7e03e43dd659817a14ce74a1e32581225",
+        "vram": "5627db16c8b7a7652f45fc6dd7c5ab47611c348f123b83e018f49264f8e8e9ac"
+      },
+      {
+        "site": "0319",
+        "count": 301,
+        "tickReads": 2782,
+        "retraceReads": 576,
+        "ds": "c56ed6052e4fd55033de82146b31d66fc3c1d975d457ba6ffc69337d40f63276",
+        "vram": "a454786785ba17d9d3d37a8f52a96e00c6d63ad54bee82557c734df00fc464f2"
+      },
+      {
+        "site": "0319",
+        "count": 401,
+        "tickReads": 3500,
+        "retraceReads": 676,
+        "ds": "b8a7359090086357caf90c1cd2812d82e58db262f606d8f53d0ef49f92db3e4d",
+        "vram": "fa5c9b38082691878162bdc69aab3d19a18ce3014de732ab860d7a1271897c85"
+      },
+      {
+        "site": "0319",
+        "count": 501,
+        "tickReads": 4217,
+        "retraceReads": 776,
+        "ds": "4db117bec214ce5052df7365a41564308179a7d497fab49d2e00c258fc0806c4",
+        "vram": "2d3ba3fe7dee5e844e35a6ba21d71d83a86bb92005154c9f97be97ff71a4c617"
+      },
+      {
+        "site": "0319",
+        "count": 601,
+        "tickReads": 4935,
+        "retraceReads": 876,
+        "ds": "9d1d9927f585a46704b0520650ed5e2fd416b0e2a6c9474ae4aeb046fe6421b6",
+        "vram": "ee87f8ae4ad37ad249d280651963b926e462867c6e9db38d124a7ff719cae98c"
+      },
+      {
+        "site": "0319",
+        "count": 701,
+        "tickReads": 5756,
+        "retraceReads": 976,
+        "ds": "90f289cb3dc8344c0a90816da2cf5bec37c495e5116f8f86427455a042ee6b06",
+        "vram": "462f9ff824aefcce50d64b9aabf8ed0d5e1167ec77b21609c5b399fe575648ad"
+      },
+      {
+        "site": "0319",
+        "count": 801,
+        "tickReads": 6473,
+        "retraceReads": 1076,
+        "ds": "1874d409aab659f83d362dc54e82045c0cf596b53c723b74062e560fdbbbe1ea",
+        "vram": "446f2599bc5afd3c596a71800a21fad1fe57ce27a33b349a2485a2974e008217"
+      },
+      {
+        "site": "0319",
+        "count": 901,
+        "tickReads": 7190,
+        "retraceReads": 1176,
+        "ds": "3d5d5b4aa5608a2d1285544ae34d109a691855b906aae3c6ae7af189105253b5",
+        "vram": "e17ba7153aa322bab7ff20a19830b93d60f7f8ba1004c50b010d4c8e3653ca00"
+      },
+      {
+        "site": "0319",
+        "count": 1001,
+        "tickReads": 8010,
+        "retraceReads": 1298,
+        "ds": "819097434c5aa13acad58674475849a4429e1f551f61395feafcf436ecf87b90",
+        "vram": "cfc444559a20fe49f49ba414d161932082b6690a72f95ca01f8e55379303fb48"
+      },
+      {
+        "site": "0319",
+        "count": 1101,
+        "tickReads": 8728,
+        "retraceReads": 1436,
+        "ds": "832cf95f451daa62f7a9243d40450cfc56624cd58f47fbd3da6795db220677a2",
+        "vram": "ca5a3d933741e4099dddea93371957852e0dc901a060a40868cd33b878c65290"
+      },
+      {
+        "site": "0319",
+        "count": 1201,
+        "tickReads": 9445,
+        "retraceReads": 1536,
+        "ds": "7812731c83329be60f21a95ed14b8a5213e274efc9cf58b965b6b009d47eeaea",
+        "vram": "acd65cbc50ba5eea44cb1542dfeda1d3b9c211520400e960fcc619777a3c8647"
+      },
+      {
+        "site": "0319",
+        "count": 1301,
+        "tickReads": 10163,
+        "retraceReads": 1636,
+        "ds": "b966a82d4f42f8d88370b689bc3fe4e32fb479ff54e17e8bbaa009ef01d01054",
+        "vram": "1bce34983c2c3cc606b9161815e7f8e747b009c55d06381bf902881a5ef1226e"
+      },
+      {
+        "site": "0319",
+        "count": 1401,
+        "tickReads": 10881,
+        "retraceReads": 1736,
+        "ds": "0e9433c5c1271601af171c1341a7121767eb4eca1e3ef54f6718ee48f3d80ee8",
+        "vram": "9463e6b4f43e545c2c4605049a9ccaf322ebbdc09fe7c8fd3ff747b7643ae2d3"
+      },
+      {
+        "site": "0319",
+        "count": 1501,
+        "tickReads": 11599,
+        "retraceReads": 1903,
+        "ds": "4a8b82c412799cc5a1b2cc7837620bdc500945887ed0d7547c1a19a16db3a5d2",
+        "vram": "ed63e375cbb98c8d7088bfc014413b0baaa2c6ef7ffdd224c426d570df144a6f"
+      },
+      {
+        "site": "0319",
+        "count": 1601,
+        "tickReads": 12315,
+        "retraceReads": 2088,
+        "ds": "ec99214e73e5ba40e8eb208c473dc9a53dd545677940c67c792ec8eadd1c0e45",
+        "vram": "7df8dd6b766f85a4d802f866898cead5a8ca242ad90ce1edf476ebf29ed37991"
+      }
+    ],
+    "artifacts": {
+      "stream.json": "d5a4d431990db13df6fdf7709dd314fd67eb1324b39d9fea03c39d278131c1e1"
+    }
+  }
+}

@@ -189,7 +189,7 @@ export function* roomTransition(g) {
   g.bios.setPalette(0, 0);
   g.c(4);
   if (g.rw(0x0006) === 7 && g.rb(0x553) !== 0) {
-    roomHooks(7).leaveSuccess(g); // CS:528b
+    yield* roomHooks(7).leaveSuccess(g); // CS:528b (waits on ticks)
     g.ww(0x579, 0x98);
     g.wb(0x57b, 0x5f);
   }
@@ -431,7 +431,7 @@ function chaserTouchesCat(g) {
 }
 
 // CS:33a0
-function eraseChaser(g) {
+export function eraseChaser(g) {
   g.c(3);
   if (g.rb(0x3286) !== 0) return;
   copyRect(g, SEG_VRAM, g.rw(0x3282), 0x31e8, 2, 0x1e);

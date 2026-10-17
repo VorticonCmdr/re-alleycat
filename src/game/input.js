@@ -78,7 +78,7 @@ export function readKeyboard(g) {
 // CS:1200 - input poll, at most every second BIOS tick.
 export function pollInput(g) {
   const t = g.ticks();
-  g.c(4);
+  g.c(6); // SUB AH,AH / MOV AX,DX / SUB / CMP / JNC / RET
   if (((t - g.rw(0x69f)) & 0xffff) < 2) return;
   g.ww(0x69f, t);
   if (g.rb(JOYSTICK) !== 0) g.unsupported('joystick input CS:122e');
@@ -96,7 +96,7 @@ export function pollInput(g) {
 // CS:1338 - global hot keys, checked when a new make code has arrived.
 // Returns true when the routine asked for the pause screen (handled by the caller).
 export function* hotKeys(g, pauseScreen) {
-  g.c(4);
+  g.c(4); // MOV AX,[693] / CMP / JZ / RET
   const n = g.rw(MAKE_COUNT);
   if (n === g.rw(0x691)) return;
   g.ww(0x691, n);

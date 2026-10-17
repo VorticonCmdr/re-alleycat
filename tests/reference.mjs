@@ -72,6 +72,9 @@ function runScenario(manifest, { perturb = null, quiet = false } = {}) {
       for (const ev of env.sync(site)) {
         if (ev.type === 'key') {
           for (const b of keyBytes(ev.code, ev.down)) keyboardInterrupt(g, b);
+        } else if (ev.type === 'poke') {
+          const bytes = Buffer.from(ev.bytes, 'hex');
+          for (let i = 0; i < bytes.length; i++) g.wb(parseInt(ev.addr, 16) + i, bytes[i]);
         } else if (ev.type === 'checkpoint') {
           const cp = expected[cpIndex];
           const label = `checkpoint ${cpIndex} @${ev.site}#${ev.count}`;
@@ -114,10 +117,12 @@ const manifestArg = process.argv.find((a) => a.startsWith('--manifest='))?.split
 const files = manifestArg ? [manifestArg] : readdirSync(join(ROOT, 'scenarios')).filter((f) => f.endsWith('.json')).map((f) => join(ROOT, 'scenarios', f));
 let total = 0;
 let bad = 0;
+let ran = 0;
 let setup = null;
 for (const f of files) {
   const manifest = JSON.parse(readFileSync(f, 'utf8'));
   if (only && manifest.id !== only) continue;
+  ran++;
   if (!manifest.capture) {
     console.log(`FAIL  ${manifest.id}: manifest has no capture section (scenario never captured)`);
     bad++;
@@ -137,7 +142,7 @@ for (const f of files) {
   }
   // Negative controls: the comparison must detect a removed input event and a tick
   // value delivered one read late.
-  const keyIdx = manifest.events.findIndex((e) => e.type === 'key' && e.site === '0155' && e.down);
+  const keyIdx = manifest.events.findLastIndex((e) => e.type === 'key' && e.down);
   const controls = [
     { name: `drop key event ${manifest.events[keyIdx]?.code}@${manifest.events[keyIdx]?.site}#${manifest.events[keyIdx]?.count}`,
       apply: (st, ev) => ({ stream: st, events: ev.filter((_, i) => i !== keyIdx) }), usable: keyIdx >= 0 },
@@ -157,5 +162,5 @@ for (const f of files) {
   }
 }
 if (setup) process.exit(2);
-console.log(`reference: ${files.length - bad}/${files.length} scenarios, ${total} checkpoints compared`);
-if (files.length === 0 || total === 0 || bad) process.exit(1);
+console.log(`reference: ${ran - bad}/${ran} scenarios, ${total} checkpoints compared`);
+if (ran === 0 || total === 0 || bad) process.exit(1);

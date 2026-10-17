@@ -93,3 +93,41 @@ Environment values are recorded at their consumption points while the original r
 Verified (**[reg]**, scenario boot-title-alley): title (attract mode, tune), menu
 (data segment; VRAM excluded for BIOS-font text), alley for 3000 loop iterations with
 walking and jumping: 34/34 checkpoints byte-identical in DS 0000-7130 and VRAM 0000-4000.
+
+## Speed calibration [obs]/[approx]
+- Free-running DOSBox (3000 cycles/ms, no breakpoints), alley with an idle cat: DS:040f
+  (+1 per loop pass) sampled every ~2 ms against 0040:006C: **≈2066 passes per BIOS tick**
+  (≈80 cycles per pass). A hand count of the original idle pass gives ≈76 instructions with
+  INT 1Ah ≈4 (INT, STI, callback, IRET), i.e. DOSBox ≈ 1 cycle per instruction.
+- During captures the same loop ran ≈7.8 passes per tick: conditional breakpoints evaluated
+  on hot addresses distort DOSBox's emulated speed. Captures are therefore exact for
+  replay (every environment value is recorded) but unusable for timing calibration.
+- Port after correcting the hot-path charges (1338, 1200, 08e5 early exit, 1e63, loop
+  overhead): **≈2143 passes per tick** (77.6 cycles). Within 4 % on this path; other paths
+  remain approximate. Most game pacing is tick-gated and saturates well below these rates
+  (cat: max 2 updates per tick after 32 calls; clothes lines/windows count loop calls but
+  are capped by the tick), so the residual error mainly changes how often retrace-gated
+  actions fire.
+
+## Rooms [static], validated per room in scenarios/room-N.json
+Jump table CS:0250 (index = DS:0004): 0/1 → room 1 (CS:03e2, loop head 03fa), 2 → 0459
+(0478), 3 → 0394 (03b2), 4 → 0349 (0364), 5 → 02fe (0319), 6 → 02aa (02c5), 7 → 0260 (027e).
+- Room choice CS:01e5: random table entry DS:0421+skill*4+(rnd&3) with probability depending
+  on rnd&0xa0 (skill 3 always uses the 5-entry table DS:042d); never the same room three
+  times in a row (DS:041d/041f). DS:0418 set → room 7 directly.
+- Shared: transition wipe CS:1bf0/1c67, return sequences CS:1d76 (picture fade + tune; a
+  life is lost when DS:0552 is set; dog bite CS:5be0 when DS:0552=DDh), CS:6040 after
+  room 7, room backgrounds CS:2790, the room chaser CS:3150 (homes in on footprints that
+  the walking cat leaves on 40 floor cells, CS:3445, and knocks the cat away, CS:0872).
+- Goals: DS:0551 = reached the room's exit object, DS:0553 = room solved (score bonus via
+  CS:38b0, room 7 via CS:528b/5313), DS:0552 = thrown out (life lost), DS:0554 = room 1
+  hands over to room 2 (fish bowl).
+- Room 2 (under water) runs its own cat physics CS:0953..0bab inside the cat update; the
+  background colour (INT 10h AH=0Bh) signals the remaining air.
+- Model-dependent waits in room 2 only run for model bytes ≥ 0xFD (not on the reference AT).
+- Room 4's loop count at CS:3fee and room 6's at CS:4b47 come from tables (never 0 in the
+  data); a 0 would hang the original, the port stops with a diagnostic instead.
+- Random seed value 1 makes the shift register reach 0 and stay there; reject loops (e.g.
+  CS:4277) would then never end, in the original as well. CS:2e10 only replaces a PIT value
+  of 0, so a start-up PIT sample of 0001 (≈1/65536) reproduces this original hang; the
+  port behaves identically (not guarded).

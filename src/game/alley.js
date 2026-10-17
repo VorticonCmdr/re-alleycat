@@ -755,7 +755,7 @@ function eraseDog(g) {
 }
 
 // CS:2136 - the dog catches the cat: fight, cat thrown to the far side.
-function dogGrabsCat(g) {
+export function dogGrabsCat(g) {
   if (g.rw(0x0004) === 6) {
     g.wb(0x1cc8, g.rb(0x57b));
     g.ww(0x1cc6, g.rw(0x579));
@@ -815,8 +815,9 @@ export function dogMeetsCat(g) {
 export function dogUpdate(g) {
   const cx = g.ticks();
   const d = (cx - g.rw(0x1cc9)) & 0xffff;
-  g.c(6);
+  g.c(9); // SUB AH,AH / MOV / SUB / MOV / AND / ADD / CMP / JNC / RET
   if (d < (g.rw(0x1ce1) & 1) + 1) return;
+  g.c(2); // JZ / RET after CALL 13d8
   if (!g.retrace()) return;
   g.ww(0x1cc9, cx);
   g.ww(0x1ce1, g.rw(0x1ce1) + 1);

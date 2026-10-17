@@ -132,7 +132,7 @@ function* alley(g) {
   S.musicReset(g); // CS:58bd
   for (;;) {
     yield 0x0155; // loop head L0155 (sync point)
-    g.c(3);
+    g.c(2 + 4 + 4); // loop-head test, 41c/41b tests, the four CALLs below
     if (g.rb(LIVES) === 0) return 'attract';
     yield* hotKeys(g, T.pauseScreen);
     if (g.rb(0x41c)) return 'menu';
@@ -144,6 +144,7 @@ function* alley(g) {
     if (g.rb(0x1cb8) === 0) {
       g.wb(0x40f, g.rb(0x40f) + 1);
       g.c(3);
+      g.c(7); // the seven CALLs of the every-4th-pass block are charged when taken
       if (g.rb(0x40f) & 3) continue;
     }
     S.alleyMusic(g); // CS:546d
