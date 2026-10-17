@@ -64,3 +64,32 @@ Live model byte DS:0697 = 0xFC. Example RNG seed DS:2ae5 after startup = 0x24EC 
 ## Reference emulator configuration [obs]
 machine=svga_s3 (BIOS model 0xFC), cpu_cycles=3000 (fixed), core=auto, cputype=auto.
 Mode 4 on a VGA machine runs at 70 Hz with VGA retrace timing (not 60 Hz CGA).
+
+## Reference capture method (tools/dosbox/capture.mjs, capture-v2)
+Environment values are recorded at their consumption points while the original runs:
+- **BIOS ticks**: execute breakpoint on the IRET of DOSBox's INT 1Ah stub (F000:1265,
+  `STI / callback / IRET`), condition `DX != last`; hit count = global read index.
+  **[obs] Finding:** an earlier variant (interrupt breakpoint with condition on 0040:006C)
+  races the timer IRQ: at read 6440 the game received the new tick while the capture
+  logged the change at 6441. The replay caught it as a 6-byte DS divergence (mouse
+  update + RNG). Testing the *returned* register removes the race.
+- **Retrace**: execute breakpoint at CS:13dc (after `IN AL,DX`, the only 3DAh read),
+  condition on AL ≥ 8 / < 8 alternately. **[obs]** DOSBox returns 4 or 5 here (bit 2
+  always set, bit 0 display-enable); in ~7000 alley reads none fell into the 2-line VGA
+  retrace window, consistent with its ~0.45 % duty cycle.
+- **RNG seed**: CS:2e25 (AX before `MOV [2ae5],AX`).
+- **Keys**: applied at sync points (loop heads that are yield points in the port) by
+  writing the memory effects of the game's INT 9 handler (DS:0693 make counter,
+  DS:06b7+i key state). DOSBox's own key injection is dispatched on its PIC clock after
+  resuming, so it cannot be aligned with a sync point. **Conditional evidence:** reference
+  runs therefore do not exercise the real INT 9 handler (CS:14b3); the port's translation of
+  it is covered by unit/slice/browser checks only.
+- **PIT-derived state**: other PIT ch0 reads are not recorded; in replay they come from the
+  port's clock. They only time delay loops and set sound-only variables (DS:5a0e, 5a12,
+  5a16-5a19, 5a3c-5a3f via CS:5a1c/5ac2). CS:5ac2 calls the RNG once per loop iteration
+  whenever the PIT moved, which is every iteration at reference speed, so the RNG stays
+  aligned. No DS exclusion has been needed so far.
+
+Verified (**[reg]**, scenario boot-title-alley): title (attract mode, tune), menu
+(data segment; VRAM excluded for BIOS-font text), alley for 3000 loop iterations with
+walking and jumping: 34/34 checkpoints byte-identical in DS 0000-7130 and VRAM 0000-4000.

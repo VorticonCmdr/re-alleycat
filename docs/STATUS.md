@@ -29,12 +29,19 @@ sound toggle, restart, back to menu. Entering a window (a room) stops with
 | `npm run verify` | all required groups | passing |
 | `npm run verify -- --only=unit` | unit: machine layer and primitives vs. definitions | 24 checks |
 | `npm run verify -- --only=slice` | independent runtime scenario + determinism + negative control | 11 checks |
+| `npm run verify -- --only=reference` | closed-loop replay of DOSBox captures, byte-exact DS+VRAM | 1 scenario, 34 checkpoints, 2 negative controls |
 | `npm run verify -- --only=browser` | browser acceptance (headless Chrome) | 10 checks |
 
-Not yet available: comparisons against the reference emulator (closed-loop replay of
-captured environment values). Until then, fidelity claims for gameplay are **static**
-(read from the disassembly) or **observed** (visual comparison of title/alley screens),
-not regression-validated.
+Reference scenarios (`scenarios/*.json`, captures in `local/captures/`, recapture with
+`node tools/dosbox/capture.mjs scenarios/<id>.json` against a running dosbox-automation):
+
+| scenario | covers | checkpoints |
+|---|---|---|
+| boot-title-alley | entry, title + attract mode + tune, menu N/K (DS only), alley 3000 iterations, walk, jump | 34/34 identical |
+
+Evidence scope: the reference replay uses recorded BIOS ticks/retrace/seed and keys applied
+at loop heads; the port's own timing model (instruction costs) is **not** validated by it.
+The free-running browser timing is an approximation of DOSBox at 3000 cycles/ms.
 
 ## Known limitations
 
@@ -44,13 +51,13 @@ not regression-validated.
   "joystick not found" path is taken when Y is chosen).
 - Menu/pause text uses an original substitute 8x8 font (the BIOS ROM font is not part of
   the game files).
-- Instruction-cost model is approximate; timing has not been calibrated against DOSBox.
+- Instruction-cost model is approximate; free-running timing (iterations per BIOS tick)
+  has not been calibrated against DOSBox yet.
 - Ctrl+Alt+Del in the original reboots the PC; the port stops with a diagnostic.
 - Ctrl+Alt+Left/Right in the original nudges the CRT picture; the port records but does
   not display it.
 
 ## Next milestone
 
-Reference capture tooling: record BIOS ticks, retrace bits, PIT reads and key state at
-their consumption points in DOSBox, replay them into the port, compare data segment and
-VRAM at checkpoints. Then port rooms, validating each against captures.
+Rooms: transition wipe (CS:1bf0), the seven room loops and their objects, the return to
+the alley; each validated with a reference scenario that enters the room.

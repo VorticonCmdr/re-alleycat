@@ -84,13 +84,15 @@ function menuLine(g) {
   print(g, g.rw(0x6d37 + bx));
 }
 
-// Wait for a new make code (the original spins on DS:0693).
-function* waitMake(g) {
+// Wait for a new make code (the original spins on DS:0693 at `site`).
+// Yields once per original compare at the loop head (sync point).
+function* waitMake(g, site) {
   const n = g.rw(MAKE_COUNT);
   g.c(1);
-  while (g.rw(MAKE_COUNT) === n) {
+  for (;;) {
+    yield site;
     g.c(3);
-    yield;
+    if (g.rw(MAKE_COUNT) !== n) return;
   }
 }
 
@@ -98,7 +100,7 @@ function* waitMake(g) {
 function* waitKey(g) {
   g.c(3);
   if (g.rb(0x69b)) g.unsupported('joystick button wait (CS:5f9e)');
-  yield* waitMake(g);
+  yield* waitMake(g, 0x5faa);
 }
 
 // CS:5fe5 - "use a joystick" check; no game port is present, so this always fails (CF=1).
@@ -107,7 +109,7 @@ function* joystickCheck(g) {
   if (g.bios.equipment & 0x1000) g.unsupported('joystick detection with a game port (CS:600f)');
   g.ww(0x6d8f, 0x24);
   for (let i = 0; i < 4; i++) menuLine(g);
-  yield* waitMake(g);
+  yield* waitMake(g, 0x6007);
   return true;
 }
 
@@ -120,7 +122,7 @@ export function* menu(g) {
     menuLine(g);
     let retry = false;
     for (;;) {
-      yield* waitMake(g);
+      yield* waitMake(g, 0x5ef7);
       g.c(4);
       if (held(g, K.Y)) {
         if (yield* joystickCheck(g)) {
@@ -140,7 +142,7 @@ export function* menu(g) {
   for (let i = 0; i < 5; i++) menuLine(g);
   let skill;
   for (;;) {
-    yield* waitMake(g);
+    yield* waitMake(g, 0x5f29);
     g.c(4);
     if (held(g, K.KEY_K)) skill = 0;
     else if (held(g, K.KEY_H)) skill = 1;
@@ -290,8 +292,7 @@ export function* titleScreen(g) {
     g.ww(0x5320, 0);
     g.c(8);
     for (;;) {
-      // L5d71
-      yield;
+      yield 0x5d71; // loop head L5d71 (sync point)
       let dx = g.ticks();
       g.c(4);
       if (((dx - g.rw(0x6a93)) & 0xffff) >= 0x24) {

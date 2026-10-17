@@ -131,7 +131,7 @@ function* alley(g) {
   scoreDraw(g, 0x1f82, 0x143c); // CS:26fc score
   S.musicReset(g); // CS:58bd
   for (;;) {
-    yield;
+    yield 0x0155; // loop head L0155 (sync point)
     g.c(3);
     if (g.rb(LIVES) === 0) return 'attract';
     yield* hotKeys(g, T.pauseScreen);

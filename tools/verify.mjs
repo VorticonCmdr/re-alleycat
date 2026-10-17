@@ -3,7 +3,7 @@
 // ran, or if fixtures are missing/corrupt (setup failure = exit 2).
 //
 //   npm run verify                 all required checks
-//   npm run verify -- --only=unit  run one group (unit | slice | browser)
+//   npm run verify -- --only=unit  run one group (unit | slice | reference | browser)
 //   npm run verify -- --skip=browser
 import { spawnSync } from 'node:child_process';
 import { ROOT, loadCatExe, SetupError } from './lib/fixtures.mjs';
@@ -25,6 +25,7 @@ try {
 const groups = [
   { name: 'unit', cmd: ['node', 'tests/run-unit.mjs'] },
   { name: 'slice', cmd: ['node', 'tests/slice.mjs'] },
+  { name: 'reference', cmd: ['node', 'tests/reference.mjs'] },
   { name: 'browser', cmd: ['node', 'tools/browser-check.mjs'] },
 ].filter((g) => (!only || only.includes(g.name)) && !skip.includes(g.name));
 

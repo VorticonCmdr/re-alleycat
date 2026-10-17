@@ -44,6 +44,7 @@ export class Game {
     this.df = 0; // CPU direction flag: persists between routines (CS:05f1 leaves it set)
     this.exited = false;
     this.trace = null; // optional hook: (event, data) => void
+    this.replay = null; // RecordedEnv when replaying a reference capture
     this.yields = 0;
     this._gen = program(this);
   }
@@ -71,7 +72,7 @@ export class Game {
   // INT 1Ah AH=0: returns DX (low word); cx (high word) on g.ticksHigh.
   ticks() {
     this.c(4);
-    const t = this.clock.biosTicks();
+    const t = this.replay ? this.replay.tick() : this.clock.biosTicks();
     this.ticksHigh = t >>> 16;
     return t & 0xffff;
   }
@@ -83,7 +84,7 @@ export class Game {
   // CS:13d8: IN AL,3DAh / AND AL,8. Returns true while in vertical retrace.
   retrace() {
     this.c(5);
-    return this.clock.inRetrace();
+    return this.replay ? this.replay.retrace() : this.clock.inRetrace();
   }
   // PIT channel 0 latch (OUT 43h,0 / IN 40h / IN 40h). Returns the 16-bit count.
   pit0() {
@@ -126,6 +127,14 @@ export class Game {
   serviceInterrupts() {
     const bytes = this.keyboard.due();
     for (const b of bytes) keyboardInterrupt(this, b);
+  }
+
+  // Resume the program until the next yield; returns the yielded sync site (or undefined).
+  step() {
+    const r = this._gen.next();
+    this.yields++;
+    if (r.done) this.exited = true;
+    return r.value;
   }
 
   // ---- driver ----
