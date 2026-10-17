@@ -60,7 +60,7 @@ async function resume(d) {
 
 // Leave the game: restore the BIOS INT 9 vector the game saved at CS:13df, then run
 // MOV AX,4C00h / INT 21h at the current instruction.
-async function forceExit(d) {
+export async function forceExit(d) {
   const st = await d.status();
   if (!/CAT/i.test(st.program || '')) return;
   let p = await d.pause();
@@ -91,7 +91,7 @@ async function forceExit(d) {
   throw new Error('CAT did not exit');
 }
 
-async function launch(d, exe) {
+export async function launch(d, exe) {
   await d.clearBreakpoints();
   const rs = await d.replayStatus().catch(() => null);
   if (rs && rs.active) await d.req('DELETE', '/api/v1/input/replay');

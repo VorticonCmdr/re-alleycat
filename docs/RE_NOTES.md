@@ -144,3 +144,14 @@ via CRTC registers 10h/11h at the first sync point. Recorded per manifest
 ## Translation bug found by reference replay
 CS:5be0 stores DX from the wait loop's last INT 1Ah (`MOV [5f66],DX`); the first translation
 re-read the clock, shifting the tick-read alignment (room-exits checkpoint 16, DS:5a83/5a85).
+
+## Speed calibration, round 2 [obs] (free-running DOSBox, no breakpoints)
+| metric | DOSBox | port | note |
+|---|---|---|---|
+| alley passes per BIOS tick (idle cat, DS:040f) | 2088 | 2116 | +1.3 % |
+| idle-cat redraws per tick (retrace-gated, DS:056d) | 0.993 | 1.000 | retrace gate retried every pass until it hits |
+| title: attract-cat updates per moving tick (DS:056b) | 0.978 | 0.986 | travel per tick is RNG-dominated and unusable |
+| port 3DAh bit 3 duty (3000 random REST samples) | 0.37 % | 0.45 % model | 2 of 449 lines; within sampling error |
+Room loops: no pass counter exists and breakpoint counting distorts DOSBox, and walking
+update rates in rooms are dominated by what the cat runs into (two DOSBox runs: 0.81 and
+0.61 updates per moving tick; port 1.06). Room-loop speed therefore remains **[approx]**.

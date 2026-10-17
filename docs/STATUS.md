@@ -66,8 +66,9 @@ The free-running browser timing is an approximation of DOSBox at 3000 cycles/ms.
   "joystick not found" path is taken when Y is chosen).
 - Menu/pause text uses an original substitute 8x8 font (the BIOS ROM font is not part of
   the game files).
-- Instruction-cost model is approximate; free-running timing (iterations per BIOS tick)
-  has not been calibrated against DOSBox yet.
+- Instruction-cost model is calibrated on the alley loop (+1.3 % passes per tick), the
+  retrace-gated idle redraw and the title's attract cat (see RE_NOTES); room loops remain
+  approximate (no undistorted measurement available).
 - Ctrl+Alt+Del in the original reboots the PC; the port stops with a diagnostic.
 - Ctrl+Alt+Left/Right in the original nudges the CRT picture; the port records but does
   not display it.
