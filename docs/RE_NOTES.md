@@ -206,3 +206,20 @@ update rates in rooms are dominated by what the cat runs into (two DOSBox runs: 
   walk the cat to the nearest non-empty bowl on its floor row (row DS:4499+bx = cat y + 8)
   and count it down (DS:44c4+bx; DS:44d6 bowls left; DS:0553 set at 0).
 - Holding Down steps the standing cat between the floor rows y = 136, 152, 168, 180.
+
+## TANDYCAT.EXE title music and title palette [obs]
+- Player CS:173e..1829 (Tandy DS addresses): runs on each BIOS tick change while DS:0001 is
+  set; the title sets PIT ch0 to CFFFh (22.41 Hz ticks). Voice records at DS:1231/123a/1243
+  (pointers DS:124c): countdown, attenuation, index word, channel bits, note and duration list
+  pointers. A new note sets attenuation 3; each further tick of the note adds 2 until 0Fh
+  (silent). Note 0 mutes, note 86h loops (voice 0 then advances the pass word DS:1254; per
+  pass DS:1256 = 0, 2, 4, 4 is the highest voice offset heard). Divisors: word table DS:1014
+  indexed by the note byte. Each voice lasts 288 ticks; four passes take 1152 ticks.
+- Check: the viewer's reconstruction (`tandyTune` in viewer.html) was compared with all 4214
+  port C0h writes the original made in DOSBox machine=tandy over 1153 player ticks: per-tick
+  attenuation of all three voices and the divisor of every audible voice are identical
+  (0 mismatches; a one-value perturbation is detected).
+- Title palette (DOSBox machine=tandy, VRAM correlated with the rendered frame): pixel
+  values 0..3 show black, light green, light blue, white.
+- Asset catalogue: with the byte-run segment map, all 217 IBM catalogue entries (sprites,
+  tables, pointer-table frames) have byte-identical counterparts in TANDYCAT.EXE.
